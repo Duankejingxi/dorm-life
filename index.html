@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>宿舍人生 · 四年模拟器</title>
+<meta name="description" content="宿舍人生：大学四年文字模拟器。每学期选一个行动，遇到随机事件，毕业时看看你的人生走向。保研、考研、大厂、创业、躺平……结局由你决定。纯前端，打开就能玩。">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- 开始界面 -->
+  <section id="startScreen">
+    <header class="hero">
+      <h1>🎓 宿舍人生</h1>
+      <p class="subtitle">大学四年模拟器 · 你的选择，决定你的结局</p>
+    </header>
+    <div class="panel">
+      <p class="hint">你 18 岁，考上大学，住进宿舍。四年，8 个学期，每学期选一个行动，再遇到一件意想不到的事。毕业那天，看看你活成了什么样。</p>
+      <label class="field-label" for="startName">你的名字</label>
+      <input id="startName" type="text" maxlength="8" placeholder="比如：阿伟" autocomplete="off">
+      <button class="btn gold-btn big" id="startBtn">开始大一 ▶</button>
+      <p class="result-line" id="endingsCount">结局图鉴：0 / 10 已解锁</p>
+      <div class="ending-chips" id="endingsList"></div>
+      <p class="mini">玩法：每学期选 1 个行动（学习/打工/健身/打游戏/社交/摆烂），再处理 1 个随机事件。健康、智力、魅力、快乐、金钱、学分——六项属性决定你的结局。健康归零会休学，欠债太多会退学。</p>
+    </div>
+  </section>
+
+  <!-- 游戏界面 -->
+  <section id="gameScreen" class="hidden">
+    <header class="game-head">
+      <h2>🎓 宿舍人生</h2>
+      <p class="result-line" id="semLabel">大一上 · 第 1 / 8 学期</p>
+    </header>
+
+    <div class="panel stats-panel">
+      <div class="stat-row"><span class="stat-label">❤️ 健康</span><div class="stat-bar"><div class="stat-fill health" id="barHealth" style="width:70%"></div></div><span class="stat-num" id="numHealth">70</span></div>
+      <div class="stat-row"><span class="stat-label">🧠 智力</span><div class="stat-bar"><div class="stat-fill iq" id="barIq" style="width:60%"></div></div><span class="stat-num" id="numIq">60</span></div>
+      <div class="stat-row"><span class="stat-label">✨ 魅力</span><div class="stat-bar"><div class="stat-fill charm" id="barCharm" style="width:60%"></div></div><span class="stat-num" id="numCharm">60</span></div>
+      <div class="stat-row"><span class="stat-label">😊 快乐</span><div class="stat-bar"><div class="stat-fill happy" id="barHappy" style="width:70%"></div></div><span class="stat-num" id="numHappy">70</span></div>
+      <div class="stat-row money-row"><span class="stat-label">💰 金钱</span><span class="stat-num big" id="numMoney">¥500</span><span class="stat-label">📚 学分</span><span class="stat-num big" id="numCredits">0</span></div>
+    </div>
+
+    <div class="panel">
+      <p class="result-line" id="actionHint">大一上，你打算怎么过？选一个。</p>
+      <div id="actionBox" class="action-grid"></div>
+
+      <div id="eventCard" class="event-card hidden">
+        <h3 id="eventTitle">🎲 事件</h3>
+        <p id="eventText"></p>
+        <div id="eventChoices" class="choice-list"></div>
+      </div>
+
+      <div id="resultBox" class="hidden">
+        <p class="result-line" id="resultText"></p>
+        <button class="btn gold-btn" id="nextBtn">下一学期 ▶</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 class="log-title">📖 人生记录</h3>
+      <div id="logList" class="log-list"></div>
+    </div>
+  </section>
+
+  <!-- 结局界面 -->
+  <section id="endingScreen" class="hidden">
+    <div class="panel ending-panel">
+      <div class="ending-emoji" id="endingEmoji">🎓</div>
+      <h2 id="endingTitle">结局</h2>
+      <p id="endingDesc"></p>
+      <p class="result-line" id="endingStats"></p>
+      <button class="btn gold-btn big" id="againBtn">再活一次 🔄</button>
+      <p class="result-line" id="endingsCount2">结局图鉴：0 / 10 已解锁</p>
+      <div class="ending-chips" id="endingsList2"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>宿舍人生 v1.0 · 纯前端文字模拟器，打开就能玩</p>
+  </footer>
+</div>
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
