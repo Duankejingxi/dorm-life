@@ -9,7 +9,9 @@
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
   const TOTAL_ENDINGS = 36;
-  const MICRO_PER_SEMESTER = 2;
+  // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
+  const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
+  const ACTIONS_PER_SEMESTER = 3;
 
   let state = null; // { name, semester, health, iq, charm, money, happy, connections, credits, log[], over, endingId }
   let flags = null; // 本局标记：actionCounts, eventsSeen[], microsSeen, chainsCompleted, lotteryWin, wasBroke, wasInDebt, lowHealth, completedGame, comeback
@@ -20,7 +22,8 @@
   let startedChains = [];
   let completedChains = [];
   let activeChain = null; // { id, part } 下一环
-  let microLeft = 0;
+  let stepIndex = 0; // 本学期走到第几个遭遇（STEP_QUEUE）
+  let actionsDone = 0; // 本学期已选的行动数（3 个封顶）
   let forcedEventId = null;
   let forcedMicroId = null;
   let forcedChainId = null;
@@ -216,7 +219,6 @@
     startedChains = [];
     completedChains = [];
     activeChain = null;
-    microLeft = 0;
     pendingAchievements = [];
     try { localStorage.setItem(GAMES_KEY, String(loadGamesPlayed() + 1)); } catch (e) { /* 忽略 */ }
     $("logList").innerHTML = "";
@@ -225,15 +227,30 @@
     renderEndingsCount();
     renderAchievements();
     showScreen("gameScreen");
-    showActionPhase();
+    startSemester();
     addLog(state.name + "入学了，住进了宿舍，大学四年开始了。");
+  }
+
+  function startSemester() {
+    stepIndex = 0;
+    actionsDone = 0;
+    advanceStep();
+  }
+
+  function advanceStep(resultText) {
+    if (stepIndex >= STEP_QUEUE.length) { showSemesterEnd(resultText); return; }
+    const kind = STEP_QUEUE[stepIndex];
+    if (kind === "action") showActionPhase();
+    else if (kind === "big") drawEvent();
+    else drawMicroEvent();
   }
 
   function showActionPhase() {
     $("actionBox").classList.remove("hidden");
     $("eventCard").classList.add("hidden");
     $("resultBox").classList.add("hidden");
-    $("actionHint").textContent = semName() + "，你打算怎么过？选一个。";
+    $("shopPanel").classList.add("hidden");
+    $("actionHint").textContent = semName() + "，选一个行动（已选 " + actionsDone + "/" + ACTIONS_PER_SEMESTER + "）。";
   }
 
   function doAction(actionId) {
@@ -243,9 +260,63 @@
     applyEffects(a.effects, a.variance, a.moneyVariance);
     applyRel(a.rel);
     addLog(a.log[Math.floor(Math.random() * a.log.length)]);
+    actionsDone++;
+    stepIndex++;
     $("actionBox").classList.add("hidden");
     if (checkEarlyEnding()) return;
-    drawEvent();
+    advanceStep();
+  }
+
+  // ---- v1.3：商店（花钱买东西，买一次算一个行动）----
+  const shopBtns = {}; // itemId -> 购买按钮
+  let shopBuilt = false; // 面板里已有标题/提示两行静态元素，不能用 children.length 判断是否建过
+  function buildShop() {
+    const panel = $("shopPanel");
+    if (!panel || shopBuilt) return;
+    shopBuilt = true;
+    SHOP_ITEMS.forEach((item) => {
+      const row = document.createElement("div");
+      row.className = "shop-row";
+      const info = document.createElement("span");
+      info.className = "shop-info";
+      info.textContent = item.icon + " " + item.name + " · ¥" + item.price + " — " + item.desc;
+      const btn = document.createElement("button");
+      btn.className = "btn gold-btn small";
+      btn.textContent = "买";
+      btn.setAttribute("data-shop", item.id);
+      btn.addEventListener("click", () => buyItem(item.id));
+      shopBtns[item.id] = btn;
+      row.appendChild(info);
+      row.appendChild(btn);
+      panel.appendChild(row);
+    });
+    const back = document.createElement("button");
+    back.className = "btn ghost-btn small";
+    back.textContent = "← 返回，不买了";
+    back.addEventListener("click", () => { $("shopPanel").classList.add("hidden"); $("actionBox").classList.remove("hidden"); });
+    panel.appendChild(back);
+  }
+  function showShop() {
+    buildShop();
+    $("actionBox").classList.add("hidden");
+    $("shopPanel").classList.remove("hidden");
+    $("shopMsg").textContent = "";
+    // 钱不够的商品变灰
+    SHOP_ITEMS.forEach((item) => {
+      if (shopBtns[item.id]) shopBtns[item.id].disabled = state.money < item.price;
+    });
+  }
+  function buyItem(itemId) {
+    const item = SHOP_ITEMS.find((x) => x.id === itemId);
+    if (!item || state.over) return;
+    if (state.money < item.price) { $("shopMsg").textContent = "钱不够，买不起「" + item.name + "」（¥" + item.price + "）。"; return; }
+    applyEffects(item.effects, 0);
+    addLog(item.log);
+    $("shopPanel").classList.add("hidden");
+    actionsDone++;
+    stepIndex++;
+    if (checkEarlyEnding()) return;
+    advanceStep();
   }
 
   // 连锁剧情的一环拼成一个“事件”对象
@@ -281,9 +352,34 @@
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
+  // v1.3：按事件标题/文案里的关键词配场景图（宿舍/教室/食堂/校园）
+  function sceneFor(ev) {
+    // v1.3：按关键词在标题+正文里第一次出现的位置定场景（标题优先，正文里先提到的地点为准）
+    // 比如“食堂新开麻辣烫”正文提到“香味飘到了宿舍楼”，但“食堂”先出现 → 食堂
+    const text = (ev.title || "") + " " + (ev.text || "");
+    const groups = [
+      ["dorm", /宿舍|室友|阿强|床|被子|寝室|打呼|停水|停电|开黑|夜聊|查寝|洗澡|晾衣/],
+      ["classroom", /上课|老师|导师|考试|四级|六级|论文|图书馆|自习|课堂|讲座|选修|期中|期末|答辩|考研|保研|学霸/],
+      ["canteen", /食堂|麻辣烫|吃饭|外卖|奶茶|鸡腿|饭卡|泡面|早餐|夜宵|水果|零食/],
+    ];
+    let best = null, bestIdx = Infinity;
+    groups.forEach(([scene, re]) => {
+      const idx = text.search(re);
+      if (idx !== -1 && idx < bestIdx) { bestIdx = idx; best = scene; }
+    });
+    return best || "campus";
+  }
+
   function showEventCard(ev, kind) {
     currentEvent = ev;
     currentKind = kind;
+    const img = $("eventScene");
+    if (img && (kind === "big" || kind === "chain") && typeof SCENES !== "undefined" && SCENES[sceneFor(ev)]) {
+      img.src = SCENES[sceneFor(ev)];
+      img.classList.remove("hidden");
+    } else if (img) {
+      img.classList.add("hidden");
+    }
     $("eventTitle").textContent = (kind === "micro" ? "✨ 小事 · " : "🎲 ") + ev.title;
     $("eventText").textContent = ev.text;
     const box = $("eventChoices");
@@ -300,11 +396,13 @@
   }
 
   function drawEvent() {
+    // v1.3：连锁剧情每学期只推进一环（只在第一个大事件出，第二个大事件是普通事件）
+    const isFirstBig = stepIndex === 1;
     let ev;
-    if (activeChain) {
+    if (activeChain && isFirstBig) {
       ev = chainEvent(activeChain.id, activeChain.part);
       showEventCard(ev, "chain");
-    } else if (forcedChainId) {
+    } else if (forcedChainId && isFirstBig) {
       ev = chainEvent(forcedChainId, 1);
       forcedChainId = null;
       showEventCard(ev, "chain");
@@ -361,23 +459,16 @@
       } else {
         activeChain = { id: ch.id, part: ch.part + 1 };
       }
+      checkAchievements();
     }
     $("eventCard").classList.add("hidden");
     if (checkEarlyEnding()) return;
-    if (currentKind === "micro") {
-      microLeft--;
-      if (microLeft > 0) { drawMicroEvent(); return; }
-    } else {
-      // 大事件刚结束，接着出 2 件小事
-      microLeft = MICRO_PER_SEMESTER;
-      drawMicroEvent();
-      return;
-    }
-    showResult(resultText);
+    stepIndex++;
+    advanceStep(resultText);
   }
 
-  function showResult(resultText) {
-    $("resultText").textContent = resultText;
+  function showSemesterEnd(resultText) {
+    $("resultText").textContent = resultText || "这学期过完了。";
     if (pendingAchievements.length > 0) {
       $("achieveLine").textContent = "🏆 解锁成就：" + pendingAchievements.map((a) => a.name).join("、");
       pendingAchievements = [];
@@ -399,7 +490,7 @@
     state.semester++;
     if (state.semester > 8) { endGame(judgeEnding(state)); return; }
     renderStats();
-    showActionPhase();
+    startSemester();
   }
 
   function endGame(endingId) {
@@ -416,6 +507,8 @@
     saveEnding(endingId);
     $("endingEmoji").textContent = e.emoji;
     $("endingTitle").textContent = e.title;
+    const eimg = $("endingScene");
+    if (eimg && typeof SCENES !== "undefined" && SCENES.campus) { eimg.src = SCENES.campus; eimg.classList.remove("hidden"); }
     $("endingDesc").textContent = state.name + "的大学四年结束了。" + e.desc;
     $("endingStats").textContent = "最终属性：健康 " + state.health + " · 智力 " + state.iq + " · 魅力 " + state.charm +
       " · 快乐 " + state.happy + " · 人脉 " + state.connections + " · 金钱 ¥" + state.money + " · 学分 " + state.credits +
@@ -482,6 +575,20 @@
     b.addEventListener("click", () => doAction(a.id));
     $("actionBox").appendChild(b);
   });
+  // v1.3：商店按钮（买东西算一个行动）
+  const shopBtn = document.createElement("button");
+  shopBtn.className = "btn action-btn shop-btn";
+  shopBtn.setAttribute("data-action", "shop");
+  const shopTitle = document.createElement("span");
+  shopTitle.className = "action-title";
+  shopTitle.textContent = "🛒 买东西";
+  const shopDesc = document.createElement("span");
+  shopDesc.className = "action-desc";
+  shopDesc.textContent = "花钱买东西：新手机、健身卡、复习资料、请客吃饭。";
+  shopBtn.appendChild(shopTitle);
+  shopBtn.appendChild(shopDesc);
+  shopBtn.addEventListener("click", showShop);
+  $("actionBox").appendChild(shopBtn);
 
   $("startBtn").addEventListener("click", () => startGame($("startName").value));
   $("nextBtn").addEventListener("click", nextSemester);
@@ -501,6 +608,11 @@
     start: startGame,
     doAction,
     chooseEvent,
+    buyItem,
+    showShop,
+    get stepIndex() { return stepIndex; },
+    get actionsDone() { return actionsDone; },
+    sceneFor,
     nextSemester,
     setNextEvent(id) { forcedEventId = id; },
     setNextMicro(id) { forcedMicroId = id; },

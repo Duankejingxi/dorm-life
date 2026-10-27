@@ -1,26 +1,38 @@
 // 宿舍人生 · 内容数据：每学期的行动、随机事件、结局
 // 数值都是“变化量”，正数加、负数减；金钱单位是元，学分没有上限
 
-// 每学期先选一个行动
+// 每学期选 3 个行动（v1.3：每学期 3 个行动，效果比 v1.2 下调，3 个加起来约等于以前 1.8 个）
 const ACTIONS = [
   { id: "study", icon: "📚", name: "上课学习", desc: "认真听课，泡图书馆。智力、学分涨，快乐掉一点。",
-    effects: { iq: 8, credits: 6, happy: -5 }, variance: 2,
-    log: ["这学期你泡在图书馆，笔记记得满满当当。", "这学期你上课坐第一排，老师都记住你了。"] },
+    effects: { iq: 5, credits: 4, happy: -3 }, variance: 2,
+    log: ["你泡在图书馆，笔记记得满满当当。", "你上课坐第一排，老师都记住你了。"] },
   { id: "work", icon: "💰", name: "打工赚钱", desc: "发传单、做家教、跑腿。钱多了，人累点，还能认识点人。",
-    effects: { money: 750, health: -5, happy: -4, iq: -2, connections: 3 }, variance: 2, moneyVariance: 100,
-    log: ["这学期你打了不少零工，钱包鼓了一点，人也累了一点。", "这学期你一边上课一边打工，月底数钱的时候笑了。"] },
+    effects: { money: 500, health: -3, happy: -3, iq: -1, connections: 2 }, variance: 2, moneyVariance: 60,
+    log: ["你打了不少零工，钱包鼓了一点，人也累了一点。", "你一边上课一边打工，月底数钱的时候笑了。"] },
   { id: "gym", icon: "🏋️", name: "健身运动", desc: "跑步、撸铁、打球。身体好了，气质也好了，还能认识健身搭子。",
-    effects: { health: 8, charm: 5, money: -100, happy: 3, connections: 2 }, variance: 2, rel: { aqiang: 2 },
-    log: ["这学期你天天泡操场，体测轻轻松松。", "这学期你练出了线条，走路都带风。"] },
+    effects: { health: 5, charm: 3, money: -60, happy: 2, connections: 1 }, variance: 2, rel: { aqiang: 2 },
+    log: ["你天天泡操场，体测轻轻松松。", "你练出了线条，走路都带风。"] },
   { id: "game", icon: "🎮", name: "打游戏", desc: "开黑、上分、通宵。快乐拉满，脑子放假。",
-    effects: { happy: 10, iq: -4, credits: -2, money: -100 }, variance: 2,
-    log: ["这学期你上分如喝水，快乐得冒泡。", "这学期你游戏里风生水起，现实里作业堆成山。"] },
+    effects: { happy: 7, iq: -3, credits: -1, money: -60 }, variance: 2,
+    log: ["你上分如喝水，快乐得冒泡。", "你游戏里风生水起，现实里作业堆成山。"] },
   { id: "social", icon: "🎉", name: "社交聚会", desc: "社团、聚餐、认识新朋友。魅力、人脉都涨，钱包瘪。",
-    effects: { charm: 8, happy: 6, money: -200, connections: 8 }, variance: 2, rel: { aqiang: 4, xiaomei: 4, xuezhang: 3, daoshi: 2 },
-    log: ["这学期你认识了一大圈人，朋友圈热闹得很。", "这学期你饭局不断，人缘越来越好。"] },
+    effects: { charm: 5, happy: 4, money: -120, connections: 5 }, variance: 2, rel: { aqiang: 4, xiaomei: 4, xuezhang: 3, daoshi: 2 },
+    log: ["你认识了一大圈人，朋友圈热闹得很。", "你饭局不断，人缘越来越好。"] },
   { id: "slack", icon: "😴", name: "摆烂躺平", desc: "不卷了。睡到自然醒，快乐最重要。",
-    effects: { happy: 6, health: -3, iq: -3 }, variance: 2,
-    log: ["这学期你彻底躺平，睡了个痛快。", "这学期你把“松弛感”贯彻到底。"] },
+    effects: { happy: 4, health: -2, iq: -2 }, variance: 2,
+    log: ["你彻底躺平，睡了个痛快。", "你把“松弛感”贯彻到底。"] },
+];
+
+// ---- v1.3：商店（花钱买东西，买一次算一个行动）----
+const SHOP_ITEMS = [
+  { id: "phone", icon: "📱", name: "新手机", price: 800, desc: "换了新手机，拍照发朋友圈，整个人都精神了。",
+    effects: { charm: 10, money: -800 }, log: "你换了新手机，拍照发朋友圈，点赞数爆了。" },
+  { id: "gymcard", icon: "🏋️", name: "健身卡", price: 500, desc: "办了张健身卡，这学期有得练了。",
+    effects: { health: 10, money: -500 }, log: "你办了张健身卡，这学期天天泡健身房。" },
+  { id: "books", icon: "📖", name: "复习资料", price: 200, desc: "买了一套复习资料和真题，备考有底了。",
+    effects: { iq: 5, money: -200 }, log: "你买了一套复习资料和真题，备考有底了。" },
+  { id: "feast", icon: "🍲", name: "请客吃饭", price: 300, desc: "请朋友吃了顿大餐，人脉和快乐都涨了。",
+    effects: { connections: 10, happy: 3, money: -300 }, log: "你请朋友吃了顿大餐，人脉和快乐都涨了。" },
 ];
 
 // 随机事件：year 不填就是任何学年都能遇到；choices 里每个选项有固定效果和一句话结果
@@ -2682,40 +2694,41 @@ const ENDINGS = [
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
+// v1.3 阈值：每学期 3 个行动，学分和金钱涨得更快，门槛相应上调
 function judgeEnding(s) {
   if (s.health <= 0) return "sick";
   if (s.money <= -500) return "debt";
-  if (s.credits < 10) return "delay2";
-  if (s.credits < 20) return "delay";
-  if (s.credits >= 20 && s.credits < 25 && s.money >= 5000) return "dropout-startup";
-  if (s.iq >= 90 && s.credits >= 55) return "phd";
-  if (s.credits >= 40 && s.iq >= 85) return "baoyan";
-  if (s.credits >= 35 && s.iq >= 75) return "kaoyan";
-  if (s.iq >= 80 && s.money >= 3000) return "abroad";
+  if (s.credits < 15) return "delay2";
+  if (s.credits < 30) return "delay";
+  if (s.credits >= 30 && s.credits < 35 && s.money >= 8000) return "dropout-startup";
+  if (s.iq >= 90 && s.credits >= 80) return "phd";
+  if (s.credits >= 60 && s.iq >= 85) return "baoyan";
+  if (s.credits >= 50 && s.iq >= 75) return "kaoyan";
+  if (s.iq >= 80 && s.money >= 5000) return "abroad";
   if (s.iq >= 80 && s.charm >= 75) return "dachang";
   if (s.iq >= 75 && s.charm >= 70 && (s.connections || 0) >= 60) return "civil";
-  if (s.money >= 5000 && s.charm >= 70) return "startup";
-  if (s.money >= 3000 && s.charm < 60 && s.iq >= 70) return "startup-fail";
-  if (s.money >= 3000 && s.charm >= 60) return "small-boss";
+  if (s.money >= 8000 && s.charm >= 70) return "startup";
+  if (s.money >= 5000 && s.charm < 60 && s.iq >= 70) return "startup-fail";
+  if (s.money >= 5000 && s.charm >= 60) return "small-boss";
   if (s.health >= 85 && s.charm >= 70) return "athlete";
   // v1.2：人际关系结局（关系够铁才触发；放在通用结局之前，差一点的结局之后）
   if ((s.rel || {}).xiaomei >= 90 && s.charm >= 70) return "sweetheart";
   if ((s.rel || {}).aqiang >= 85 && s.happy >= 70) return "brother";
   if ((s.rel || {}).daoshi >= 85 && s.iq >= 80) return "protege";
   if ((s.rel || {}).xuezhang >= 85 && (s.connections || 0) >= 80) return "mentor-job";
-  if (s.credits >= 40 && s.iq >= 70) return "baoyan-fail";
-  if (s.credits >= 30 && s.credits < 35 && s.iq >= 75) return "kaoyan-retry";
+  if (s.credits >= 60 && s.iq >= 70) return "baoyan-fail";
+  if (s.credits >= 45 && s.credits < 50 && s.iq >= 75) return "kaoyan-retry";
   if (s.charm >= 85 && s.happy >= 85) return "love";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";
   if (s.happy >= 85 && s.charm >= 70 && s.iq >= 60) return "esports-pro";
-  if (s.iq >= 70 && s.charm >= 70 && s.credits >= 30) return "teacher";
+  if (s.iq >= 70 && s.charm >= 70 && s.credits >= 45) return "teacher";
   if (s.iq >= 80 && s.happy >= 70) return "writer";
   if (s.charm >= 85 && s.happy >= 75) return "artist";
   if (s.charm >= 80 && s.happy >= 75) return "photographer";
   if (s.charm >= 80 && s.happy >= 80 && s.money < 2000) return "volunteer-star";
   if (s.happy >= 80 && s.money >= 2000) return "freelancer";
-  if (s.happy >= 80 && s.money >= 1000 && s.credits < 30) return "gap-year";
+  if (s.happy >= 80 && s.money >= 1000 && s.credits < 45) return "gap-year";
   if (s.happy >= 70 && s.money < 1000) return "inherit";
   if (s.happy >= 90) return "happy";
   if (s.happy >= 75 && s.money >= 1000) return "happy-rich";
