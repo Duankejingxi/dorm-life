@@ -10,13 +10,13 @@ const ACTIONS = [
     effects: { money: 750, health: -5, happy: -4, iq: -2, connections: 3 }, variance: 2, moneyVariance: 100,
     log: ["这学期你打了不少零工，钱包鼓了一点，人也累了一点。", "这学期你一边上课一边打工，月底数钱的时候笑了。"] },
   { id: "gym", icon: "🏋️", name: "健身运动", desc: "跑步、撸铁、打球。身体好了，气质也好了，还能认识健身搭子。",
-    effects: { health: 8, charm: 5, money: -100, happy: 3, connections: 2 }, variance: 2,
+    effects: { health: 8, charm: 5, money: -100, happy: 3, connections: 2 }, variance: 2, rel: { aqiang: 2 },
     log: ["这学期你天天泡操场，体测轻轻松松。", "这学期你练出了线条，走路都带风。"] },
   { id: "game", icon: "🎮", name: "打游戏", desc: "开黑、上分、通宵。快乐拉满，脑子放假。",
     effects: { happy: 10, iq: -4, credits: -2, money: -100 }, variance: 2,
     log: ["这学期你上分如喝水，快乐得冒泡。", "这学期你游戏里风生水起，现实里作业堆成山。"] },
   { id: "social", icon: "🎉", name: "社交聚会", desc: "社团、聚餐、认识新朋友。魅力、人脉都涨，钱包瘪。",
-    effects: { charm: 8, happy: 6, money: -200, connections: 8 }, variance: 2,
+    effects: { charm: 8, happy: 6, money: -200, connections: 8 }, variance: 2, rel: { aqiang: 4, xiaomei: 4, xuezhang: 3, daoshi: 2 },
     log: ["这学期你认识了一大圈人，朋友圈热闹得很。", "这学期你饭局不断，人缘越来越好。"] },
   { id: "slack", icon: "😴", name: "摆烂躺平", desc: "不卷了。睡到自然醒，快乐最重要。",
     effects: { happy: 6, health: -3, iq: -3 }, variance: 2,
@@ -2443,6 +2443,167 @@ const ACHIEVEMENTS = [
   { id: "replay", name: "🔄 再来一局", desc: "累计玩过 3 局", check: (s, f) => (f.gamesPlayed || 0) >= 3 },
 ];
 
+// ---- v1.2：人际关系（4 个 NPC；choices 里的 rel 字段是关系变化，0-100）----
+const NPCS = [
+  { id: "aqiang", name: "阿强", role: "室友", start: 60, desc: "睡你上铺的兄弟，游戏搭子，借钱不还的常客。" },
+  { id: "xiaomei", name: "小美", role: "同班同学", start: 50, desc: "坐在你前排的女生，笔记做得特别好，笑起来很好看。" },
+  { id: "xuezhang", name: "学长", role: "大三学长", start: 40, desc: "学生会的老油条，什么都知道，什么都能搞定。" },
+  { id: "daoshi", name: "导师", role: "专业课老师", start: 30, desc: "专业课老师，严厉但负责，欣赏认真的学生。" },
+];
+
+// ---- v1.2：分学年事件（24 个，每学年 6 个，带关系变化）----
+const YEAR_EVENTS = [
+  // 大一
+  { id: "y1-roommate-first", title: "第一次见室友", text: "开学第一天，你见到了室友阿强，他正在收拾行李，床上堆满了零食。", year: 1,
+    choices: [
+      { text: "打招呼", effects: { happy: 4, charm: 3 }, rel: { aqiang: 10 }, result: "你们打了招呼，聊了一下午，从家乡聊到游戏，一见如故。" },
+      { text: "各忙各的", effects: { happy: 1 }, result: "你们各忙各的，没怎么说话，气氛有点尴尬。" },
+    ] },
+  { id: "y1-icebreak", title: "班级破冰", text: "班级破冰活动，每个人上台自我介绍，轮到你了。", year: 1,
+    choices: [
+      { text: "大方介绍", effects: { charm: 6, happy: 5 }, rel: { xiaomei: 5, aqiang: 3 }, result: "你大方介绍了自己，还讲了个笑话，全班都笑了，小美多看了你两眼。" },
+      { text: "简单说两句", effects: { charm: 2, happy: 2 }, result: "你简单说了两句就下来了，虽然紧张，但完成了。" },
+      { text: "紧张得结巴", effects: { happy: -2, charm: -2 }, result: "你紧张得结巴了，全班都在笑，不过是善意的笑。" },
+    ] },
+  { id: "y1-senior-help", title: "学长帮忙", text: "你刚入学什么都不懂，学长主动帮你办手续、找宿舍、介绍食堂。", year: 1,
+    choices: [
+      { text: "谢谢学长", effects: { happy: 4, charm: 3 }, rel: { xuezhang: 10 }, result: "你谢谢学长，他说都是应该的，还加了你好友，有事随时找他。" },
+      { text: "请他吃饭", effects: { money: -50, happy: 5, charm: 4 }, rel: { xuezhang: 8 }, result: "你请他吃了顿饭，两个人聊了很多，学长成了你的校园向导。" },
+      { text: "自己摸索", effects: { iq: 2 }, result: "你自己摸索，虽然走了不少弯路，但也都搞定了。" },
+    ] },
+  { id: "y1-first-class", title: "第一堂专业课", text: "第一堂专业课，导师站在讲台上，气场特别强，全班鸦雀无声。", year: 1,
+    choices: [
+      { text: "认真听", effects: { iq: 5, credits: 3 }, rel: { daoshi: 6 }, result: "你认真听了，导师提问的时候你答上来了，他对你有了印象。" },
+      { text: "走神", effects: { happy: 2, iq: -1 }, result: "你走神了，导师讲的内容只听进去一半。" },
+      { text: "记笔记", effects: { iq: 4, credits: 2 }, rel: { daoshi: 3 }, result: "你记了满满一页笔记，导师路过的时候看了你一眼，点了点头。" },
+    ] },
+  { id: "y1-xiaomei-note", title: "借小美的笔记", text: "你有节课没去，想借小美的笔记抄一下，她坐在你前排。", year: 1,
+    choices: [
+      { text: "借", effects: { iq: 3, happy: 3 }, rel: { xiaomei: 8 }, result: "你借了笔记，她的字特别工整，还给你划了重点，你们聊了起来。" },
+      { text: "不借", effects: { happy: 1 }, result: "你没借，自己看书也看懂了，就是慢了点。" },
+      { text: "请她吃饭", effects: { money: -40, happy: 5, charm: 4 }, rel: { xiaomei: 6 }, result: "你请她吃了顿饭，感谢她的笔记，两个人越聊越投缘。" },
+    ] },
+  { id: "y1-dorm-first-night", title: "宿舍第一夜", text: "宿舍第一夜，全宿舍都没睡，聊到半夜，从高中聊到未来。", year: 1,
+    choices: [
+      { text: "聊到天亮", effects: { happy: 8, charm: 5 }, rel: { aqiang: 8 }, result: "你们聊到天亮，阿强成了你最好的兄弟，宿舍的感情从这一夜开始。" },
+      { text: "早点睡", effects: { health: 4, happy: 3 }, result: "你早点睡了，第二天精神饱满，听着室友的呼噜声笑了。" },
+    ] },
+  // 大二
+  { id: "y2-xiaomei-birthday", title: "小美过生日", text: "小美过生日，班里几个人给她庆祝，你也在受邀之列。", year: 2,
+    choices: [
+      { text: "送礼物", effects: { money: -80, happy: 6, charm: 5 }, rel: { xiaomei: 10 }, result: "你送了礼物，她特别开心，还请你吃了蛋糕，你们的关系更近了。" },
+      { text: "发红包", effects: { money: -50, happy: 4 }, rel: { xiaomei: 5 }, result: "你发了红包，她收了，心意到了就行。" },
+      { text: "去庆祝", effects: { happy: 5, charm: 3 }, rel: { xiaomei: 4 }, result: "你去庆祝了，一晚上有说有笑，挺开心。" },
+    ] },
+  { id: "y2-aqiang-fight", title: "和阿强吵架", text: "你和阿强因为一点小事吵起来了，宿舍气氛特别僵。", year: 2,
+    choices: [
+      { text: "主动和好", effects: { charm: 6, happy: 5 }, rel: { aqiang: 8 }, result: "你主动和好了，两个人聊开后发现就是个误会，关系更好了，兄弟没有隔夜仇。" },
+      { text: "冷战", effects: { happy: -4, charm: -3 }, rel: { aqiang: -10 }, result: "你们冷战了一周，宿舍气氛降到冰点，谁也不先说话。" },
+      { text: "请他吃饭", effects: { money: -60, happy: 5, charm: 4 }, rel: { aqiang: 6 }, result: "你请他吃了顿饭，饭桌上就和好了，男人之间的事一顿饭就能解决。" },
+    ] },
+  { id: "y2-daoshi-project", title: "导师的项目", text: "导师有个项目缺人手，问你愿不愿意加入，跟着他做。", year: 2,
+    choices: [
+      { text: "加入", effects: { iq: 6, credits: 4, happy: -2 }, rel: { daoshi: 10 }, result: "你加入了，跟着导师做项目，学到了不少真本事，导师对你越来越器重。" },
+      { text: "先想想", effects: { iq: 2, happy: 1 }, result: "你说先想想，导师说随时欢迎，你心里有点底了。" },
+      { text: "婉拒", effects: { happy: 2 }, rel: { daoshi: -3 }, result: "你婉拒了，导师也没强求，但印象分降了一点。" },
+    ] },
+  { id: "y2-xuezhang-intro", title: "学长介绍实习", text: "学长说他实习的公司在招实习生，问你要不要去试试。", year: 2,
+    choices: [
+      { text: "去试试", effects: { iq: 4, charm: 4, money: 500, happy: 4 }, rel: { xuezhang: 8 }, result: "你去试了，居然通过了，学长还帮你说了不少好话，实习特别顺利。" },
+      { text: "先准备", effects: { iq: 3, happy: 2 }, result: "你说先准备一下，学长说随时可以去，机会留着呢。" },
+      { text: "不去", effects: { happy: 1 }, rel: { xuezhang: -2 }, result: "你没去，觉得时机还不成熟，学长也没说什么。" },
+    ] },
+  { id: "y2-club-together", title: "和小美一起办活动", text: "社团要办活动，你和小美被分到一组，负责策划。", year: 2,
+    choices: [
+      { text: "认真策划", effects: { iq: 4, charm: 5, happy: 5 }, rel: { xiaomei: 8 }, result: "你们认真策划，活动办得特别成功，配合得越来越默契。" },
+      { text: "分工合作", effects: { iq: 3, happy: 3 }, rel: { xiaomei: 4 }, result: "你们分工合作，各做各的部分，效率还挺高。" },
+      { text: "摸鱼", effects: { happy: 3, iq: -1 }, rel: { xiaomei: -3 }, result: "你摸鱼了，小美一个人扛下了大部分工作，对你有点失望。" },
+    ] },
+  { id: "y2-aqiang-loan", title: "阿强找你借钱", text: "阿强找你借 300，说月底一定还，你手头也不宽裕。", year: 2,
+    choices: [
+      { text: "借了", effects: { money: -300, charm: 4 }, rel: { aqiang: 8 }, result: "你借了，他月底真的还了，还请你吃了顿饭，兄弟就是这样。" },
+      { text: "借一半", effects: { money: -150, charm: 2 }, rel: { aqiang: 4 }, result: "你借了一半，他说够了，挺感激的。" },
+      { text: "婉拒", effects: { charm: -2 }, rel: { aqiang: -5 }, result: "你婉拒了，他没说什么，但心里有点不是滋味。" },
+    ] },
+  // 大三
+  { id: "y3-xiaomei-confess", title: "小美向你表白", text: "小美约你去操场，说有话对你说，月光下，她向你表白了。", year: 3,
+    choices: [
+      { text: "答应", effects: { happy: 10, charm: 5, money: -150, iq: -2 }, rel: { xiaomei: 15 }, result: "你答应了，两个人在操场走了很久，月光、晚风、还有她，一切都刚刚好。" },
+      { text: "先做朋友", effects: { happy: 4, charm: 3 }, rel: { xiaomei: 5 }, result: "你们先做了朋友，相处起来很舒服，不急，慢慢来。" },
+      { text: "拒绝", effects: { happy: -5, charm: 2 }, rel: { xiaomei: -15 }, result: "你拒绝了，她很难过，你也有点不得劲，之后见面都有点尴尬。" },
+    ] },
+  { id: "y3-daoshi-letter", title: "导师的推荐信", text: "你要申请保研/实习，需要一封推荐信，导师说可以帮你写。", year: 3,
+    choices: [
+      { text: "请他写", effects: { iq: 5, credits: 4, happy: 5 }, rel: { daoshi: 10 }, result: "他给你写了封特别好的推荐信，字字都是肯定，你的申请顺利通过了。" },
+      { text: "自己写草稿", effects: { iq: 4, happy: 3 }, rel: { daoshi: 6 }, result: "你自己写了草稿，他改了改就签了，效率特别高。" },
+      { text: "不好意思开口", effects: { happy: -1 }, result: "你不好意思开口，错过了机会，后来才知道他其实很愿意帮你。" },
+    ] },
+  { id: "y3-xuezhang-job", title: "学长内推", text: "学长毕业进了大厂，说他们部门在招人，可以内推你去实习。", year: 3,
+    choices: [
+      { text: "接受内推", effects: { iq: 4, charm: 5, money: 1000, happy: 6 }, rel: { xuezhang: 10 }, result: "你接受了内推，面试特别顺利，学长在大厂等你，实习转正有望。" },
+      { text: "先准备", effects: { iq: 3, happy: 2 }, result: "你说先准备一下，学长说内推名额留着呢，随时可以去。" },
+      { text: "不去", effects: { happy: 1 }, rel: { xuezhang: -3 }, result: "你没去，觉得想先考研，学长说理解，有需要随时找他。" },
+    ] },
+  { id: "y3-aqiang-startup", title: "阿强拉你创业", text: "阿强有个创业想法，想拉你一起干，说你们两个联手肯定能成。", year: 3,
+    choices: [
+      { text: "一起干", effects: { iq: 4, charm: 4, money: -300, happy: 5 }, rel: { aqiang: 10 }, result: "你们一起干了，兄弟创业，虽然辛苦，但每天都充满干劲。" },
+      { text: "先观望", effects: { iq: 2, happy: 2 }, result: "你说先观望一下，阿强说等你，项目先做着。" },
+      { text: "不参与", effects: { happy: 1 }, rel: { aqiang: -4 }, result: "你没参与，阿强自己干了，虽然有点遗憾，但各有各的路。" },
+    ] },
+  { id: "y3-xiaomei-exam", title: "帮小美复习", text: "小美有门课快挂了，找你帮忙复习，你刚好学得不错。", year: 3,
+    choices: [
+      { text: "认真帮", effects: { iq: 4, happy: 5, charm: 4 }, rel: { xiaomei: 10 }, result: "你认真帮她复习，她考试过了，特别感激你，请你吃了顿大餐。" },
+      { text: "划重点", effects: { iq: 2, happy: 3 }, rel: { xiaomei: 5 }, result: "你给她划了重点，她考了个及格，松了口气。" },
+      { text: "没时间", effects: { happy: -1 }, rel: { xiaomei: -4 }, result: "你说没时间，她自己熬夜复习，虽然过了，但对你有点失望。" },
+    ] },
+  { id: "y3-daoshi-strict", title: "导师的批评", text: "你的作业没做好，导师当众批评了你，说你最近态度有问题。", year: 3,
+    choices: [
+      { text: "虚心接受", effects: { iq: 5, credits: 3, happy: -3 }, rel: { daoshi: 6 }, result: "你虚心接受了，回去重做了一遍，导师看后点了点头，说你态度不错。" },
+      { text: "顶撞", effects: { happy: -4, charm: -3 }, rel: { daoshi: -12 }, result: "你顶撞了两句，导师脸色很难看，之后对你的印象大打折扣。" },
+      { text: "默默改", effects: { iq: 3, happy: -1 }, rel: { daoshi: 3 }, result: "你默默改了，虽然没说什么，但行动证明了你的态度。" },
+    ] },
+  // 大四
+  { id: "y4-xiaomei-future", title: "和小美聊未来", text: "毕业在即，你和小美聊起了未来，去哪工作、要不要考研、异地怎么办。", year: 4,
+    choices: [
+      { text: "一起规划", effects: { happy: 8, charm: 5 }, rel: { xiaomei: 12 }, result: "你们一起规划了未来，目标一致，异地也不怕，感情反而更坚定了。" },
+      { text: "顺其自然", effects: { happy: 4 }, rel: { xiaomei: 3 }, result: "你们决定顺其自然，走到哪算哪，珍惜当下就好。" },
+      { text: "各奔东西", effects: { happy: -4 }, rel: { xiaomei: -8 }, result: "你们决定各奔东西，虽然难过，但都知道这是成长的代价。" },
+    ] },
+  { id: "y4-aqiang-farewell", title: "阿强的告别", text: "阿强要去外地工作了，临走前请全宿舍吃了顿散伙饭。", year: 4,
+    choices: [
+      { text: "送他", effects: { happy: 6, charm: 5 }, rel: { aqiang: 10 }, result: "你们送他到车站，抱了一下，约好每年聚一次，兄弟一辈子。" },
+      { text: "喝一杯", effects: { money: -100, happy: 8, charm: 4 }, rel: { aqiang: 8 }, result: "你们喝了一杯，聊起四年的点点滴滴，笑中带泪。" },
+      { text: "没去送", effects: { happy: -3 }, rel: { aqiang: -5 }, result: "你没去送，在宿舍收拾行李，心里有点空落落的。" },
+    ] },
+  { id: "y4-xuezhang-advice", title: "学长的毕业建议", text: "学长回来参加毕业典礼，请你吃饭，聊了很多职场经验。", year: 4,
+    choices: [
+      { text: "认真听", effects: { iq: 5, charm: 4, happy: 4 }, rel: { xuezhang: 8 }, result: "你认真听了，学长的每句话都是干货，少走不少弯路。" },
+      { text: "请教问题", effects: { iq: 4, charm: 5 }, rel: { xuezhang: 6 }, result: "你请教了不少问题，他知无不言，还把你拉进了他的职场圈子。" },
+      { text: "光顾着吃", effects: { happy: 4 }, result: "你光顾着吃了，学长的话只听进去一半，但饭挺好吃。" },
+    ] },
+  { id: "y4-daoshi-grad", title: "导师的毕业寄语", text: "毕业前，导师把你叫到办公室，聊了几句毕业寄语。", year: 4,
+    choices: [
+      { text: "认真听", effects: { iq: 4, happy: 6 }, rel: { daoshi: 10 }, result: "你认真听了，他说你是个好苗子，未来可期，还说有需要随时找他。" },
+      { text: "合影留念", effects: { happy: 7, charm: 4 }, rel: { daoshi: 8 }, result: "你们合影留念，照片里你笑得特别灿烂，导师也笑了。" },
+      { text: "匆匆离开", effects: { happy: 1 }, rel: { daoshi: -2 }, result: "你匆匆离开了，忙着收拾行李，错过了一次好好聊天的机会。" },
+    ] },
+  { id: "y4-xiaomei-grad", title: "毕业典礼上的小美", text: "毕业典礼上，小美穿着学士服，笑得特别好看，你忍不住多看了两眼。", year: 4,
+    choices: [
+      { text: "表白", effects: { happy: 10, charm: 6 }, rel: { xiaomei: 15 }, result: "你表白了，她答应了，毕业典礼成了你们的定情之日，全班都在起哄。" },
+      { text: "合影", effects: { happy: 7, charm: 4 }, rel: { xiaomei: 8 }, result: "你们合影了，照片里两个人笑得特别甜，这张照片会留一辈子。" },
+      { text: "远远看着", effects: { happy: 3 }, result: "你远远看着，心里默默祝福她，毕业快乐，前程似锦。" },
+    ] },
+  { id: "y4-aqiang-promise", title: "十年之约", text: "毕业前夜，全宿舍约定：十年后同一天，回到宿舍，再聚一次。", year: 4,
+    choices: [
+      { text: "拉钩", effects: { happy: 9, charm: 6 }, rel: { aqiang: 10 }, result: "你们拉钩约定，十年后不见不散，宿舍的情谊不会散。" },
+      { text: "写下来", effects: { happy: 8, charm: 5 }, rel: { aqiang: 8 }, result: "你们写了下来，贴在宿舍墙上，十年后回来，第一眼就能看到。" },
+      { text: "笑笑", effects: { happy: 5 }, result: "你们笑了笑，虽然没说什么，但心里都记住了这个约定。" },
+    ] },
+];
+
+// v1.2：把分学年事件并入大事件池（游戏只从 EVENTS 里抽）
+EVENTS.push(...YEAR_EVENTS);
+
 const ENDINGS = [
   { id: "sick", title: "病倒休学", emoji: "🤒", early: true,
     desc: "身体垮了。连续熬夜加生病，你不得不休学一年。健康才是本钱，这次算是交了学费。" },
@@ -2509,6 +2670,15 @@ const ENDINGS = [
     desc: "你回家继承了爸妈的小卖部，生意红红火火。每天守着小店，日子过得悠闲又满足。" },
   { id: "happy-rich", title: "平凡但幸福", emoji: "😊",
     desc: "你找了份普通的工作，收入不高但够花，周末和朋友聚聚，日子过得平平淡淡但特别幸福。平凡，也是一种成功。" },
+  // ---- v1.2 新增结局（4 个，和人际关系挂钩）----
+  { id: "brother", title: "兄弟情深", emoji: "🤝",
+    desc: "你和阿强从室友处成了过命的兄弟。毕业后你们合伙开了家店，虽然不大，但兄弟齐心，其利断金。" },
+  { id: "sweetheart", title: "终身伴侣", emoji: "💍",
+    desc: "你和小美从同班同学走到了一起，毕业那年领了证。婚礼上全班都来了，阿强哭得比你还凶。" },
+  { id: "protege", title: "得意门生", emoji: "🎓",
+    desc: "导师特别欣赏你，不仅写了推荐信，还把你介绍给了业内的大牛。你成了他最得意的门生，前途一片光明。" },
+  { id: "mentor-job", title: "贵人相助", emoji: "🌟",
+    desc: "学长一直惦记着你，毕业时内推你进了大厂，还手把手带你入行。有贵人相助，职场之路顺风顺水。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -2521,8 +2691,6 @@ function judgeEnding(s) {
   if (s.iq >= 90 && s.credits >= 55) return "phd";
   if (s.credits >= 40 && s.iq >= 85) return "baoyan";
   if (s.credits >= 35 && s.iq >= 75) return "kaoyan";
-  if (s.credits >= 40 && s.iq >= 70) return "baoyan-fail";
-  if (s.credits >= 30 && s.credits < 35 && s.iq >= 75) return "kaoyan-retry";
   if (s.iq >= 80 && s.money >= 3000) return "abroad";
   if (s.iq >= 80 && s.charm >= 75) return "dachang";
   if (s.iq >= 75 && s.charm >= 70 && (s.connections || 0) >= 60) return "civil";
@@ -2530,6 +2698,13 @@ function judgeEnding(s) {
   if (s.money >= 3000 && s.charm < 60 && s.iq >= 70) return "startup-fail";
   if (s.money >= 3000 && s.charm >= 60) return "small-boss";
   if (s.health >= 85 && s.charm >= 70) return "athlete";
+  // v1.2：人际关系结局（关系够铁才触发；放在通用结局之前，差一点的结局之后）
+  if ((s.rel || {}).xiaomei >= 90 && s.charm >= 70) return "sweetheart";
+  if ((s.rel || {}).aqiang >= 85 && s.happy >= 70) return "brother";
+  if ((s.rel || {}).daoshi >= 85 && s.iq >= 80) return "protege";
+  if ((s.rel || {}).xuezhang >= 85 && (s.connections || 0) >= 80) return "mentor-job";
+  if (s.credits >= 40 && s.iq >= 70) return "baoyan-fail";
+  if (s.credits >= 30 && s.credits < 35 && s.iq >= 75) return "kaoyan-retry";
   if (s.charm >= 85 && s.happy >= 85) return "love";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";

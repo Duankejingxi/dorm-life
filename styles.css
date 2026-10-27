@@ -98,6 +98,10 @@ input[type="text"]:focus { border-color: var(--gold); }
 .stat-fill.charm { background: linear-gradient(90deg, #b967ff, #d08cff); }
 .stat-fill.happy { background: linear-gradient(90deg, #f5c542, #ffd76a); }
 .stat-fill.connections { background: linear-gradient(90deg, #2dd4a8, #5eead4); }
+.stat-fill.rel { background: linear-gradient(90deg, #f472b6, #fbbf24); }
+.section-title { font-size: 15px; color: var(--gold2); margin: 14px 0 6px; }
+.rel-row .stat-label { min-width: 110px; }
+#endingLog { margin: 8px 0 16px; }
 .stat-num { width: 28px; text-align: right; font-size: 14px; font-weight: 700; }
 .stat-num.big { width: auto; font-size: 16px; color: var(--gold2); }
 .money-row { justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--line); margin-top: 4px; }

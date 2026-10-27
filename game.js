@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 32;
+  const TOTAL_ENDINGS = 36;
   const MICRO_PER_SEMESTER = 2;
 
   let state = null; // { name, semester, health, iq, charm, money, happy, connections, credits, log[], over, endingId }
@@ -60,6 +60,52 @@
     if (state.health <= 20) flags.lowHealth = true;
     renderStats();
     checkAchievements();
+  }
+
+  function applyRel(rel) {
+    if (!rel) return;
+    Object.keys(rel).forEach((id) => {
+      if (state.rel[id] === undefined) state.rel[id] = 0;
+      state.rel[id] = clamp(state.rel[id] + rel[id], 0, 100);
+    });
+    renderRel();
+  }
+
+  function renderRel() {
+    NPCS.forEach((n) => {
+      const v = state.rel[n.id] || 0;
+      const bar = $("relBar-" + n.id);
+      const num = $("relNum-" + n.id);
+      if (bar) bar.style.width = v + "%";
+      if (num) num.textContent = v;
+    });
+  }
+
+  function buildRelPanel() {
+    const panel = $("relPanel");
+    if (!panel || panel.children.length > 0) return;
+    NPCS.forEach((n) => {
+      const row = document.createElement("div");
+      row.className = "stat-row rel-row";
+      const label = document.createElement("span");
+      label.className = "stat-label";
+      label.textContent = n.name + " · " + n.role;
+      const barWrap = document.createElement("div");
+      barWrap.className = "stat-bar";
+      const fill = document.createElement("div");
+      fill.className = "stat-fill rel";
+      fill.id = "relBar-" + n.id;
+      fill.style.width = n.start + "%";
+      barWrap.appendChild(fill);
+      const num = document.createElement("span");
+      num.className = "stat-num";
+      num.id = "relNum-" + n.id;
+      num.textContent = n.start;
+      row.appendChild(label);
+      row.appendChild(barWrap);
+      row.appendChild(num);
+      panel.appendChild(row);
+    });
   }
 
   function semName() { return SEMESTERS[state.semester - 1]; }
@@ -152,9 +198,12 @@
   }
 
   function startGame(name) {
+    const rel0 = {};
+    NPCS.forEach((n) => { rel0[n.id] = n.start; });
     state = {
       name: (name || "").trim() || "你",
       semester: 1, health: 70, iq: 60, charm: 60, money: 500, happy: 70, connections: 60, credits: 0,
+      rel: rel0,
       log: [], over: false, endingId: null,
     };
     flags = {
@@ -172,6 +221,7 @@
     try { localStorage.setItem(GAMES_KEY, String(loadGamesPlayed() + 1)); } catch (e) { /* 忽略 */ }
     $("logList").innerHTML = "";
     renderStats();
+    renderRel();
     renderEndingsCount();
     renderAchievements();
     showScreen("gameScreen");
@@ -191,6 +241,7 @@
     if (!a || state.over) return;
     flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
     applyEffects(a.effects, a.variance, a.moneyVariance);
+    applyRel(a.rel);
     addLog(a.log[Math.floor(Math.random() * a.log.length)]);
     $("actionBox").classList.add("hidden");
     if (checkEarlyEnding()) return;
@@ -298,6 +349,7 @@
     } else {
       applyEffects(c.effects, 0);
     }
+    applyRel(c.rel);
     addLog(resultText);
     // 连锁剧情推进
     if (currentEvent.chain) {
@@ -366,10 +418,52 @@
     $("endingTitle").textContent = e.title;
     $("endingDesc").textContent = state.name + "的大学四年结束了。" + e.desc;
     $("endingStats").textContent = "最终属性：健康 " + state.health + " · 智力 " + state.iq + " · 魅力 " + state.charm +
-      " · 快乐 " + state.happy + " · 人脉 " + state.connections + " · 金钱 ¥" + state.money + " · 学分 " + state.credits;
+      " · 快乐 " + state.happy + " · 人脉 " + state.connections + " · 金钱 ¥" + state.money + " · 学分 " + state.credits +
+      " · 阿强 " + (state.rel.aqiang || 0) + " · 小美 " + (state.rel.xiaomei || 0) + " · 学长 " + (state.rel.xuezhang || 0) + " · 导师 " + (state.rel.daoshi || 0);
+    // 人生回顾：把 8 个学期的记录搬到结局页
+    const elog = $("endingLog");
+    elog.innerHTML = "";
+    state.log.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "log-item";
+      const tag = document.createElement("span");
+      tag.className = "log-tag";
+      tag.textContent = item.sem;
+      const body = document.createElement("span");
+      body.textContent = item.text;
+      div.appendChild(tag);
+      div.appendChild(body);
+      elog.appendChild(div);
+    });
+    $("shareMsg").textContent = "";
     renderEndingsCount();
     renderAchievements();
     showScreen("endingScreen");
+  }
+
+  function shareEnding() {
+    if (!state || !state.endingId) return;
+    const e = ENDINGS.find((x) => x.id === state.endingId);
+    const text = "【宿舍人生】" + state.name + "的大学四年：" + e.emoji + e.title +
+      "（健康 " + state.health + " · 智力 " + state.iq + " · 魅力 " + state.charm + " · 快乐 " + state.happy +
+      " · 人脉 " + state.connections + " · 金钱 ¥" + state.money + " · 学分 " + state.credits +
+      "）。结局图鉴 " + loadEndings().length + "/" + TOTAL_ENDINGS + "，成就 " + loadAchievements().length + "/" + ACHIEVEMENTS.length +
+      "。你也来活一次：https://duankejingxi.github.io/dorm-life/";
+    const done = () => { $("shareMsg").textContent = "✅ 已复制，去发给朋友炫耀吧"; };
+    const fallback = () => {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        done();
+      } catch (err) { $("shareMsg").textContent = "复制失败，长按手动复制吧"; }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else fallback();
   }
 
   // 建行动按钮
@@ -391,8 +485,10 @@
 
   $("startBtn").addEventListener("click", () => startGame($("startName").value));
   $("nextBtn").addEventListener("click", nextSemester);
+  $("shareBtn").addEventListener("click", shareEnding);
   $("againBtn").addEventListener("click", () => { showScreen("startScreen"); renderEndingsCount(); renderAchievements(); });
 
+  buildRelPanel();
   renderEndingsCount();
   renderAchievements();
 
@@ -409,7 +505,8 @@
     setNextEvent(id) { forcedEventId = id; },
     setNextMicro(id) { forcedMicroId = id; },
     setNextChain(id) { forcedChainId = id; },
-    debugSetStats(patch) { Object.assign(state, patch); renderStats(); checkAchievements(); },
+    debugClearChain() { activeChain = null; startedChains = []; }, // 测试用：清空连锁，避免随机连锁抢占强制事件
+    debugSetStats(patch) { Object.assign(state, patch); renderStats(); renderRel(); checkAchievements(); },
     debugSetFlags(patch) { Object.assign(flags, patch); },
     get endings() { return loadEndings(); },
     get achievements() { return loadAchievements(); },
