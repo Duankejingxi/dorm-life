@@ -35,6 +35,7 @@
   let pickedClub = "none";
   // v1.6：开局兼职（默认不打工 = 无收入，和以前一样）
   let pickedJob = "none";
+  let awaitingBreak = false;
   let breakShown = {}; // 哪几个学期后的假期已安排过（key 是刚打完的学期号）
 
   function loadCollection(key, items) {
@@ -233,6 +234,7 @@
         else state[k] = clamp(state[k] + src.effects[k], 0, 100);
       });
     });
+    awaitingBreak = false;
     breakShown = {};
     flags = {
       actionCounts: {}, eventsSeen: [], microsSeen: 0, chainsCompleted: 0,
@@ -293,7 +295,7 @@
 
   function doAction(actionId) {
     const a = ACTIONS.find((x) => x.id === actionId);
-    if (!a || state.over) return;
+    if (!a || !state || state.over || STEP_QUEUE[stepIndex] !== "action" || awaitingBreak) return;
     // v1.5：社团活动——没加社团点这个不消耗行动；加了按社团给不同加成
     if (a.clubAction) {
       if (!state.club || state.club === "none") {
@@ -369,6 +371,7 @@
     panel.appendChild(back);
   }
   function showShop() {
+    if (!state || state.over || STEP_QUEUE[stepIndex] !== "action" || awaitingBreak) return;
     buildShop();
     $("actionBox").classList.add("hidden");
     $("shopPanel").classList.remove("hidden");
@@ -380,7 +383,7 @@
   }
   function buyItem(itemId) {
     const item = SHOP_ITEMS.find((x) => x.id === itemId);
-    if (!item || state.over) return;
+    if (!item || !state || state.over || STEP_QUEUE[stepIndex] !== "action" || awaitingBreak) return;
     if (state.money < item.price) { $("shopMsg").textContent = "钱不够，买不起「" + item.name + "」（¥" + item.price + "）。"; return; }
     applyEffects(item.effects, 0);
     addLog(item.log);
@@ -466,7 +469,7 @@
       const b = document.createElement("button");
       b.className = "btn choice-btn";
       b.textContent = c.text;
-      b.addEventListener("click", () => chooseEvent(i));
+      b.addEventListener("click", () => { if (currentEvent === ev) chooseEvent(i); });
       box.appendChild(b);
     });
     $("eventCard").classList.toggle("micro", kind === "micro");
@@ -539,6 +542,7 @@
       }
       checkAchievements();
     }
+    currentEvent = null;
     $("eventCard").classList.add("hidden");
     if (checkEarlyEnding()) return;
     stepIndex++;
@@ -565,6 +569,8 @@
 
   // ---- v1.4：假期（第 2/4/6 学期末，寒暑假怎么过）----
   function showBreakEvent() {
+    awaitingBreak = true;
+    currentEvent = null;
     const sem = state.semester;
     $("resultBox").classList.add("hidden");
     $("actionBox").classList.add("hidden");
@@ -588,7 +594,8 @@
   }
   function chooseBreak(choiceId) {
     const c = BREAK_CHOICES.find((x) => x.id === choiceId);
-    if (!c || state.over) return;
+    if (!c || !state || state.over || !awaitingBreak) return;
+    awaitingBreak = false;
     applyEffects(c.effects, 0);
     addLog(c.log);
     breakShown[state.semester] = true;
@@ -601,7 +608,7 @@
   }
 
   function nextSemester() {
-    if (state.over) return;
+    if (!state || state.over || stepIndex < STEP_QUEUE.length || awaitingBreak) return;
     // v1.4：第 2/4/6 学期末先过假期，再进下一学期
     if ((state.semester === 2 || state.semester === 4 || state.semester === 6) && !breakShown[state.semester]) {
       showBreakEvent();
@@ -669,9 +676,10 @@
         ta.value = text;
         document.body.appendChild(ta);
         ta.select();
-        document.execCommand("copy");
+        const copied = document.execCommand("copy");
         document.body.removeChild(ta);
-        done();
+        if (copied) done();
+        else $("shareMsg").textContent = "复制未成功，请允许剪贴板权限后重试";
       } catch (err) { $("shareMsg").textContent = "复制失败，长按手动复制吧"; }
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -719,11 +727,16 @@
       const b = document.createElement("button");
       b.className = "btn pick-btn" + (item.id === pickedId ? " picked" : "");
       b.setAttribute("data-pick", item.id);
+      b.setAttribute("aria-pressed", String(item.id === pickedId));
       b.textContent = item.icon + " " + item.name;
       b.title = item.desc;
       b.addEventListener("click", () => {
         onPick(item.id);
-        [...row.children].forEach((c) => c.classList.toggle("picked", c.getAttribute("data-pick") === item.id));
+        [...row.children].forEach((c) => {
+          const selected = c.getAttribute("data-pick") === item.id;
+          c.classList.toggle("picked", selected);
+          c.setAttribute("aria-pressed", String(selected));
+        });
       });
       row.appendChild(b);
     });
