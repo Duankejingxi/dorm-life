@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 48;
+  const TOTAL_ENDINGS = 52;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -303,6 +303,22 @@
       flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
       applyEffects(ca.effects, ca.variance);
       addLog(ca.log[Math.floor(Math.random() * ca.log.length)]);
+      actionsDone++;
+      stepIndex++;
+      $("actionBox").classList.add("hidden");
+      if (checkEarlyEnding()) return;
+      advanceStep();
+      return;
+    }
+    // v1.7：宿舍夜聊——随机挑一个人，关系 +6、快乐 +3
+    if (a.nightchat) {
+      const npc = NPCS[Math.floor(Math.random() * NPCS.length)];
+      flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
+      applyEffects({ happy: 3 }, 1);
+      const relPatch = {};
+      relPatch[npc.id] = 6;
+      applyRel(relPatch);
+      addLog("熄灯后，你和" + npc.name + "夜聊到半夜，聊了好多心里话，关系更铁了。（" + npc.name + " 关系 +6）");
       actionsDone++;
       stepIndex++;
       $("actionBox").classList.add("hidden");
