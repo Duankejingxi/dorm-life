@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 40;
+  const TOTAL_ENDINGS = 44;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -31,6 +31,8 @@
   // v1.4：开局选择（默认小康 + 普通人 = 以前的开局数值）
   let pickedBackground = "middle";
   let pickedTalent = "normal";
+  // v1.5：开局社团（默认不参加 = 无加成，和以前一样）
+  let pickedClub = "none";
   let breakShown = {}; // 哪几个学期后的假期已安排过（key 是刚打完的学期号）
 
   function loadEndings() {
@@ -212,12 +214,14 @@
       semester: 1, health: 70, iq: 60, charm: 60, money: 500, happy: 70, connections: 60, credits: 0,
       rel: rel0,
       log: [], over: false, endingId: null,
-      background: pickedBackground, talent: pickedTalent,
+      background: pickedBackground, talent: pickedTalent, club: pickedClub,
     };
     // v1.4：开局家境 + 天赋加成（默认小康 + 普通人 = 无加成，和以前一样）
+    // v1.5：开局社团加成（默认不参加 = 无加成）
     const bg = BACKGROUNDS.find((b) => b.id === pickedBackground);
     const tl = TALENTS.find((t) => t.id === pickedTalent);
-    [bg, tl].forEach((src) => {
+    const cl = CLUBS.find((c) => c.id === pickedClub);
+    [bg, tl, cl].forEach((src) => {
       if (!src) return;
       Object.keys(src.effects).forEach((k) => {
         if (k === "money") state.money += src.effects[k];
@@ -245,8 +249,8 @@
     renderAchievements();
     showScreen("gameScreen");
     startSemester();
-    const bgName = bg ? bg.name : "", tlName = tl ? tl.name : "";
-    addLog(state.name + "入学了，住进了宿舍，大学四年开始了。（家境：" + bgName + " · 天赋：" + tlName + "）");
+    const bgName = bg ? bg.name : "", tlName = tl ? tl.name : "", clName = cl ? cl.name : "";
+    addLog(state.name + "入学了，住进了宿舍，大学四年开始了。（家境：" + bgName + " · 天赋：" + tlName + " · 社团：" + clName + "）");
   }
 
   function startSemester() {
@@ -274,6 +278,24 @@
   function doAction(actionId) {
     const a = ACTIONS.find((x) => x.id === actionId);
     if (!a || state.over) return;
+    // v1.5：社团活动——没加社团点这个不消耗行动；加了按社团给不同加成
+    if (a.clubAction) {
+      if (!state.club || state.club === "none") {
+        addLog("你还没加入社团。开局选一个社团，才能参加社团活动。（这次不算行动）");
+        return;
+      }
+      const ca = CLUB_ACTIVITY[state.club];
+      if (!ca) return;
+      flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
+      applyEffects(ca.effects, ca.variance);
+      addLog(ca.log[Math.floor(Math.random() * ca.log.length)]);
+      actionsDone++;
+      stepIndex++;
+      $("actionBox").classList.add("hidden");
+      if (checkEarlyEnding()) return;
+      advanceStep();
+      return;
+    }
     flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
     applyEffects(a.effects, a.variance, a.moneyVariance);
     applyRel(a.rel);
@@ -353,7 +375,8 @@
   function pickRandomEvent() {
     const year = yearOf();
     // 大事件池：按学年过滤、排除最近用过的；再加未开始的连锁第 1 环
-    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && usedEventIds.indexOf(e.id) === -1);
+    // v1.5：社团专属事件只刷自己社团的（没加社团的刷不到）
+    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && usedEventIds.indexOf(e.id) === -1);
     CHAINS.forEach((c) => {
       if (startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
         pool.push(chainEvent(c.id, 1));
@@ -382,6 +405,8 @@
       ["canteen", /食堂|麻辣烫|吃饭|外卖|奶茶|鸡腿|饭卡|泡面|早餐|夜宵|水果|零食/],
       ["library", /图书馆|借书|看书|书架|阅览/],
       ["playground", /操场|运动会|跑步|球场|篮球|足球|跑道|体测|晨跑/],
+      // v1.5：社团活动室（社团招新、演出、排练、部长、会长）
+      ["clubroom", /社团|招新|演出|排练|部长|会长|乐队|支教|义卖|解说|队长/],
     ];
     let best = null, bestIdx = Infinity;
     groups.forEach(([scene, re]) => {
@@ -673,6 +698,7 @@
   }
   buildPickRow("bgPick", BACKGROUNDS, pickedBackground, (id) => { pickedBackground = id; });
   buildPickRow("talentPick", TALENTS, pickedTalent, (id) => { pickedTalent = id; });
+  buildPickRow("clubPick", CLUBS, pickedClub, (id) => { pickedClub = id; });
 
   $("startBtn").addEventListener("click", () => startGame($("startName").value));
   $("nextBtn").addEventListener("click", nextSemester);
@@ -702,9 +728,12 @@
     pickTalent(id) { pickedTalent = id; },
     get background() { return pickedBackground; },
     get talent() { return pickedTalent; },
+    pickClub(id) { pickedClub = id; },
+    get club() { return pickedClub; },
     chooseBreak,
     get breakShown() { return breakShown; },
     setNextEvent(id) { forcedEventId = id; },
+    debugPickEvent() { return pickRandomEvent(); },
     setNextMicro(id) { forcedMicroId = id; },
     setNextChain(id) { forcedChainId = id; },
     debugClearChain() { activeChain = null; startedChains = []; }, // 测试用：清空连锁，避免随机连锁抢占强制事件

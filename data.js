@@ -21,6 +21,9 @@ const ACTIONS = [
   { id: "slack", icon: "😴", name: "摆烂躺平", desc: "不卷了。睡到自然醒，快乐最重要。",
     effects: { happy: 4, health: -2, iq: -2 }, variance: 2,
     log: ["你彻底躺平，睡了个痛快。", "你把“松弛感”贯彻到底。"] },
+  { id: "club", icon: "🎪", name: "参加社团活动", desc: "去自己社团的活动，不同社团加成不同。没加社团点这个没用。",
+    effects: {}, variance: 0, clubAction: true,
+    log: ["你参加了社团活动。"] },
 ];
 
 // ---- v1.3：商店（花钱买东西，买一次算一个行动）----
@@ -56,6 +59,31 @@ const TALENTS = [
   { id: "normal", icon: "😊", name: "普通人", desc: "没什么特别的，但也没短板。",
     effects: {} },
 ];
+
+// ---- v1.5：社团（开局选一个；参加社团活动按社团给不同加成；社团事件只刷自己社团的）----
+const CLUBS = [
+  { id: "basketball", icon: "🏀", name: "篮球社", desc: "天天打球，身体和人气一起涨。",
+    effects: { health: 5, charm: 5 } },
+  { id: "music", icon: "🎵", name: "音乐社", desc: "唱歌弹琴，魅力拉满。",
+    effects: { charm: 10 } },
+  { id: "esports", icon: "🎮", name: "电竞社", desc: "开黑上分，快乐拉满。",
+    effects: { happy: 10 } },
+  { id: "volunteer", icon: "❤️", name: "志愿者协会", desc: "做公益、认识人，人脉广。",
+    effects: { connections: 10, happy: 5 } },
+  { id: "none", icon: "🚫", name: "不参加", desc: "专心学习生活，不参加社团。",
+    effects: {} },
+];
+// 参加社团活动：按社团给不同加成（v1.5；没加社团时点这个不消耗行动）
+const CLUB_ACTIVITY = {
+  basketball: { effects: { health: 4, charm: 3, connections: 2 }, variance: 2,
+    log: ["你跟社团打了场 3v3，投进一个压哨三分，全场都在喊你名字。", "社团训练完一起去吃了顿好的，你认识了几个新球友。"] },
+  music: { effects: { charm: 5, happy: 3, connections: 2 }, variance: 2,
+    log: ["你在社团排练了一下午，新歌练熟了，嗓子都快哑了。", "音乐社排练，你弹了一段新学的曲子，大家都安静下来听。"] },
+  esports: { effects: { happy: 6, iq: -1, connections: 2 }, variance: 2,
+    log: ["电竞社开黑五连赢，你的操作被全队夸上天。", "你跟社团打训练赛，配合越来越默契，上分如喝水。"] },
+  volunteer: { effects: { connections: 5, happy: 3, charm: 2 }, variance: 2,
+    log: ["你跟志愿者协会去敬老院帮忙，老人们拉着你聊了一下午。", "志愿活动结束，你认识了不少热心的朋友，心里暖暖的。"] },
+};
 
 // ---- v1.4：假期（第 2/4/6 学期末，寒暑假怎么过）----
 const BREAK_CHOICES = [
@@ -1386,6 +1414,52 @@ const EVENTS = [
       { text: "继续暗恋", effects: { happy: 2 }, result: "你继续暗恋，默默关注着对方，心里有点酸也有点甜。" },
       { text: "放弃", effects: { happy: -2 }, result: "你放弃了，觉得不合适，但心里还是有点不舍。" },
     ] },
+
+  // ---- v1.5：社团专属事件（club 字段：只刷自己社团的；2 个/社团）----
+  { id: "club-basket-game", title: "社团篮球赛", text: "篮球社和隔壁学校打友谊赛，最后一节比分咬得很紧，教练喊你上场。", club: "basketball",
+    choices: [
+      { text: "上场拼了", effects: { health: 6, charm: 6, happy: 6 }, result: "你上场连拿 8 分，带队赢了，社团的人把你抛了起来。" },
+      { text: "场下加油", effects: { happy: 4, connections: 3 }, result: "你在场下喊加油，嗓子都哑了，球队赢了，你也与有荣焉。" },
+      { text: "有事去不了", effects: { happy: -2 }, result: "你有事去不了，听说比赛赢了，你有点遗憾。" },
+    ] },
+  { id: "club-basket-captain", title: "当队长", text: "篮球社要选新队长，几个老队员都推荐你，说你打球稳、人也靠谱。", club: "basketball",
+    choices: [
+      { text: "接下来", effects: { charm: 8, connections: 6, happy: 5 }, result: "你当了队长，训练、比赛都你张罗，社团越来越有凝聚力。" },
+      { text: "推给别人", effects: { happy: 2 }, result: "你推给了别人，自己轻松了，但总觉得少了点什么。" },
+    ] },
+  { id: "club-music-show", title: "社团演出", text: "音乐社要在迎新晚会上表演，轮到你独唱一首，台下几百双眼睛看着你。", club: "music",
+    choices: [
+      { text: "好好唱", effects: { charm: 8, happy: 8, connections: 4 }, result: "你一开口全场安静了，唱完掌声雷动，还有人来加你好友。" },
+      { text: "紧张忘词", effects: { charm: 2, happy: -3 }, result: "你紧张忘词了，好在大家都很包容，还给你鼓掌打气。" },
+      { text: "让给别人", effects: { happy: 1 }, result: "你让给了别人，在台下看演出，也挺享受。" },
+    ] },
+  { id: "club-music-band", title: "组乐队", text: "音乐社几个朋友想组个乐队，缺个主唱/吉他手，问你要不要加入。", club: "music",
+    choices: [
+      { text: "加入", effects: { charm: 6, happy: 7, connections: 5 }, result: "你加入了乐队，每周排练，第一次演出就炸了场。" },
+      { text: "先练练再说", effects: { happy: 2 }, result: "你说先练练，回去苦练了基本功，等下次再加入。" },
+    ] },
+  { id: "club-esports-tourney", title: "电竞社比赛", text: "电竞社办校内赛，冠军有奖金和奖杯，你的队伍一路杀进决赛。", club: "esports",
+    choices: [
+      { text: "决赛拼了", effects: { happy: 9, connections: 5, money: 200 }, result: "决赛 3:2 赢了，你捧着奖杯，奖金到手，社团都沸腾了。" },
+      { text: "稳住别浪", effects: { happy: 5, connections: 3 }, result: "你稳扎稳打，虽然没夺冠，但打出了自己的风格。" },
+      { text: "弃赛复习", effects: { iq: 3, happy: -2 }, result: "你弃赛回去复习了，队友理解你，但你还是有点不甘。" },
+    ] },
+  { id: "club-esports-stream", title: "社团直播", text: "电竞社想搞直播，缺个解说，社长觉得你口才不错，想让你试试。", club: "esports",
+    choices: [
+      { text: "试试解说", effects: { charm: 7, happy: 6, connections: 4 }, result: "你解说了一场，弹幕都在夸你专业，粉丝涨了不少。" },
+      { text: "幕后帮忙", effects: { happy: 3, connections: 3 }, result: "你在幕后帮忙调设备，直播很顺利，你也学了不少。" },
+    ] },
+  { id: "club-vol-teach", title: "支教活动", text: "志愿者协会组织去乡村小学支教一周，你负责给孩子们上课，孩子们特别黏你。", club: "volunteer",
+    choices: [
+      { text: "认真上课", effects: { connections: 8, happy: 8, charm: 4 }, result: "你认真上了每一节课，离开那天孩子们拉着你不让走，你心里满满的。" },
+      { text: "多陪陪孩子", effects: { happy: 9, connections: 5 }, result: "你多陪孩子们玩，他们的笑声让你觉得这一周特别值。" },
+      { text: "下次再去", effects: { happy: 1 }, result: "你下次再去，这次先忙自己的事。" },
+    ] },
+  { id: "club-vol-fundraiser", title: "公益义卖", text: "志愿者协会办义卖筹善款，缺个摊主，你被安排去守摊，路人来来往往。", club: "volunteer",
+    choices: [
+      { text: "热情叫卖", effects: { charm: 6, connections: 6, happy: 5 }, result: "你热情叫卖，摊位卖得最快，善款也筹了不少，协会表扬了你。" },
+      { text: "安静守摊", effects: { happy: 3, connections: 2 }, result: "你安静守摊，也卖了不少东西，挺充实的。" },
+    ] },
 ];
 
 // ---- v1.1：随机小事（每学期在大事件后出现 2 件，短平快，丰富日常）----
@@ -2473,7 +2547,7 @@ const ACHIEVEMENTS = [
   { id: "survivor", name: "🎓 顺利毕业", desc: "打满 8 个学期正常毕业", check: (s, f) => !!f.completedGame },
   { id: "explorer", name: "🗺️ 见多识广", desc: "一局内遇到 30 个不同事件", check: (s, f) => (f.eventsSeen || 0) >= 30 },
   { id: "collector", name: "🏆 结局收集者", desc: "解锁 10 个结局", check: (s, f) => (f.endingsCount || 0) >= 10 },
-  { id: "master", name: "👑 全结局", desc: "解锁全部 32 个结局", check: (s, f) => (f.endingsCount || 0) >= 32 },
+  { id: "master", name: "👑 全结局", desc: "解锁全部 44 个结局", check: (s, f) => (f.endingsCount || 0) >= 44 },
   { id: "gamer", name: "🎮 游戏达人", desc: "一局内打游戏 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.game >= 4) },
   { id: "worker", name: "💼 打工皇帝", desc: "一局内打工 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.work >= 4) },
   { id: "bookworm", name: "📖 书虫", desc: "一局内学习 6 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.study >= 6) },
@@ -2734,6 +2808,15 @@ const ENDINGS = [
     desc: "考公差几分没上岸。笔试过了，面试刷下来了。你决定再战一年，或者先找份工作骑驴找马。" },
   { id: "travel-blogger", title: "旅行博主", emoji: "🧳",
     desc: "大学四年你走遍了大半个中国，拍的旅行视频火了，粉丝几十万。毕业了，你决定继续在路上，边走边拍边赚钱。" },
+  // v1.5：4 个新结局（社团会长、校园歌手、辩论冠军、交换生）
+  { id: "club-president", title: "社团会长", emoji: "🎪",
+    desc: "你在社团从干事干到会长，带社团拿了校级优秀社团，毕业晚会上你代表社团发言，全场都在鼓掌。社团这四年，是你大学最亮的一笔。" },
+  { id: "campus-singer", title: "校园歌手", emoji: "🎤",
+    desc: "你在音乐社唱了四年，从迎新晚会唱到毕业晚会，成了全校闻名的校园歌手。毕业了，有酒吧和音乐公司想签你，你的歌声还要唱给更多人听。" },
+  { id: "debate-champion", title: "辩论冠军", emoji: "🎙️",
+    desc: "你带着校辩论队一路杀进全国总决赛，拿了最佳辩手。逻辑和口才成了你最硬的底牌，毕业了，好几家公司抢着要你去做法务和公关。" },
+  { id: "exchange-student", title: "交换生", emoji: "✈️",
+    desc: "你申请到了去国外交换一年的机会，在异国他乡上课、旅行、交朋友。回来的时候，你的眼界和简历都比别人宽了一大截。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -2746,6 +2829,10 @@ function judgeEnding(s) {
   if (s.credits >= 30 && s.credits < 35 && s.money >= 8000) return "dropout-startup";
   if (s.iq >= 90 && s.credits >= 80) return "phd";
   if (s.credits >= 60 && s.iq >= 85) return "baoyan";
+  // v1.5：辩论冠军（智力高、魅力高、学分 50–59，卡在保研线下但辩论出彩）、交换生（智力 80–84、学分高、有点钱）
+  // 放在考研判定之前，不然会被考研上岸抢走
+  if (s.iq >= 85 && s.charm >= 80 && s.credits >= 50 && s.credits < 60) return "debate-champion";
+  if (s.iq >= 80 && s.iq < 85 && s.credits >= 65 && s.money >= 2000 && s.money < 5000) return "exchange-student";
   if (s.credits >= 50 && s.iq >= 75) return "kaoyan";
   if (s.iq >= 80 && s.money >= 5000) return "abroad";
   if (s.iq >= 80 && s.charm >= 75) return "dachang";
@@ -2760,11 +2847,15 @@ function judgeEnding(s) {
   if ((s.rel || {}).aqiang >= 85 && s.happy >= 70) return "brother";
   if ((s.rel || {}).daoshi >= 85 && s.iq >= 80) return "protege";
   if ((s.rel || {}).xuezhang >= 85 && (s.connections || 0) >= 80) return "mentor-job";
+  // v1.5：社团会长（加了社团、人脉够广、魅力够高；智力 <75，不然会被考公抢走）
+  if (s.club && s.club !== "none" && (s.connections || 0) >= 80 && s.charm >= 75 && s.iq < 75) return "club-president";
   if (s.credits >= 60 && s.iq >= 70) return "baoyan-fail";
   if (s.credits >= 45 && s.credits < 50 && s.iq >= 75) return "kaoyan-retry";
   if (s.credits >= 40 && s.credits < 50 && s.iq >= 60 && s.iq < 75) return "kaoyan-fail"; // v1.4
   if (s.iq >= 65 && s.iq < 75 && s.charm >= 60 && (s.connections || 0) >= 60) return "civil-fail"; // v1.4
   if (s.charm >= 85 && s.happy >= 85) return "love";
+  // v1.5：校园歌手（音乐社、魅力高、快乐 80–84；快乐 ≥85 会被校园恋爱抢走）
+  if (s.club === "music" && s.charm >= 85 && s.happy >= 80 && s.happy < 85) return "campus-singer";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";
   if (s.happy >= 85 && s.charm >= 70 && s.iq >= 60) return "esports-pro";
