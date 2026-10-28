@@ -35,6 +35,40 @@ const SHOP_ITEMS = [
     effects: { connections: 10, happy: 3, money: -300 }, log: "你请朋友吃了顿大餐，人脉和快乐都涨了。" },
 ];
 
+// ---- v1.4：开局家境（默认小康 = 以前的开局数值，改家境才变；天赋默认普通人 = 无加成）----
+const BACKGROUNDS = [
+  { id: "rich", icon: "💰", name: "富裕", desc: "家里条件不错，生活费管够。",
+    effects: { money: 2500, happy: 10, charm: 5 } },
+  { id: "middle", icon: "🏠", name: "小康", desc: "普通家庭，生活费刚好。",
+    effects: {} },
+  { id: "poor", icon: "💪", name: "拮据", desc: "家里条件一般，但你更能吃苦。",
+    effects: { money: -300, iq: 5, health: 5 } },
+];
+const TALENTS = [
+  { id: "brain", icon: "🧠", name: "学霸体质", desc: "天生会读书，过目不忘。",
+    effects: { iq: 10 } },
+  { id: "athlete", icon: "🏃", name: "运动健将", desc: "体能爆表，跑跳都不在话下。",
+    effects: { health: 15, charm: 5 } },
+  { id: "social", icon: "🎤", name: "社交达人", desc: "自来熟，走到哪都能交到朋友。",
+    effects: { charm: 10, connections: 10 } },
+  { id: "lucky", icon: "🍀", name: "幸运星", desc: "运气爆棚，压岁钱都比别人多。",
+    effects: { happy: 10, money: 500 } },
+  { id: "normal", icon: "😊", name: "普通人", desc: "没什么特别的，但也没短板。",
+    effects: {} },
+];
+
+// ---- v1.4：假期（第 2/4/6 学期末，寒暑假怎么过）----
+const BREAK_CHOICES = [
+  { id: "home", icon: "🏠", name: "回家陪父母", desc: "回家待一个月，好吃好喝，心情大好。",
+    effects: { happy: 8, money: -200, health: 5 }, log: "假期回家陪父母，吃好喝好，心情大好。" },
+  { id: "work", icon: "💰", name: "留校打工", desc: "假期不回家，留校打工赚钱。",
+    effects: { money: 800, health: -5, happy: -3 }, log: "假期留校打工，赚了 800 块，人累了点。" },
+  { id: "travel", icon: "✈️", name: "和朋友旅游", desc: "约上朋友出去玩一圈，钱花了，心野了。",
+    effects: { money: -1000, happy: 12, charm: 3 }, log: "假期和朋友出去旅游，钱花了不少，但特别开心。" },
+  { id: "study", icon: "📖", name: "留校复习", desc: "假期留校啃书，为下学期攒点底子。",
+    effects: { iq: 5, credits: 2, happy: -5 }, log: "假期留校复习，啃了不少书，下学期有底了。" },
+];
+
 // 随机事件：year 不填就是任何学年都能遇到；choices 里每个选项有固定效果和一句话结果
 // 有 odds 的选项是赌一把：按概率出 win / lose 两种结果
 const EVENTS = [
@@ -2691,6 +2725,15 @@ const ENDINGS = [
     desc: "导师特别欣赏你，不仅写了推荐信，还把你介绍给了业内的大牛。你成了他最得意的门生，前途一片光明。" },
   { id: "mentor-job", title: "贵人相助", emoji: "🌟",
     desc: "学长一直惦记着你，毕业时内推你进了大厂，还手把手带你入行。有贵人相助，职场之路顺风顺水。" },
+  // ---- v1.4 新增结局（4 个）----
+  { id: "fitness-coach", title: "健身教练", emoji: "💪",
+    desc: "四年天天泡健身房，你练出了一身肌肉，还考了健身教练证。毕业就进了健身房当教练，学员排着队找你上课。" },
+  { id: "kaoyan-fail", title: "考研落榜", emoji: "😔",
+    desc: "考研没考上，分数差了一截。失落了一阵子，你决定先工作，边上班边准备，路还长着呢。" },
+  { id: "civil-fail", title: "考公落榜", emoji: "📝",
+    desc: "考公差几分没上岸。笔试过了，面试刷下来了。你决定再战一年，或者先找份工作骑驴找马。" },
+  { id: "travel-blogger", title: "旅行博主", emoji: "🧳",
+    desc: "大学四年你走遍了大半个中国，拍的旅行视频火了，粉丝几十万。毕业了，你决定继续在路上，边走边拍边赚钱。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -2710,6 +2753,7 @@ function judgeEnding(s) {
   if (s.money >= 8000 && s.charm >= 70) return "startup";
   if (s.money >= 5000 && s.charm < 60 && s.iq >= 70) return "startup-fail";
   if (s.money >= 5000 && s.charm >= 60) return "small-boss";
+  if (s.health >= 90 && s.charm >= 70) return "fitness-coach"; // v1.4：比校队明星更进一步
   if (s.health >= 85 && s.charm >= 70) return "athlete";
   // v1.2：人际关系结局（关系够铁才触发；放在通用结局之前，差一点的结局之后）
   if ((s.rel || {}).xiaomei >= 90 && s.charm >= 70) return "sweetheart";
@@ -2718,6 +2762,8 @@ function judgeEnding(s) {
   if ((s.rel || {}).xuezhang >= 85 && (s.connections || 0) >= 80) return "mentor-job";
   if (s.credits >= 60 && s.iq >= 70) return "baoyan-fail";
   if (s.credits >= 45 && s.credits < 50 && s.iq >= 75) return "kaoyan-retry";
+  if (s.credits >= 40 && s.credits < 50 && s.iq >= 60 && s.iq < 75) return "kaoyan-fail"; // v1.4
+  if (s.iq >= 65 && s.iq < 75 && s.charm >= 60 && (s.connections || 0) >= 60) return "civil-fail"; // v1.4
   if (s.charm >= 85 && s.happy >= 85) return "love";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";
@@ -2725,6 +2771,7 @@ function judgeEnding(s) {
   if (s.iq >= 70 && s.charm >= 70 && s.credits >= 45) return "teacher";
   if (s.iq >= 80 && s.happy >= 70) return "writer";
   if (s.charm >= 85 && s.happy >= 75) return "artist";
+  if (s.charm >= 80 && s.happy >= 80 && s.money >= 3000 && s.credits < 45) return "travel-blogger"; // v1.4
   if (s.charm >= 80 && s.happy >= 75) return "photographer";
   if (s.charm >= 80 && s.happy >= 80 && s.money < 2000) return "volunteer-star";
   if (s.happy >= 80 && s.money >= 2000) return "freelancer";

@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 36;
+  const TOTAL_ENDINGS = 40;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -28,6 +28,10 @@
   let forcedMicroId = null;
   let forcedChainId = null;
   let pendingAchievements = []; // 本学期新解锁的成就，等结果框一起展示
+  // v1.4：开局选择（默认小康 + 普通人 = 以前的开局数值）
+  let pickedBackground = "middle";
+  let pickedTalent = "normal";
+  let breakShown = {}; // 哪几个学期后的假期已安排过（key 是刚打完的学期号）
 
   function loadEndings() {
     try { return JSON.parse(localStorage.getItem(ENDINGS_KEY) || "[]") || []; }
@@ -208,7 +212,20 @@
       semester: 1, health: 70, iq: 60, charm: 60, money: 500, happy: 70, connections: 60, credits: 0,
       rel: rel0,
       log: [], over: false, endingId: null,
+      background: pickedBackground, talent: pickedTalent,
     };
+    // v1.4：开局家境 + 天赋加成（默认小康 + 普通人 = 无加成，和以前一样）
+    const bg = BACKGROUNDS.find((b) => b.id === pickedBackground);
+    const tl = TALENTS.find((t) => t.id === pickedTalent);
+    [bg, tl].forEach((src) => {
+      if (!src) return;
+      Object.keys(src.effects).forEach((k) => {
+        if (k === "money") state.money += src.effects[k];
+        else if (k === "credits") state.credits = Math.max(0, state.credits + src.effects[k]);
+        else state[k] = clamp(state[k] + src.effects[k], 0, 100);
+      });
+    });
+    breakShown = {};
     flags = {
       actionCounts: {}, eventsSeen: [], microsSeen: 0, chainsCompleted: 0,
       lotteryWin: false, wasBroke: false, wasInDebt: false, lowHealth: false,
@@ -228,7 +245,8 @@
     renderAchievements();
     showScreen("gameScreen");
     startSemester();
-    addLog(state.name + "入学了，住进了宿舍，大学四年开始了。");
+    const bgName = bg ? bg.name : "", tlName = tl ? tl.name : "";
+    addLog(state.name + "入学了，住进了宿舍，大学四年开始了。（家境：" + bgName + " · 天赋：" + tlName + "）");
   }
 
   function startSemester() {
@@ -356,11 +374,14 @@
   function sceneFor(ev) {
     // v1.3：按关键词在标题+正文里第一次出现的位置定场景（标题优先，正文里先提到的地点为准）
     // 比如“食堂新开麻辣烫”正文提到“香味飘到了宿舍楼”，但“食堂”先出现 → 食堂
+    // v1.4：加图书馆和操场两张图
     const text = (ev.title || "") + " " + (ev.text || "");
     const groups = [
       ["dorm", /宿舍|室友|阿强|床|被子|寝室|打呼|停水|停电|开黑|夜聊|查寝|洗澡|晾衣/],
-      ["classroom", /上课|老师|导师|考试|四级|六级|论文|图书馆|自习|课堂|讲座|选修|期中|期末|答辩|考研|保研|学霸/],
+      ["classroom", /上课|老师|导师|考试|四级|六级|论文|自习|课堂|讲座|选修|期中|期末|答辩|考研|保研|学霸/],
       ["canteen", /食堂|麻辣烫|吃饭|外卖|奶茶|鸡腿|饭卡|泡面|早餐|夜宵|水果|零食/],
+      ["library", /图书馆|借书|看书|书架|阅览/],
+      ["playground", /操场|运动会|跑步|球场|篮球|足球|跑道|体测|晨跑/],
     ];
     let best = null, bestIdx = Infinity;
     groups.forEach(([scene, re]) => {
@@ -485,8 +506,50 @@
     return true;
   }
 
+  // ---- v1.4：假期（第 2/4/6 学期末，寒暑假怎么过）----
+  function showBreakEvent() {
+    const sem = state.semester;
+    $("resultBox").classList.add("hidden");
+    $("actionBox").classList.add("hidden");
+    const img = $("eventScene");
+    if (img && typeof SCENES !== "undefined" && SCENES.campus) {
+      img.src = SCENES.campus;
+      img.classList.remove("hidden");
+    }
+    $("eventTitle").textContent = "☀️ 寒暑假到了";
+    $("eventText").textContent = "第 " + sem + " 学期打完了，假期怎么过？选一个。";
+    const box = $("eventChoices");
+    box.innerHTML = "";
+    BREAK_CHOICES.forEach((c) => {
+      const b = document.createElement("button");
+      b.className = "btn choice-btn";
+      b.textContent = c.icon + " " + c.name + " — " + c.desc;
+      b.addEventListener("click", () => chooseBreak(c.id));
+      box.appendChild(b);
+    });
+    $("eventCard").classList.remove("hidden");
+  }
+  function chooseBreak(choiceId) {
+    const c = BREAK_CHOICES.find((x) => x.id === choiceId);
+    if (!c || state.over) return;
+    applyEffects(c.effects, 0);
+    addLog(c.log);
+    breakShown[state.semester] = true;
+    $("eventCard").classList.add("hidden");
+    if (checkEarlyEnding()) return;
+    state.semester++;
+    if (state.semester > 8) { endGame(judgeEnding(state)); return; }
+    renderStats();
+    startSemester();
+  }
+
   function nextSemester() {
     if (state.over) return;
+    // v1.4：第 2/4/6 学期末先过假期，再进下一学期
+    if ((state.semester === 2 || state.semester === 4 || state.semester === 6) && !breakShown[state.semester]) {
+      showBreakEvent();
+      return;
+    }
     state.semester++;
     if (state.semester > 8) { endGame(judgeEnding(state)); return; }
     renderStats();
@@ -590,6 +653,27 @@
   shopBtn.addEventListener("click", showShop);
   $("actionBox").appendChild(shopBtn);
 
+  // v1.4：开局选择按钮（家境 + 天赋）
+  function buildPickRow(elId, items, pickedId, onPick) {
+    const row = $(elId);
+    if (!row) return;
+    row.innerHTML = "";
+    items.forEach((item) => {
+      const b = document.createElement("button");
+      b.className = "btn pick-btn" + (item.id === pickedId ? " picked" : "");
+      b.setAttribute("data-pick", item.id);
+      b.textContent = item.icon + " " + item.name;
+      b.title = item.desc;
+      b.addEventListener("click", () => {
+        onPick(item.id);
+        [...row.children].forEach((c) => c.classList.toggle("picked", c.getAttribute("data-pick") === item.id));
+      });
+      row.appendChild(b);
+    });
+  }
+  buildPickRow("bgPick", BACKGROUNDS, pickedBackground, (id) => { pickedBackground = id; });
+  buildPickRow("talentPick", TALENTS, pickedTalent, (id) => { pickedTalent = id; });
+
   $("startBtn").addEventListener("click", () => startGame($("startName").value));
   $("nextBtn").addEventListener("click", nextSemester);
   $("shareBtn").addEventListener("click", shareEnding);
@@ -614,6 +698,12 @@
     get actionsDone() { return actionsDone; },
     sceneFor,
     nextSemester,
+    pickBackground(id) { pickedBackground = id; },
+    pickTalent(id) { pickedTalent = id; },
+    get background() { return pickedBackground; },
+    get talent() { return pickedTalent; },
+    chooseBreak,
+    get breakShown() { return breakShown; },
     setNextEvent(id) { forcedEventId = id; },
     setNextMicro(id) { forcedMicroId = id; },
     setNextChain(id) { forcedChainId = id; },

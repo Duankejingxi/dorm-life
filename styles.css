@@ -190,3 +190,8 @@ footer p { margin: 0; }
   .hero h1 { font-size: 36px; }
   .action-grid { grid-template-columns: 1fr; }
 }
+
+/* v1.4：开局选择 */
+.pick-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 12px; }
+.pick-btn { flex: 1 1 30%; padding: 10px 4px; font-size: 14px; margin-top: 0; white-space: nowrap; }
+.pick-btn.picked { background: linear-gradient(180deg, var(--gold2), #e8a90c); color: #231303; border: none; box-shadow: 0 0 14px rgba(245, 197, 66, .4); }
