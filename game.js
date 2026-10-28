@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 52;
+  const TOTAL_ENDINGS = ENDINGS.length;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -37,18 +37,20 @@
   let pickedJob = "none";
   let breakShown = {}; // 哪几个学期后的假期已安排过（key 是刚打完的学期号）
 
-  function loadEndings() {
-    try { return JSON.parse(localStorage.getItem(ENDINGS_KEY) || "[]") || []; }
-    catch (e) { return []; }
+  function loadCollection(key, items) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key) || "[]");
+      if (!Array.isArray(saved)) return [];
+      const valid = new Set(items.map((item) => item.id));
+      return [...new Set(saved.filter((id) => valid.has(id)))];
+    } catch (e) { return []; }
   }
+  function loadEndings() { return loadCollection(ENDINGS_KEY, ENDINGS); }
   function saveEnding(id) {
     const list = loadEndings();
     if (list.indexOf(id) === -1) { list.push(id); try { localStorage.setItem(ENDINGS_KEY, JSON.stringify(list)); } catch (e) { /* 忽略 */ } }
   }
-  function loadAchievements() {
-    try { return JSON.parse(localStorage.getItem(ACHIEVE_KEY) || "[]") || []; }
-    catch (e) { return []; }
-  }
+  function loadAchievements() { return loadCollection(ACHIEVE_KEY, ACHIEVEMENTS); }
   function loadGamesPlayed() {
     try { return parseInt(localStorage.getItem(GAMES_KEY) || "0", 10) || 0; }
     catch (e) { return 0; }
@@ -406,14 +408,14 @@
     const year = yearOf();
     // 大事件池：按学年过滤、排除最近用过的；再加未开始的连锁第 1 环
     // v1.6：兼职专属事件只刷自己那份兼职的（没打工的刷不到）
-    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && usedEventIds.indexOf(e.id) === -1);
+    const eligible = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === state.club) && (!e.job || e.job === state.job));
+    let pool = eligible.filter((e) => usedEventIds.indexOf(e.id) === -1);
     CHAINS.forEach((c) => {
-      if (startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
+      if (!activeChain && stepIndex === 1 && startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
         pool.push(chainEvent(c.id, 1));
       }
     });
-    if (pool.length === 0) { usedEventIds = []; pool = EVENTS.filter((e) => !e.year || e.year === year); }
-    if (pool.length === 0) pool = EVENTS.slice();
+    if (pool.length === 0) { usedEventIds = []; pool = eligible.slice(); }
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
@@ -621,8 +623,8 @@
     if ((flags.wasBroke || flags.wasInDebt || flags.lowHealth) && topEndings.indexOf(endingId) !== -1) {
       flags.comeback = true;
     }
-    checkAchievements();
     saveEnding(endingId);
+    checkAchievements();
     $("endingEmoji").textContent = e.emoji;
     $("endingTitle").textContent = e.title;
     const eimg = $("endingScene");
