@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 44;
+  const TOTAL_ENDINGS = 48;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -33,6 +33,8 @@
   let pickedTalent = "normal";
   // v1.5：开局社团（默认不参加 = 无加成，和以前一样）
   let pickedClub = "none";
+  // v1.6：开局兼职（默认不打工 = 无收入，和以前一样）
+  let pickedJob = "none";
   let breakShown = {}; // 哪几个学期后的假期已安排过（key 是刚打完的学期号）
 
   function loadEndings() {
@@ -214,7 +216,7 @@
       semester: 1, health: 70, iq: 60, charm: 60, money: 500, happy: 70, connections: 60, credits: 0,
       rel: rel0,
       log: [], over: false, endingId: null,
-      background: pickedBackground, talent: pickedTalent, club: pickedClub,
+      background: pickedBackground, talent: pickedTalent, club: pickedClub, job: pickedJob,
     };
     // v1.4：开局家境 + 天赋加成（默认小康 + 普通人 = 无加成，和以前一样）
     // v1.5：开局社团加成（默认不参加 = 无加成）
@@ -250,12 +252,24 @@
     showScreen("gameScreen");
     startSemester();
     const bgName = bg ? bg.name : "", tlName = tl ? tl.name : "", clName = cl ? cl.name : "";
-    addLog(state.name + "入学了，住进了宿舍，大学四年开始了。（家境：" + bgName + " · 天赋：" + tlName + " · 社团：" + clName + "）");
+    const jb = JOBS.find((j) => j.id === pickedJob);
+    const jbName = jb ? jb.name : "";
+    addLog(state.name + "入学了，住进了宿舍，大学四年开始了。（家境：" + bgName + " · 天赋：" + tlName + " · 社团：" + clName + " · 兼职：" + jbName + "）");
+  }
+
+  // v1.6：每学期初发兼职工资（第 1 学期不发，刚入学还没开工）
+  function payJob() {
+    if (!state || !state.job || state.job === "none") return;
+    const jb = JOBS.find((j) => j.id === state.job);
+    if (!jb || !jb.effects) return;
+    applyEffects(jb.effects, 0);
+    addLog("💰 兼职发工资了：" + jb.name + "，到手 ¥" + (jb.effects.money || 0) + "。");
   }
 
   function startSemester() {
     stepIndex = 0;
     actionsDone = 0;
+    if (state.semester > 1) payJob(); // 第 2 学期起，每学期初发工资
     advanceStep();
   }
 
@@ -375,8 +389,8 @@
   function pickRandomEvent() {
     const year = yearOf();
     // 大事件池：按学年过滤、排除最近用过的；再加未开始的连锁第 1 环
-    // v1.5：社团专属事件只刷自己社团的（没加社团的刷不到）
-    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && usedEventIds.indexOf(e.id) === -1);
+    // v1.6：兼职专属事件只刷自己那份兼职的（没打工的刷不到）
+    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && usedEventIds.indexOf(e.id) === -1);
     CHAINS.forEach((c) => {
       if (startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
         pool.push(chainEvent(c.id, 1));
@@ -699,6 +713,7 @@
   buildPickRow("bgPick", BACKGROUNDS, pickedBackground, (id) => { pickedBackground = id; });
   buildPickRow("talentPick", TALENTS, pickedTalent, (id) => { pickedTalent = id; });
   buildPickRow("clubPick", CLUBS, pickedClub, (id) => { pickedClub = id; });
+  buildPickRow("jobPick", JOBS, pickedJob, (id) => { pickedJob = id; });
 
   $("startBtn").addEventListener("click", () => startGame($("startName").value));
   $("nextBtn").addEventListener("click", nextSemester);
@@ -730,6 +745,8 @@
     get talent() { return pickedTalent; },
     pickClub(id) { pickedClub = id; },
     get club() { return pickedClub; },
+    pickJob(id) { pickedJob = id; },
+    get job() { return pickedJob; },
     chooseBreak,
     get breakShown() { return breakShown; },
     setNextEvent(id) { forcedEventId = id; },

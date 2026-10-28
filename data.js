@@ -85,6 +85,20 @@ const CLUB_ACTIVITY = {
     log: ["你跟志愿者协会去敬老院帮忙，老人们拉着你聊了一下午。", "志愿活动结束，你认识了不少热心的朋友，心里暖暖的。"] },
 };
 
+// ---- v1.6：兼职（开局选一份，每学期初发工资 + 攒点属性）----
+// effects 是每学期初结算的固定收益（money 是工资，别的属性是干活攒的）
+const JOBS = [
+  { id: "tutor", icon: "📚", name: "家教", desc: "每周给小学生补课，工资高，还练脑子。",
+    effects: { money: 800, iq: 2 } },
+  { id: "delivery", icon: "🛵", name: "外卖员", desc: "跑单送外卖，风里来雨里去，身体练出来了。",
+    effects: { money: 600, health: 3 } },
+  { id: "boba", icon: "🧋", name: "奶茶店员", desc: "调奶茶、招呼客人，嘴甜人缘好。",
+    effects: { money: 500, charm: 2, connections: 2 } },
+  { id: "library", icon: "📖", name: "图书馆助理", desc: "在图书馆帮忙整理书，工资不多但能蹭书看。",
+    effects: { money: 300, iq: 3, credits: 1 } },
+  { id: "none", icon: "🚫", name: "不打工", desc: "专心上学，不打工。", effects: {} },
+];
+
 // ---- v1.4：假期（第 2/4/6 学期末，寒暑假怎么过）----
 const BREAK_CHOICES = [
   { id: "home", icon: "🏠", name: "回家陪父母", desc: "回家待一个月，好吃好喝，心情大好。",
@@ -1460,6 +1474,27 @@ const EVENTS = [
       { text: "热情叫卖", effects: { charm: 6, connections: 6, happy: 5 }, result: "你热情叫卖，摊位卖得最快，善款也筹了不少，协会表扬了你。" },
       { text: "安静守摊", effects: { happy: 3, connections: 2 }, result: "你安静守摊，也卖了不少东西，挺充实的。" },
     ] },
+  // ---- v1.6：兼职专属事件（job 字段过滤，只刷自己那份兼职的）----
+  { id: "job-tutor", title: "家教课", text: "你带的那个小学生今天考试进步了，家长高兴得多给了你 200 块红包，还问你下学期还来不来。", job: "tutor",
+    choices: [
+      { text: "继续带，认真负责", effects: { money: 200, iq: 2, happy: 4 }, result: "你答应继续带，家长放心了，红包也收下了。" },
+      { text: "婉拒，专心学业", effects: { iq: 3 }, result: "你婉拒了，把时间留给自己学习。" },
+    ] },
+  { id: "job-delivery", title: "送单爆单", text: "今天单子特别多，App 一直响，你一口气跑了十几单，腿都快断了，但收入也翻倍了。", job: "delivery",
+    choices: [
+      { text: "咬牙跑完", effects: { money: 300, health: -3, happy: 3 }, result: "你咬牙跑完了所有单，收入翻倍，累但值了。" },
+      { text: "转掉几单休息", effects: { money: 100, health: 3 }, result: "你转掉几单，歇了一会儿，身体缓过来了。" },
+    ] },
+  { id: "job-boba", title: "奶茶店新品", text: "奶茶店出了新品，老板让你当第一个试调的人，调出了一款特别受欢迎的口味。", job: "boba",
+    choices: [
+      { text: "认真调一杯招牌", effects: { charm: 3, money: 100, connections: 3 }, result: "你调的新品成了店里的招牌，客人都夸你手艺好。" },
+      { text: "随便调调应付", effects: { money: 50, happy: 2 }, result: "你随便调了调，也还行，老板没说什么。" },
+    ] },
+  { id: "job-library", title: "闭馆整理", text: "图书馆闭馆后要整理一大批新到的书，管理员让你帮忙，你在书堆里翻到了一本绝版的老教材。", job: "library",
+    choices: [
+      { text: "认真整理，顺便翻翻", effects: { iq: 2, credits: 1, happy: 3 }, result: "你认真整理，还翻了翻那本老教材，学到不少东西。" },
+      { text: "赶紧干完走人", effects: { money: 100 }, result: "你赶紧干完，拿了加班费走人。" },
+    ] },
 ];
 
 // ---- v1.1：随机小事（每学期在大事件后出现 2 件，短平快，丰富日常）----
@@ -2547,7 +2582,7 @@ const ACHIEVEMENTS = [
   { id: "survivor", name: "🎓 顺利毕业", desc: "打满 8 个学期正常毕业", check: (s, f) => !!f.completedGame },
   { id: "explorer", name: "🗺️ 见多识广", desc: "一局内遇到 30 个不同事件", check: (s, f) => (f.eventsSeen || 0) >= 30 },
   { id: "collector", name: "🏆 结局收集者", desc: "解锁 10 个结局", check: (s, f) => (f.endingsCount || 0) >= 10 },
-  { id: "master", name: "👑 全结局", desc: "解锁全部 44 个结局", check: (s, f) => (f.endingsCount || 0) >= 44 },
+  { id: "master", name: "👑 全结局", desc: "解锁全部 48 个结局", check: (s, f) => (f.endingsCount || 0) >= 48 },
   { id: "gamer", name: "🎮 游戏达人", desc: "一局内打游戏 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.game >= 4) },
   { id: "worker", name: "💼 打工皇帝", desc: "一局内打工 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.work >= 4) },
   { id: "bookworm", name: "📖 书虫", desc: "一局内学习 6 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.study >= 6) },
@@ -2817,6 +2852,15 @@ const ENDINGS = [
     desc: "你带着校辩论队一路杀进全国总决赛，拿了最佳辩手。逻辑和口才成了你最硬的底牌，毕业了，好几家公司抢着要你去做法务和公关。" },
   { id: "exchange-student", title: "交换生", emoji: "✈️",
     desc: "你申请到了去国外交换一年的机会，在异国他乡上课、旅行、交朋友。回来的时候，你的眼界和简历都比别人宽了一大截。" },
+  // v1.6：4 个新结局（奖学金学霸、考研状元、创业大佬、校园舞王）
+  { id: "scholarship-star", title: "奖学金学霸", emoji: "🏆",
+    desc: "你年年拿一等奖学金，成绩单上几乎全是优。毕业典礼上，你作为优秀毕业生代表发言，台下掌声雷动，奖学金拿到手软的四年，值了。" },
+  { id: "top-scorer", title: "考研状元", emoji: "🥇",
+    desc: "你以全校第一的成绩考上研究生，初试复试双料第一。导师点名要你，学弟学妹都拿你当榜样，考研状元的名头比毕业证还亮眼。" },
+  { id: "startup-tycoon", title: "创业大佬", emoji: "💰",
+    desc: "你大学四年边读书边创业，毕业时公司已经估值过亿，投资人排队要给你投钱。从宿舍里的小项目到一家真正的公司，你用四年走完了别人十年的路。" },
+  { id: "dance-king", title: "校园舞王", emoji: "🕺",
+    desc: "你跳了四年街舞，从迎新晚会跳到毕业晚会，成了全校闻名的校园舞王。毕业了，有舞蹈工作室和经纪公司想签你，舞台还要继续。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -2828,7 +2872,12 @@ function judgeEnding(s) {
   if (s.credits < 30) return "delay";
   if (s.credits >= 30 && s.credits < 35 && s.money >= 8000) return "dropout-startup";
   if (s.iq >= 90 && s.credits >= 80) return "phd";
+  // v1.6：奖学金学霸（学分 85+、智力 80–89，智力 90+ 会被读博抢走）、考研状元（智力 90+、学分 75–79，学分 80+ 会被读博抢走）
+  if (s.credits >= 85 && s.iq >= 80 && s.iq < 90) return "scholarship-star";
+  if (s.iq >= 90 && s.credits >= 75 && s.credits < 80) return "top-scorer";
   if (s.credits >= 60 && s.iq >= 85) return "baoyan";
+  // v1.6：创业大佬（钱够多、魅力够高；放在考研判定之前，不然会被考研上岸抢走）
+  if (s.money >= 15000 && s.charm >= 75) return "startup-tycoon";
   // v1.5：辩论冠军（智力高、魅力高、学分 50–59，卡在保研线下但辩论出彩）、交换生（智力 80–84、学分高、有点钱）
   // 放在考研判定之前，不然会被考研上岸抢走
   if (s.iq >= 85 && s.charm >= 80 && s.credits >= 50 && s.credits < 60) return "debate-champion";
@@ -2856,6 +2905,8 @@ function judgeEnding(s) {
   if (s.charm >= 85 && s.happy >= 85) return "love";
   // v1.5：校园歌手（音乐社、魅力高、快乐 80–84；快乐 ≥85 会被校园恋爱抢走）
   if (s.club === "music" && s.charm >= 85 && s.happy >= 80 && s.happy < 85) return "campus-singer";
+  // v1.6：校园舞王（魅力 90+、快乐 80+、健康 75+、学分 40+；放在网红主播之前，不然会被抢走）
+  if (s.charm >= 90 && s.happy >= 80 && s.health >= 75 && s.credits >= 40) return "dance-king";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";
   if (s.happy >= 85 && s.charm >= 70 && s.iq >= 60) return "esports-pro";
