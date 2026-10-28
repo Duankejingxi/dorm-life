@@ -13,14 +13,12 @@
   <!-- 开始界面 -->
   <section id="startScreen">
     <header class="hero">
-      <p class="eyebrow">CAMPUS LIFE · 大学生活实验室</p>
-      <h1>把四年，<br>活成你的故事。</h1>
-      <p class="subtitle">宿舍人生 / 从第一次入学，到属于你的毕业答案</p>
+      <h1>🎓 宿舍人生</h1>
+      <p class="subtitle">大学四年模拟器 · 你的选择，决定你的结局</p>
     </header>
     <div class="panel">
-      <div class="intro-strip"><span>🎓 8 个学期</span><span>🤝 4 位伙伴</span><span>✦ 多种人生结局</span></div>
-      <h2 class="setup-title">你的入学档案</h2>
-      <p class="hint">选好起点，故事就此开始。每学期安排 3 个行动，再面对生活送来的大小惊喜。</p>
+      <p class="hint">你 18 岁，考上大学，住进宿舍。四年，8 个学期，每学期选 3 个行动（还能买东西），再遇到 2 件大事（可能是 3 环连锁剧情的一环）和 3 件随机小事。寒暑假还有假期安排。毕业那天，看看你活成了什么样。</p>
+      <p class="mini">👥 你身边有 4 个人：室友阿强、同班同学小美、大三学长、专业课导师。对他们好一点，关系够铁能解锁专属结局。</p>
       <label class="field-label" for="startName">你的名字</label>
       <input id="startName" type="text" maxlength="8" placeholder="比如：阿伟" autocomplete="off">
       <p class="field-label">家境（影响开局金钱和属性）</p>
@@ -32,15 +30,11 @@
       <p class="field-label">兼职（开局选一份，每学期初发工资；兼职也有专属事件）</p>
       <div class="pick-row" id="jobPick"></div>
       <button class="btn gold-btn big" id="startBtn">开始大一 ▶</button>
-      <details class="collection"><summary>探索结局图鉴</summary>
-      <p class="result-line" id="endingsCount">结局图鉴：0 / 52 已解锁</p>
+      <p class="result-line" id="endingsCount">结局图鉴：0 / 56 已解锁</p>
       <div class="ending-chips" id="endingsList"></div>
-      </details>
-      <details class="collection"><summary>我的成就收藏</summary>
       <p class="result-line" id="achieveCount">成就：0 / 25 已解锁</p>
       <div class="ending-chips" id="achieveList"></div>
-      </details>
-      <p class="mini">小提醒：照顾好健康，也记得攒学分。健康归零或负债达到 ¥500，会提前结束大学生活。</p>
+      <p class="mini">玩法：开局先选家境（富裕/小康/拮据）和天赋（学霸/运动/社交/幸运/普通），再每学期选 3 个行动（学习/打工/健身/打游戏/社交/摆烂，还能🛒买东西：新手机、健身卡、复习资料、请客吃饭），再处理 2 个大事件 + 3 件小事，穿插着来；第 2/4/6 学期末还有寒暑假安排。健康、智力、魅力、快乐、人脉、金钱、学分——七项属性决定你的结局。健康归零会休学，欠债太多会退学。244 个大事件、200 件小事、15 条连锁剧情、40 个结局、25 个成就、4 个 NPC、6 张场景配图，换个活法能解锁更多。</p>
     </div>
   </section>
 
@@ -103,13 +97,13 @@
       <h3 class="section-title">📖 人生回顾</h3>
       <div class="log-list" id="endingLog"></div>
       <button class="btn gold-btn big" id="againBtn">再活一次 🔄</button>
-      <p class="result-line" id="endingsCount2">结局图鉴：0 / 52 已解锁</p>
+      <p class="result-line" id="endingsCount2">结局图鉴：0 / 56 已解锁</p>
       <div class="ending-chips" id="endingsList2"></div>
     </div>
   </section>
 
   <footer>
-    <p>宿舍人生 v1.7 · 纯前端文字模拟器，打开就能玩</p>
+    <p>宿舍人生 v1.8 · 纯前端文字模拟器，打开就能玩</p>
   </footer>
 </div>
 <script src="data.js"></script>

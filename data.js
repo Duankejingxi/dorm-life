@@ -27,6 +27,9 @@ const ACTIONS = [
   { id: "nightchat", icon: "🌙", name: "宿舍夜聊", desc: "熄灯后和一个人夜聊到半夜，聊人生聊八卦。随机一个人的关系大涨，心情也好。",
     effects: {}, variance: 0, nightchat: true,
     log: ["你们夜聊到半夜，关系更铁了。"] },
+  { id: "confess", icon: "💌", name: "表白", desc: "向关系最好的那个人表白。关系 ≥80 才能成功，失败会扣关系和心情。",
+    effects: {}, variance: 0, confess: true,
+    log: ["你鼓起勇气表白了。"] },
 ];
 
 // ---- v1.3：商店（花钱买东西，买一次算一个行动）----
@@ -2585,7 +2588,7 @@ const ACHIEVEMENTS = [
   { id: "survivor", name: "🎓 顺利毕业", desc: "打满 8 个学期正常毕业", check: (s, f) => !!f.completedGame },
   { id: "explorer", name: "🗺️ 见多识广", desc: "一局内遇到 30 个不同事件", check: (s, f) => (f.eventsSeen || 0) >= 30 },
   { id: "collector", name: "🏆 结局收集者", desc: "解锁 10 个结局", check: (s, f) => (f.endingsCount || 0) >= 10 },
-  { id: "master", name: "👑 全结局", desc: "解锁全部 52 个结局", check: (s, f) => (f.endingsCount || 0) >= 52 },
+  { id: "master", name: "👑 全结局", desc: "解锁全部 56 个结局", check: (s, f) => (f.endingsCount || 0) >= 56 },
   { id: "gamer", name: "🎮 游戏达人", desc: "一局内打游戏 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.game >= 4) },
   { id: "worker", name: "💼 打工皇帝", desc: "一局内打工 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.work >= 4) },
   { id: "bookworm", name: "📖 书虫", desc: "一局内学习 6 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.study >= 6) },
@@ -2873,6 +2876,15 @@ const ENDINGS = [
     desc: "毕业后你去了乡村小学支教，成了孩子们最喜欢的老师。山里的四年，你教孩子们读书，孩子们教你什么是快乐，支教成了你一生的骄傲。" },
   { id: "delivery-station", title: "外卖站长", emoji: "🛵",
     desc: "你从外卖员干到了站长，管着几十号骑手，站点月月拿第一。毕业了，你没去大厂，而是把站点越做越大，成了片区最年轻的站长。" },
+  // v1.8：4 个新结局（保研清北、选调生、宿舍长、校园情侣）
+  { id: "top-baoyan", title: "保研清北", emoji: "🏫",
+    desc: "你以全校第一的成绩保研到了清北，导师点名要你。保研清北的名头，比毕业证还亮眼，爸妈逢人就夸你。" },
+  { id: "selected-graduate", title: "选调生", emoji: "📋",
+    desc: "你考上了选调生，去了基层工作。从象牙塔到田间地头，你带着理想和干劲，成了最年轻的基层干部。" },
+  { id: "dorm-leader", title: "宿舍长", emoji: "🗝️",
+    desc: "你当了四年宿舍长，宿舍被你管得井井有条，还拿了校级文明宿舍。毕业了，室友们都说，没有你这个宿舍长，大学得少一半快乐。" },
+  { id: "campus-couple", title: "校园情侣", emoji: "💑",
+    desc: "你和 TA 从表白到毕业，感情越来越稳定。毕业那天，你们一起拍了毕业照，约定以后每年都回来看看，校园情侣修成正果。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -2884,6 +2896,8 @@ function judgeEnding(s) {
   if (s.credits < 30) return "delay";
   if (s.credits >= 30 && s.credits < 35 && s.money >= 8000) return "dropout-startup";
   if (s.iq >= 90 && s.credits >= 80) return "phd";
+  // v1.8：保研清北（学分 90+、智力 85–89、魅力 70+；放在奖学金学霸之前，不然会被抢走）
+  if (s.credits >= 90 && s.iq >= 85 && s.iq < 90 && s.charm >= 70) return "top-baoyan";
   // v1.6：奖学金学霸（学分 85+、智力 80–89，智力 90+ 会被读博抢走）、考研状元（智力 90+、学分 77–79；学分 75–76 会被保研测试的随机区间撞上，留空）
   if (s.credits >= 85 && s.iq >= 80 && s.iq < 90) return "scholarship-star";
   if (s.iq >= 90 && s.credits >= 77 && s.credits < 80) return "top-scorer";
@@ -2896,6 +2910,8 @@ function judgeEnding(s) {
   if (s.iq >= 80 && s.iq < 85 && s.credits >= 65 && s.money >= 2000 && s.money < 5000) return "exchange-student";
   // v1.7：学生会主席（人脉够广、魅力够高、学分够、智力 75–84，智力 85+ 会被保研抢走）
   if ((s.connections || 0) >= 85 && s.charm >= 80 && s.credits >= 60 && s.iq >= 75 && s.iq < 85) return "student-union-president";
+  // v1.8：选调生（智力 70–79、人脉 75+、学分 60+、魅力 65+；放在考研判定之前，不然会被考研上岸抢走）
+  if (s.iq >= 70 && s.iq < 80 && (s.connections || 0) >= 75 && s.credits >= 60 && s.charm >= 65) return "selected-graduate";
   if (s.credits >= 50 && s.iq >= 75) return "kaoyan";
   if (s.iq >= 80 && s.money >= 5000) return "abroad";
   if (s.iq >= 80 && s.charm >= 75) return "dachang";
@@ -2914,6 +2930,10 @@ function judgeEnding(s) {
   if ((s.rel || {}).xuezhang >= 85 && (s.connections || 0) >= 80) return "mentor-job";
   // v1.5：社团会长（加了社团、人脉够广、魅力够高；智力 <75，不然会被考公抢走）
   if (s.club && s.club !== "none" && (s.connections || 0) >= 80 && s.charm >= 75 && s.iq < 75) return "club-president";
+  // v1.7：支教老师（志愿者协会、人脉够广、快乐够高、学分够；放在宿舍长之前，不然会被宿舍长抢走）
+  if (s.club === "volunteer" && (s.connections || 0) >= 75 && s.happy >= 80 && s.credits >= 45) return "volunteer-teacher";
+  // v1.8：宿舍长（人脉够广、快乐够高、学分够、魅力够高、智力 <75；放在保研失败之前，不然会被抢走）
+  if ((s.connections || 0) >= 80 && s.happy >= 85 && s.credits >= 50 && s.charm >= 70 && s.iq < 75) return "dorm-leader";
   if (s.credits >= 60 && s.iq >= 70) return "baoyan-fail";
   if (s.credits >= 45 && s.credits < 50 && s.iq >= 75) return "kaoyan-retry";
   // v1.7：调剂上岸（学分 40–49、智力 70–74、人脉 70+；放在考研落榜之前，不然会被抢走）
@@ -2921,12 +2941,12 @@ function judgeEnding(s) {
   if (s.credits >= 40 && s.credits < 50 && s.iq >= 60 && s.iq < 75) return "kaoyan-fail"; // v1.4
   if (s.iq >= 65 && s.iq < 75 && s.charm >= 60 && (s.connections || 0) >= 60) return "civil-fail"; // v1.4
   if (s.charm >= 85 && s.happy >= 85) return "love";
+  // v1.8：校园情侣（表白成功过、快乐够高、学分够；放在校园歌手之前，不然会被抢走）
+  if (s.inLove && s.happy >= 85 && s.credits >= 40) return "campus-couple";
   // v1.5：校园歌手（音乐社、魅力高、快乐 80–84；快乐 ≥85 会被校园恋爱抢走）
   if (s.club === "music" && s.charm >= 85 && s.happy >= 80 && s.happy < 85) return "campus-singer";
   // v1.6：校园舞王（魅力 90+、快乐 80+、健康 75+、学分 40+；放在网红主播之前，不然会被抢走）
   if (s.charm >= 90 && s.happy >= 80 && s.health >= 75 && s.credits >= 40) return "dance-king";
-  // v1.7：支教老师（志愿者协会、人脉够广、快乐够高、学分够；放在网红主播之前，不然会被抢走）
-  if (s.club === "volunteer" && (s.connections || 0) >= 75 && s.happy >= 80 && s.credits >= 45) return "volunteer-teacher";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";
   if (s.happy >= 85 && s.charm >= 70 && s.iq >= 60) return "esports-pro";

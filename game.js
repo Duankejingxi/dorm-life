@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = ENDINGS.length;
+  const TOTAL_ENDINGS = 56;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -35,23 +35,20 @@
   let pickedClub = "none";
   // v1.6：开局兼职（默认不打工 = 无收入，和以前一样）
   let pickedJob = "none";
-  let awaitingBreak = false;
   let breakShown = {}; // 哪几个学期后的假期已安排过（key 是刚打完的学期号）
 
-  function loadCollection(key, items) {
-    try {
-      const saved = JSON.parse(localStorage.getItem(key) || "[]");
-      if (!Array.isArray(saved)) return [];
-      const valid = new Set(items.map((item) => item.id));
-      return [...new Set(saved.filter((id) => valid.has(id)))];
-    } catch (e) { return []; }
+  function loadEndings() {
+    try { return JSON.parse(localStorage.getItem(ENDINGS_KEY) || "[]") || []; }
+    catch (e) { return []; }
   }
-  function loadEndings() { return loadCollection(ENDINGS_KEY, ENDINGS); }
   function saveEnding(id) {
     const list = loadEndings();
     if (list.indexOf(id) === -1) { list.push(id); try { localStorage.setItem(ENDINGS_KEY, JSON.stringify(list)); } catch (e) { /* 忽略 */ } }
   }
-  function loadAchievements() { return loadCollection(ACHIEVE_KEY, ACHIEVEMENTS); }
+  function loadAchievements() {
+    try { return JSON.parse(localStorage.getItem(ACHIEVE_KEY) || "[]") || []; }
+    catch (e) { return []; }
+  }
   function loadGamesPlayed() {
     try { return parseInt(localStorage.getItem(GAMES_KEY) || "0", 10) || 0; }
     catch (e) { return 0; }
@@ -218,7 +215,7 @@
       name: (name || "").trim() || "你",
       semester: 1, health: 70, iq: 60, charm: 60, money: 500, happy: 70, connections: 60, credits: 0,
       rel: rel0,
-      log: [], over: false, endingId: null,
+      log: [], over: false, endingId: null, inLove: null,
       background: pickedBackground, talent: pickedTalent, club: pickedClub, job: pickedJob,
     };
     // v1.4：开局家境 + 天赋加成（默认小康 + 普通人 = 无加成，和以前一样）
@@ -234,7 +231,6 @@
         else state[k] = clamp(state[k] + src.effects[k], 0, 100);
       });
     });
-    awaitingBreak = false;
     breakShown = {};
     flags = {
       actionCounts: {}, eventsSeen: [], microsSeen: 0, chainsCompleted: 0,
@@ -295,7 +291,7 @@
 
   function doAction(actionId) {
     const a = ACTIONS.find((x) => x.id === actionId);
-    if (!a || !state || state.over || STEP_QUEUE[stepIndex] !== "action" || awaitingBreak) return;
+    if (!a || state.over) return;
     // v1.5：社团活动——没加社团点这个不消耗行动；加了按社团给不同加成
     if (a.clubAction) {
       if (!state.club || state.club === "none") {
@@ -323,6 +319,32 @@
       relPatch[npc.id] = 6;
       applyRel(relPatch);
       addLog("熄灯后，你和" + npc.name + "夜聊到半夜，聊了好多心里话，关系更铁了。（" + npc.name + " 关系 +6）");
+      actionsDone++;
+      stepIndex++;
+      $("actionBox").classList.add("hidden");
+      if (checkEarlyEnding()) return;
+      advanceStep();
+      return;
+    }
+    // v1.8：表白——向关系最好的那个人表白；关系 ≥80 成功（快乐 +10，记下恋爱对象），否则失败（快乐 -5，那个人关系 -3）
+    if (a.confess) {
+      let best = null, bestRel = -1;
+      NPCS.forEach((n) => {
+        const r = (state.rel && state.rel[n.id]) || 0;
+        if (r > bestRel) { bestRel = r; best = n; }
+      });
+      flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
+      if (best && bestRel >= 80) {
+        state.inLove = best.id;
+        applyEffects({ happy: 10 }, 1);
+        addLog("💌 你向" + best.name + "表白了，TA 答应了！你们在一起了。（快乐 +10）");
+      } else if (best) {
+        applyEffects({ happy: -5 }, 1);
+        const relPatch = {};
+        relPatch[best.id] = -3;
+        applyRel(relPatch);
+        addLog("💔 你向" + best.name + "表白了，TA 说还是做朋友吧……（快乐 -5，" + best.name + " 关系 -3）");
+      }
       actionsDone++;
       stepIndex++;
       $("actionBox").classList.add("hidden");
@@ -371,7 +393,6 @@
     panel.appendChild(back);
   }
   function showShop() {
-    if (!state || state.over || STEP_QUEUE[stepIndex] !== "action" || awaitingBreak) return;
     buildShop();
     $("actionBox").classList.add("hidden");
     $("shopPanel").classList.remove("hidden");
@@ -383,7 +404,7 @@
   }
   function buyItem(itemId) {
     const item = SHOP_ITEMS.find((x) => x.id === itemId);
-    if (!item || !state || state.over || STEP_QUEUE[stepIndex] !== "action" || awaitingBreak) return;
+    if (!item || state.over) return;
     if (state.money < item.price) { $("shopMsg").textContent = "钱不够，买不起「" + item.name + "」（¥" + item.price + "）。"; return; }
     applyEffects(item.effects, 0);
     addLog(item.log);
@@ -411,14 +432,14 @@
     const year = yearOf();
     // 大事件池：按学年过滤、排除最近用过的；再加未开始的连锁第 1 环
     // v1.6：兼职专属事件只刷自己那份兼职的（没打工的刷不到）
-    const eligible = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === state.club) && (!e.job || e.job === state.job));
-    let pool = eligible.filter((e) => usedEventIds.indexOf(e.id) === -1);
+    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && usedEventIds.indexOf(e.id) === -1);
     CHAINS.forEach((c) => {
-      if (!activeChain && stepIndex === 1 && startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
+      if (startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
         pool.push(chainEvent(c.id, 1));
       }
     });
-    if (pool.length === 0) { usedEventIds = []; pool = eligible.slice(); }
+    if (pool.length === 0) { usedEventIds = []; pool = EVENTS.filter((e) => !e.year || e.year === year); }
+    if (pool.length === 0) pool = EVENTS.slice();
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
@@ -469,7 +490,7 @@
       const b = document.createElement("button");
       b.className = "btn choice-btn";
       b.textContent = c.text;
-      b.addEventListener("click", () => { if (currentEvent === ev) chooseEvent(i); });
+      b.addEventListener("click", () => chooseEvent(i));
       box.appendChild(b);
     });
     $("eventCard").classList.toggle("micro", kind === "micro");
@@ -542,7 +563,6 @@
       }
       checkAchievements();
     }
-    currentEvent = null;
     $("eventCard").classList.add("hidden");
     if (checkEarlyEnding()) return;
     stepIndex++;
@@ -569,8 +589,6 @@
 
   // ---- v1.4：假期（第 2/4/6 学期末，寒暑假怎么过）----
   function showBreakEvent() {
-    awaitingBreak = true;
-    currentEvent = null;
     const sem = state.semester;
     $("resultBox").classList.add("hidden");
     $("actionBox").classList.add("hidden");
@@ -594,8 +612,7 @@
   }
   function chooseBreak(choiceId) {
     const c = BREAK_CHOICES.find((x) => x.id === choiceId);
-    if (!c || !state || state.over || !awaitingBreak) return;
-    awaitingBreak = false;
+    if (!c || state.over) return;
     applyEffects(c.effects, 0);
     addLog(c.log);
     breakShown[state.semester] = true;
@@ -608,7 +625,7 @@
   }
 
   function nextSemester() {
-    if (!state || state.over || stepIndex < STEP_QUEUE.length || awaitingBreak) return;
+    if (state.over) return;
     // v1.4：第 2/4/6 学期末先过假期，再进下一学期
     if ((state.semester === 2 || state.semester === 4 || state.semester === 6) && !breakShown[state.semester]) {
       showBreakEvent();
@@ -630,8 +647,8 @@
     if ((flags.wasBroke || flags.wasInDebt || flags.lowHealth) && topEndings.indexOf(endingId) !== -1) {
       flags.comeback = true;
     }
-    saveEnding(endingId);
     checkAchievements();
+    saveEnding(endingId);
     $("endingEmoji").textContent = e.emoji;
     $("endingTitle").textContent = e.title;
     const eimg = $("endingScene");
@@ -676,10 +693,9 @@
         ta.value = text;
         document.body.appendChild(ta);
         ta.select();
-        const copied = document.execCommand("copy");
+        document.execCommand("copy");
         document.body.removeChild(ta);
-        if (copied) done();
-        else $("shareMsg").textContent = "复制未成功，请允许剪贴板权限后重试";
+        done();
       } catch (err) { $("shareMsg").textContent = "复制失败，长按手动复制吧"; }
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -727,16 +743,11 @@
       const b = document.createElement("button");
       b.className = "btn pick-btn" + (item.id === pickedId ? " picked" : "");
       b.setAttribute("data-pick", item.id);
-      b.setAttribute("aria-pressed", String(item.id === pickedId));
       b.textContent = item.icon + " " + item.name;
       b.title = item.desc;
       b.addEventListener("click", () => {
         onPick(item.id);
-        [...row.children].forEach((c) => {
-          const selected = c.getAttribute("data-pick") === item.id;
-          c.classList.toggle("picked", selected);
-          c.setAttribute("aria-pressed", String(selected));
-        });
+        [...row.children].forEach((c) => c.classList.toggle("picked", c.getAttribute("data-pick") === item.id));
       });
       row.appendChild(b);
     });
