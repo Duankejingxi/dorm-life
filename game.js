@@ -1,6 +1,6 @@
 // 宿舍人生 · 游戏逻辑 v1.1
-// 8 个学期，每学期：1 个行动 + 1 个大事件（可能是连锁剧情的一环）+ 2 件随机小事
-// 属性：健康/智力/魅力/快乐/人脉（0-100）、金钱（可负）、学分（只增不减为负时归零）
+// 8 个学期，每学期：3 个行动 + 2 个大事件（可能是连锁剧情的一环）+ 3 件随机小事，穿插进行
+// 属性：健康/智力/魅力/快乐/人脉（0-100）、金钱（可负）、学分（只增不减，为负时归零）
 (() => {
   "use strict";
   const $ = (id) => document.getElementById(id);
@@ -56,30 +56,74 @@
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
   // 应用一组属性变化；variance 是属性点的随机浮动，moneyVariance 是金钱的浮动（元）
+  // 返回实际生效的变化（扣掉 0–100 上下限后的真实差值），供日志显示“智力 +5 · 学分 +4”
   function applyEffects(effects, variance, moneyVariance) {
+    const deltas = {};
     Object.keys(effects).forEach((k) => {
       const base = effects[k];
       const v = k === "money"
         ? base + (moneyVariance ? Math.round((Math.random() * 2 - 1) * moneyVariance) : 0)
         : base + (variance ? Math.round((Math.random() * 2 - 1) * variance) : 0);
-      if (k === "money") state.money += v;
-      else if (k === "credits") state.credits = Math.max(0, state.credits + v);
-      else state[k] = clamp(state[k] + v, 0, 100);
+      let before, after;
+      if (k === "money") { before = state.money; state.money += v; after = state.money; }
+      else if (k === "credits") { before = state.credits; state.credits = Math.max(0, state.credits + v); after = state.credits; }
+      else { before = state[k]; state[k] = clamp(state[k] + v, 0, 100); after = state[k]; }
+      if (after !== before) deltas[k] = after - before;
     });
     if (state.money <= 0) flags.wasBroke = true;
     if (state.money <= -200) flags.wasInDebt = true;
     if (state.health <= 20) flags.lowHealth = true;
     renderStats();
     checkAchievements();
+    return deltas;
+  }
+
+  // 把变化拼成一行提示，如“（智力 +5 · 学分 +4 · 快乐 -3）”；空变化返回空串
+  const STAT_LABELS = { health: "健康", iq: "智力", charm: "魅力", happy: "快乐", connections: "人脉", money: "金钱", credits: "学分" };
+  function deltaParts(deltas, exclude) {
+    const parts = [];
+    if (!deltas) return parts;
+    Object.keys(deltas).forEach((k) => {
+      if (exclude && exclude.indexOf(k) !== -1) return;
+      const label = STAT_LABELS[k] || k;
+      const v = deltas[k];
+      parts.push(label + " " + (v > 0 ? "+" : "") + v);
+    });
+    return parts;
+  }
+  function relDeltaParts(relDeltas) {
+    const parts = [];
+    if (!relDeltas) return parts;
+    Object.keys(relDeltas).forEach((id) => {
+      const npc = NPCS.find((n) => n.id === id);
+      const v = relDeltas[id];
+      if (npc && v !== 0) parts.push(npc.name + "关系 " + (v > 0 ? "+" : "") + v);
+    });
+    return parts;
+  }
+  // 属性 + 关系变化拼成一行，如“（智力 +5 · 阿强关系 +2）”；没变化返回空串
+  function fmtChange(effectDeltas, relDeltas, exclude) {
+    const parts = deltaParts(effectDeltas, exclude).concat(relDeltaParts(relDeltas));
+    return parts.length > 0 ? "（" + parts.join(" · ") + "）" : "";
+  }
+  function mergeDeltas(a, b) {
+    const out = Object.assign({}, a);
+    if (!b) return out;
+    Object.keys(b).forEach((k) => { out[k] = (out[k] || 0) + b[k]; if (out[k] === 0) delete out[k]; });
+    return out;
   }
 
   function applyRel(rel) {
-    if (!rel) return;
+    if (!rel) return {};
+    const deltas = {};
     Object.keys(rel).forEach((id) => {
       if (state.rel[id] === undefined) state.rel[id] = 0;
+      const before = state.rel[id];
       state.rel[id] = clamp(state.rel[id] + rel[id], 0, 100);
+      if (state.rel[id] !== before) deltas[id] = state.rel[id] - before;
     });
     renderRel();
+    return deltas;
   }
 
   function renderRel() {
@@ -161,7 +205,8 @@
       ENDINGS.forEach((e) => {
         const chip = document.createElement("span");
         chip.className = "ending-chip" + (list.indexOf(e.id) !== -1 ? "" : " locked");
-        chip.textContent = list.indexOf(e.id) !== -1 ? e.emoji + " " + e.title : "？？？";
+        // 未解锁也露个 emoji 当线索（只露图标，不露标题，不剧透）
+        chip.textContent = list.indexOf(e.id) !== -1 ? e.emoji + " " + e.title : e.emoji + " ？？？";
         el.appendChild(chip);
       });
     };
@@ -262,8 +307,9 @@
     if (!state || !state.job || state.job === "none") return;
     const jb = JOBS.find((j) => j.id === state.job);
     if (!jb || !jb.effects) return;
-    applyEffects(jb.effects, 0);
-    addLog("💰 兼职发工资了：" + jb.name + "，到手 ¥" + (jb.effects.money || 0) + "。");
+    const d = applyEffects(jb.effects, 0);
+    // 金钱已经在文案里说了（“到手 ¥N”），只补非金钱的变化
+    addLog("💰 兼职发工资了：" + jb.name + "，到手 ¥" + (jb.effects.money || 0) + "。" + fmtChange(d, null, ["money"]));
   }
 
   function startSemester() {
@@ -286,6 +332,7 @@
     $("eventCard").classList.add("hidden");
     $("resultBox").classList.add("hidden");
     $("shopPanel").classList.add("hidden");
+    $("actionHint").classList.remove("hidden");
     $("actionHint").textContent = semName() + "，选一个行动（已选 " + actionsDone + "/" + ACTIONS_PER_SEMESTER + "）。";
   }
 
@@ -301,8 +348,8 @@
       const ca = CLUB_ACTIVITY[state.club];
       if (!ca) return;
       flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
-      applyEffects(ca.effects, ca.variance);
-      addLog(ca.log[Math.floor(Math.random() * ca.log.length)]);
+      const cd = applyEffects(ca.effects, ca.variance);
+      addLog(ca.log[Math.floor(Math.random() * ca.log.length)] + fmtChange(cd));
       actionsDone++;
       stepIndex++;
       $("actionBox").classList.add("hidden");
@@ -353,9 +400,9 @@
       return;
     }
     flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
-    applyEffects(a.effects, a.variance, a.moneyVariance);
-    applyRel(a.rel);
-    addLog(a.log[Math.floor(Math.random() * a.log.length)]);
+    const d = applyEffects(a.effects, a.variance, a.moneyVariance);
+    const rd = applyRel(a.rel);
+    addLog(a.log[Math.floor(Math.random() * a.log.length)] + fmtChange(d, rd));
     actionsDone++;
     stepIndex++;
     $("actionBox").classList.add("hidden");
@@ -389,12 +436,13 @@
     const back = document.createElement("button");
     back.className = "btn ghost-btn small";
     back.textContent = "← 返回，不买了";
-    back.addEventListener("click", () => { $("shopPanel").classList.add("hidden"); $("actionBox").classList.remove("hidden"); });
+    back.addEventListener("click", () => { $("shopPanel").classList.add("hidden"); $("actionBox").classList.remove("hidden"); $("actionHint").classList.remove("hidden"); });
     panel.appendChild(back);
   }
   function showShop() {
     buildShop();
     $("actionBox").classList.add("hidden");
+    $("actionHint").classList.add("hidden");
     $("shopPanel").classList.remove("hidden");
     $("shopMsg").textContent = "";
     // 钱不够的商品变灰
@@ -406,8 +454,8 @@
     const item = SHOP_ITEMS.find((x) => x.id === itemId);
     if (!item || state.over) return;
     if (state.money < item.price) { $("shopMsg").textContent = "钱不够，买不起「" + item.name + "」（¥" + item.price + "）。"; return; }
-    applyEffects(item.effects, 0);
-    addLog(item.log);
+    const d = applyEffects(item.effects, 0);
+    addLog(item.log + fmtChange(d));
     $("shopPanel").classList.add("hidden");
     actionsDone++;
     stepIndex++;
@@ -475,6 +523,7 @@
   function showEventCard(ev, kind) {
     currentEvent = ev;
     currentKind = kind;
+    $("actionHint").classList.add("hidden"); // 事件期间不显示“选一个行动”，免得和事件卡片打架
     const img = $("eventScene");
     if (img && (kind === "big" || kind === "chain") && typeof SCENES !== "undefined" && SCENES[sceneFor(ev)]) {
       img.src = SCENES[sceneFor(ev)];
@@ -535,22 +584,23 @@
     const c = currentEvent.choices[choiceIdx];
     if (!c) return;
     let resultText = c.result || "";
+    let d = {};
     if (c.odds) {
       // 赌一把：按概率出输赢两种结果
       if (Math.random() < c.odds.chance) {
-        applyEffects(c.odds.win, 0);
+        d = mergeDeltas(d, applyEffects(c.odds.win, 0));
         resultText = c.odds.winText;
         flags.lotteryWin = true;
       } else {
-        applyEffects(c.odds.lose, 0);
+        d = mergeDeltas(d, applyEffects(c.odds.lose, 0));
         resultText = c.odds.loseText;
       }
-      applyEffects(c.effects, 0);
+      d = mergeDeltas(d, applyEffects(c.effects, 0));
     } else {
-      applyEffects(c.effects, 0);
+      d = applyEffects(c.effects, 0);
     }
-    applyRel(c.rel);
-    addLog(resultText);
+    const rd = applyRel(c.rel);
+    addLog(resultText + fmtChange(d, rd));
     // 连锁剧情推进
     if (currentEvent.chain) {
       const ch = currentEvent.chain;
@@ -592,6 +642,7 @@
     const sem = state.semester;
     $("resultBox").classList.add("hidden");
     $("actionBox").classList.add("hidden");
+    $("actionHint").classList.add("hidden");
     const img = $("eventScene");
     if (img && typeof SCENES !== "undefined" && SCENES.campus) {
       img.src = SCENES.campus;
@@ -613,8 +664,8 @@
   function chooseBreak(choiceId) {
     const c = BREAK_CHOICES.find((x) => x.id === choiceId);
     if (!c || state.over) return;
-    applyEffects(c.effects, 0);
-    addLog(c.log);
+    const d = applyEffects(c.effects, 0);
+    addLog(c.log + fmtChange(d));
     breakShown[state.semester] = true;
     $("eventCard").classList.add("hidden");
     if (checkEarlyEnding()) return;
@@ -735,7 +786,16 @@
   $("actionBox").appendChild(shopBtn);
 
   // v1.4：开局选择按钮（家境 + 天赋）
-  function buildPickRow(elId, items, pickedId, onPick) {
+  // 选中项的说明直接显示在选项下面（手机上没有 hover，title 提示看不到）
+  function renderPickDesc(descElId, items, pickedId) {
+    const el = $(descElId);
+    if (!el) return;
+    const item = items.find((x) => x.id === pickedId);
+    if (!item) { el.textContent = ""; return; }
+    const parts = deltaParts(item.effects || {});
+    el.textContent = item.name + "：" + item.desc + (parts.length > 0 ? "（开局" + parts.join(" · ") + "）" : "");
+  }
+  function buildPickRow(elId, items, pickedId, onPick, descElId) {
     const row = $(elId);
     if (!row) return;
     row.innerHTML = "";
@@ -748,14 +808,16 @@
       b.addEventListener("click", () => {
         onPick(item.id);
         [...row.children].forEach((c) => c.classList.toggle("picked", c.getAttribute("data-pick") === item.id));
+        renderPickDesc(descElId, items, item.id);
       });
       row.appendChild(b);
     });
+    renderPickDesc(descElId, items, pickedId);
   }
-  buildPickRow("bgPick", BACKGROUNDS, pickedBackground, (id) => { pickedBackground = id; });
-  buildPickRow("talentPick", TALENTS, pickedTalent, (id) => { pickedTalent = id; });
-  buildPickRow("clubPick", CLUBS, pickedClub, (id) => { pickedClub = id; });
-  buildPickRow("jobPick", JOBS, pickedJob, (id) => { pickedJob = id; });
+  buildPickRow("bgPick", BACKGROUNDS, pickedBackground, (id) => { pickedBackground = id; }, "bgDesc");
+  buildPickRow("talentPick", TALENTS, pickedTalent, (id) => { pickedTalent = id; }, "talentDesc");
+  buildPickRow("clubPick", CLUBS, pickedClub, (id) => { pickedClub = id; }, "clubDesc");
+  buildPickRow("jobPick", JOBS, pickedJob, (id) => { pickedJob = id; }, "jobDesc");
 
   $("startBtn").addEventListener("click", () => startGame($("startName").value));
   $("nextBtn").addEventListener("click", nextSemester);
