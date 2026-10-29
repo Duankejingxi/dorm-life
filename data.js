@@ -1501,6 +1501,187 @@ const EVENTS = [
       { text: "认真整理，顺便翻翻", effects: { iq: 2, credits: 1, happy: 3 }, result: "你认真整理，还翻了翻那本老教材，学到不少东西。" },
       { text: "赶紧干完走人", effects: { money: 100 }, result: "你赶紧干完，拿了加班费走人。" },
     ] },
+  // v1.10 新增：30 个通用大事件
+  { id: "alarm-hell", title: "室友的闹钟地狱", text: "室友定了 6 个闹钟，从 6 点响到 7 点，间隔 10 分钟。他一个没起，全响了，你全听见了。",
+    choices: [
+      { text: "把他摇醒", effects: { happy: 3, health: 2 }, rel: { aqiang: 3 }, result: "你把他摇醒了，他顶着鸡窝头去上课，你回去睡了个回笼觉。" },
+      { text: "关掉他的闹钟", effects: { happy: 5 }, rel: { aqiang: -3 }, result: "你关掉了他的闹钟，他迟到了，在群里骂了一上午，但你睡好了。" },
+      { text: "戴耳塞继续睡", effects: { health: 2, happy: -1 }, result: "你戴上耳塞继续睡，耳塞里还是隐约能听见闹钟声。" },
+    ] },
+  { id: "charger-war", title: "充电器争夺战", text: "全宿舍只有一个快充头，四个人四部手机，谁先抢到谁用，战争一触即发。",
+    choices: [
+      { text: "先下手为强", effects: { happy: 4 }, result: "你先下手抢到了，手机飞速回血，室友们用幽怨的眼神看着你。" },
+      { text: "让给室友", effects: { charm: 4, happy: 3 }, rel: { aqiang: 4 }, result: "你让给了室友，他感动得说下次请你喝奶茶，充电慢点就慢点吧。" },
+      { text: "买个新的", effects: { money: -50, happy: 5 }, result: "你买了个新的快充头，战争结束，宿舍恢复和平。" },
+    ] },
+  { id: "water-change", title: "换桶装水", text: "饮水机没水了，空桶在那立着。四个大男人面面相觑，没人想搬那 20 公斤的水。",
+    choices: [
+      { text: "我去换", effects: { health: 3, charm: 5, happy: 3 }, rel: { aqiang: 4 }, result: "你扛起水桶就换，室友们纷纷表示你是宿舍的顶梁柱。" },
+      { text: "石头剪刀布", effects: { happy: 4 }, result: "你们石头剪刀布决定，输的人去换，愿赌服输，换水的人一路骂骂咧咧。" },
+      { text: "都不换，买瓶装", effects: { money: -20, happy: 1 }, result: "都不换，各自买瓶装水，饮水机成了摆设，空桶还在那立着。" },
+    ] },
+  { id: "trash-standoff", title: "倒垃圾僵局", text: "垃圾堆成山了，袋子都系不上了。谁都不想下楼，宿舍开始了心理战，比谁先忍不住。",
+    choices: [
+      { text: "我去倒", effects: { charm: 4, happy: 2 }, result: "你提着垃圾下楼了，回来的时候宿舍空气都清新了，室友们有点不好意思。" },
+      { text: "轮流制", effects: { iq: 3, happy: 3 }, result: "你提议轮流倒垃圾，做了个值日表贴在门上，从此有章可循。" },
+      { text: "继续僵持", effects: { happy: -4, health: -2 }, result: "继续僵持，垃圾发酵了，整个宿舍都是味道，最后还是你忍不住去倒了。" },
+    ] },
+  { id: "shower-singer", title: "浴室歌神", text: "有人在浴室唱歌，跑调跑到姥姥家，整层楼都听得见。宿管阿姨来敲门了。",
+    choices: [
+      { text: "让他小声点", effects: { charm: 3, happy: 2 }, result: "你让他小声点，他说'洗澡不唱歌，等于白洗澡'，但还是小声了点。" },
+      { text: "一起唱", effects: { happy: 8, charm: 3 }, rel: { aqiang: 5 }, result: "你加入了他，两个人对唱，整层楼都在笑，宿管阿姨也笑了。" },
+      { text: "录下来", effects: { happy: 6 }, result: "你录了下来，发到宿舍群，成了宿舍的保留节目，他扬言要灭口。" },
+    ] },
+  { id: "midnight-call", title: "半夜煲电话粥", text: "室友和对象打电话到凌晨两点，情话不断，全宿舍被迫听恋爱实况直播，睡不着。",
+    choices: [
+      { text: "让他去走廊", effects: { health: 3, happy: 2 }, rel: { aqiang: -2 }, result: "你让他去走廊打，他不情愿地去了，走廊里回荡着他的情话。" },
+      { text: "戴耳机忍", effects: { happy: -2, health: 1 }, result: "你戴上耳机，耳机里放着歌，隐约还能听见他的笑声，恋爱的酸臭味。" },
+      { text: "起哄", effects: { happy: 6 }, rel: { aqiang: 3 }, result: "你们开始起哄，他红着脸挂了电话，第二天请全宿舍喝奶茶封口。" },
+    ] },
+  { id: "socks-attack", title: "臭袜子攻击", text: "有人三天没洗袜子，宿舍已经没法待了。开窗也没用，味道有穿透性。",
+    choices: [
+      { text: "让他洗", effects: { charm: 3, happy: 2 }, result: "你让他洗袜子，他说明天一定，明天又说明天，第三天终于洗了。" },
+      { text: "帮他洗了", effects: { charm: 6, happy: -1 }, rel: { aqiang: 6 }, result: "你捏着鼻子帮他洗了，他感动得不行，说你是亲兄弟，宿舍空气得救了。" },
+      { text: "买除臭剂", effects: { money: -25, happy: 3 }, result: "你买了除臭剂，喷了一整瓶，味道压住了，但治标不治本。" },
+    ] },
+  { id: "takeout-stolen", title: "外卖被拿错", text: "你的外卖被人拿走了，放在楼下的架子上不翼而飞。监控里看不清脸，饭也没了。",
+    choices: [
+      { text: "再点一份", effects: { money: -30, happy: -3 }, result: "你再点了一份，等了半小时，饿得前胸贴后背，拿错的人祝你天天没外卖。" },
+      { text: "去群里问", effects: { charm: 3, happy: 2 }, result: "你在楼栋群里问，有人说是拿错了，还回来了，虽然凉了，但心意到了。" },
+      { text: "蹭室友的", effects: { happy: 3 }, rel: { aqiang: 3 }, result: "你蹭了室友的外卖，他分了你一半，患难见真情。" },
+    ] },
+  { id: "pinduoduo-cut", title: "砍一刀", text: "室友让你帮他砍一刀，说就差 0.01 元了。你点了，砍了 0.01 元，还差 0.01 元。",
+    choices: [
+      { text: "继续帮他砍", effects: { happy: 3 }, rel: { aqiang: 3 }, result: "你继续帮他砍，拉了三个人，终于砍成了，他请你喝了瓶水。" },
+      { text: "让他放弃", effects: { happy: 2 }, result: "你让他放弃吧，这就是个无底洞，他想了想，觉得你说得对。" },
+      { text: "直接给他钱", effects: { money: -10, happy: 4 }, rel: { aqiang: 5 }, result: "你直接转了他 10 块钱，说别砍了，他愣了三秒，说你是真兄弟。" },
+    ] },
+  { id: "return-war", title: "退货拉锯战", text: "买的东西不合适，退货要自己出运费 12 块，东西才 30 块。退还是不退，这是个问题。",
+    choices: [
+      { text: "退！", effects: { money: 18, happy: -2 }, result: "你退了，运费 12 块，到手 18 块，亏了，但出了口气。" },
+      { text: "不退，送人", effects: { charm: 4, happy: 3 }, result: "你送人了，室友正好需要，皆大欢喜，比退货强。" },
+      { text: "留着用", effects: { happy: 1 }, result: "你留着用了，虽然不合适，但将就能用，省了运费。" },
+    ] },
+  { id: "phone-class", title: "上课玩手机被抓", text: "上课玩手机，老师突然点你回答问题。你手机还亮着，全班都看着你。",
+    choices: [
+      { text: "蒙一个", effects: { iq: 2, happy: -2 }, result: "你蒙了一个，居然蒙对了，全班鼓掌，老师让你坐下，你后背全是汗。" },
+      { text: "老实承认", effects: { charm: 3, happy: -3 }, result: "你老实承认在玩手机，老师说下课来找我，你一节课都没听进去。" },
+      { text: "同桌救场", effects: { happy: 3 }, rel: { xiaomei: 4 }, result: "同桌小声告诉你答案，你答上来了，下课请她喝了杯奶茶压惊。" },
+    ] },
+  { id: "seat-war", title: "抢前排座位", text: "为了抢前排座位，有人 7 点就去占座。你 7 点半到，只剩后排了，老师在黑板上写字你都看不清。",
+    choices: [
+      { text: "早起抢座", effects: { health: 2, iq: 4, happy: -1 }, result: "你第二天 7 点去抢座，抢到了前排，看得清清楚楚，困得要死。" },
+      { text: "后排也挺好", effects: { happy: 3, iq: -1 }, result: "后排也挺好，睡觉方便，玩手机方便，就是听不清老师讲什么。" },
+      { text: "和室友换", effects: { happy: 2 }, rel: { aqiang: 3 }, result: "你和室友换，他坐前排，你坐后排，他说前排风大，让你多穿点。" },
+    ] },
+  { id: "professor-story", title: "老师讲八卦", text: "专业课老师不讲课，讲他当年在工地的八卦：谁和谁吵架，谁把图纸画错了，全班听得津津有味。",
+    choices: [
+      { text: "听得入迷", effects: { happy: 6, iq: 1 }, result: "你听得入迷，八卦里全是职场经验，比课本有用多了。" },
+      { text: "记笔记", effects: { iq: 4, credits: 2 }, result: "你记了笔记，虽然老师没讲课本，但八卦里的知识点你都记下了。" },
+      { text: "提醒他上课", effects: { charm: -2, happy: -1 }, result: "你提醒他上课，全班都瞪你，老师说'就你事儿多'，继续讲八卦。" },
+    ] },
+  { id: "group-homework", title: "小组作业划水", text: "小组作业四个人，三个划水，就你一个人干。你写完了，他们说'辛苦了'，名字都署上了。",
+    choices: [
+      { text: "忍了", effects: { iq: 4, credits: 3, happy: -4 }, result: "你忍了，作业拿了高分，但你发誓下次再也不和他们一组。" },
+      { text: "摊牌", effects: { charm: -3, happy: 3 }, result: "你摊牌了，要求重新分工，他们不好意思，接下来认真了点。" },
+      { text: "也划水", effects: { happy: 2, credits: -2, iq: -2 }, result: "你也划水了，作业交了个半成品，老师给了个及格分，大家都没话说。" },
+    ] },
+  { id: "thesis-check", title: "论文查重", text: "论文查重率 38%，离 20% 还差得远。通宵改论文，改到怀疑人生，每个字都认识，连起来就不认识了。",
+    choices: [
+      { text: "通宵改", effects: { iq: 5, credits: 4, health: -6, happy: -4 }, result: "你通宵改完了，查重 18%，过了，倒头就睡，睡了 14 个小时。" },
+      { text: "找学长帮忙", effects: { iq: 3, happy: 2 }, rel: { xuezhang: 5 }, result: "你找学长帮忙，他教你改写技巧，查重过了，你请他吃了顿饭。" },
+      { text: "花钱降重", effects: { money: -200, happy: 2, credits: 2 }, result: "你花钱找了降重，过了，但肉疼，200 块就这么没了。" },
+    ] },
+  { id: "second-major", title: "辅修", text: "你报了个辅修，觉得技多不压身。结果课表全满，周末也没了，你开始怀疑人生。",
+    choices: [
+      { text: "坚持", effects: { iq: 6, credits: 5, health: -4, happy: -3 }, result: "你坚持下来了，辅修拿到了，双学位在手，找工作多了个筹码。" },
+      { text: "放弃", effects: { happy: 4, health: 2 }, result: "你放弃了，周末回来了，你躺在床上，觉得空气都是甜的。" },
+      { text: "划水", effects: { iq: 2, happy: 1 }, result: "你划水，课去听，作业交，但不深究，拿了个证，够用就行。" },
+    ] },
+  { id: "cet-spell", title: "四级听力", text: "四级听力完全听不懂，全靠蒙。你蒙了个 425 分，刚过线，多一分浪费，少一分重考。",
+    choices: [
+      { text: "过了就行", effects: { happy: 6, iq: 2 }, result: "过了就行，你长舒一口气，四级这道坎算是迈过去了。" },
+      { text: "再刷高分", effects: { iq: 5, happy: -2 }, result: "你决定再刷个高分，报了下一次，每天听听力，耳朵都起茧了。" },
+      { text: "请客庆祝", effects: { money: -100, happy: 8 }, result: "你请客庆祝，室友说你 425 分也好意思庆祝，你说'过线就是胜利'。" },
+    ] },
+  { id: "driver-license", title: "考驾照", text: "暑假去考驾照，科目二挂了两次。教练的脸比锅底还黑，你的钱包比脸还白。",
+    choices: [
+      { text: "继续考", effects: { money: -500, happy: -3, iq: 2 }, result: "你继续考，第三次过了，拿证那天，你觉得自己是秋名山车神。" },
+      { text: "先缓缓", effects: { happy: 3 }, result: "你先缓缓，等开学再说，教练说'你随时来，我随时在'，听着像诅咒。" },
+      { text: "找陪练", effects: { money: -300, happy: 2 }, result: "你找了个陪练，一对一，贵但有用，一次就过了。" },
+    ] },
+  { id: "teacher-cert", title: "教资面试", text: "你考教师资格证，面试的时候紧张，把考官叫成了'同学'，全场都笑了。",
+    choices: [
+      { text: "将错就错", effects: { charm: 5, happy: 4 }, result: "你将错就错，说'同学你好'，考官笑了，气氛轻松了，你超常发挥。" },
+      { text: "道歉重来", effects: { charm: 3, happy: -1 }, result: "你道歉重来，考官说没事，你稳住心态，正常发挥，通过了。" },
+      { text: "破罐破摔", effects: { happy: -3 }, result: "你破罐破摔，讲得磕磕绊绊，没过，下次再战。" },
+    ] },
+  { id: "club-interview", title: "社团面试", text: "社团面试，学长问你'有什么特长'，你脱口而出'能吃'，全场安静了三秒。",
+    choices: [
+      { text: "展开说说", effects: { charm: 6, happy: 5 }, result: "你展开说说，说自己是干饭团团长，能带动气氛，学长笑了，让你过了。" },
+      { text: "换个答案", effects: { charm: 3, happy: 2 }, result: "你换了个答案，说自己会剪视频，学长点点头，也让你过了。" },
+      { text: "转身就走", effects: { happy: -2 }, result: "你转身就走，觉得这个社团不适合你，学长在后面喊'同学别走'。" },
+    ] },
+  { id: "club-quit", title: "退社", text: "社团天天开会，活动没几个，会开了不少。你决定退社，部长说'你再想想'，你想了，想好了。",
+    choices: [
+      { text: "坚决退", effects: { happy: 6, charm: -2 }, result: "你坚决退了，时间回来了，你躺在床上，觉得退社是今年最正确的决定。" },
+      { text: "再待待", effects: { happy: -1, charm: 3 }, result: "你再待待，部长给你安排了个闲职，不用开会，偶尔帮忙，挺好。" },
+      { text: "转幕后", effects: { happy: 4, iq: 2 }, result: "你转幕后了，不用抛头露面，做点技术活，乐得清闲。" },
+    ] },
+  { id: "flyer-job", title: "发传单兼职", text: "你去发传单，站在路口，见人就递。站了一天，挣了 80 块，腿断了，脸笑僵了。",
+    choices: [
+      { text: "再接再厉", effects: { money: 80, health: -3, happy: -2 }, result: "你再接再厉，干了一周，挣了 500 块，觉得钱真难挣。" },
+      { text: "就干一天", effects: { money: 80, happy: 1 }, result: "你就干一天，体验生活，80 块买了顿好的，犒劳自己。" },
+      { text: "介绍给室友", effects: { happy: 3 }, rel: { aqiang: 3 }, result: "你介绍给室友，他去了半天就跑了，说'这钱我挣不了'，你们都笑了。" },
+    ] },
+  { id: "scam-call", title: "刷单骗局", text: "有个'刷单'兼职，日入 300，先垫付 500。你差点就信了，手指已经放在转账键上了。",
+    choices: [
+      { text: "悬崖勒马", effects: { iq: 4, happy: 3 }, result: "你悬崖勒马，查了一下，全是骗局，你保住了 500 块，保住了智商。" },
+      { text: "问学长", effects: { iq: 3, happy: 2 }, rel: { xuezhang: 4 }, result: "你问学长，他说'天上不会掉馅饼'，你恍然大悟，请他喝了杯奶茶。" },
+      { text: "转了500", effects: { money: -500, happy: -8 }, result: "你转了 500，对方消失了。你报了警，钱没回来，买了个教训，贵的教训。" },
+    ] },
+  { id: "crush-seat", title: "暗恋三年", text: "你暗恋一个人，每次上课都坐她后面。三年了，没说过一句话，连她叫什么都是听别人说的。",
+    choices: [
+      { text: "表白", effects: { charm: 6, happy: 8 }, result: "你表白了，她说'我知道你坐我后面三年了'，你们在一起了，宿舍都惊了。" },
+      { text: "继续暗恋", effects: { happy: -2, charm: 1 }, result: "你继续暗恋，毕业了也没说，这段暗恋成了你心里的秘密，挺好。" },
+      { text: "要微信", effects: { charm: 4, happy: 5 }, result: "你要了微信，先从朋友做起，不急，三年都等了，不差这一会儿。" },
+    ] },
+  { id: "couple-show", title: "食堂秀恩爱", text: "食堂里一对情侣互相喂饭，你端着餐盘，默默走开，找了个角落坐下。",
+    choices: [
+      { text: "吃自己的", effects: { happy: 2 }, result: "你吃自己的，饭还是香的，单身有单身的好，不用喂饭。" },
+      { text: "拍照发群", effects: { happy: 5 }, result: "你拍照发到宿舍群，群里一片'杀狗'之声，你成了群里的英雄。" },
+      { text: "拼桌", effects: { charm: 4, happy: 4 }, result: "你拼桌了，和他们聊了起来，发现人挺好，还加了微信，多了个朋友。" },
+    ] },
+  { id: "breakup-rain", title: "朋友分手", text: "朋友分手了，拉着你喝酒。你陪他坐到半夜，听他骂了三个小时前任。",
+    choices: [
+      { text: "陪他喝", effects: { happy: -2, health: -2, charm: 4 }, result: "你陪他喝，他喝多了，抱着你哭，你说'都会过去的'，他睡着了。" },
+      { text: "开导他", effects: { charm: 5, happy: 3 }, result: "你开导他，从'她不值得'讲到'你值得更好的'，他听进去了，请你吃了顿饭。" },
+      { text: "带他打游戏", effects: { happy: 5 }, result: "你带他打游戏，连赢五把，他笑了，说'游戏比恋爱靠谱'，你们都笑了。" },
+    ] },
+  { id: "parents-visit", title: "父母突然来访", text: "你妈突然说要来学校，你连夜收拾宿舍，藏起了所有'违禁品'，宿舍从来没这么干净过。",
+    choices: [
+      { text: "隆重接待", effects: { happy: 6, money: -200, charm: 3 }, result: "你隆重接待，带他们吃好吃的，你妈说'学校挺好'，你爸偷偷塞给你 500 块。" },
+      { text: "简单看看", effects: { happy: 4 }, result: "你简单带他们看看，你妈检查了你的柜子，说'还行'，这是最高评价。" },
+      { text: "让室友帮忙", effects: { happy: 4 }, rel: { aqiang: 5 }, result: "你让室友帮忙打掩护，室友们超配合，你妈说'你室友真不错'，你们都笑了。" },
+    ] },
+  { id: "money-month-end", title: "月底吃土", text: "月底了，饭卡里只剩 3 块钱。你看着食堂的窗口，陷入了沉思。",
+    choices: [
+      { text: "室友接济", effects: { happy: 4 }, rel: { aqiang: 5 }, result: "室友接济了你一桶泡面，还加了根肠，你说'苟富贵，勿相忘'。" },
+      { text: "找爸妈", effects: { money: 500, happy: -1 }, result: "你找爸妈要了 500，你妈说'省着点花'，你说明白，但下个月还这样。" },
+      { text: "硬扛", effects: { health: -3, happy: -2, iq: 2 }, result: "你硬扛，啃了三天馒头，瘦了两斤，悟出了'钱要省着花'的道理。" },
+    ] },
+  { id: "wrong-dorm", title: "走错宿舍", text: "你走错宿舍了，推开门，是个陌生人。两个人对视了三秒，空气凝固了。",
+    choices: [
+      { text: "道歉退出", effects: { charm: 3, happy: 2 }, result: "你道歉退出，他说没事，你关上门，靠在墙上笑了半天。" },
+      { text: "聊两句", effects: { charm: 5, happy: 4 }, result: "你聊了两句，发现是老乡，加了微信，多了个朋友，走错门走出了缘分。" },
+      { text: "装作查寝", effects: { happy: 6, charm: -2 }, result: "你装作查寝，说'卫生不错'，他愣了，你转身就跑，身后传来笑声。" },
+    ] },
+  { id: "wechat-mistake", title: "微信发错群", text: "你在宿舍群里吐槽老师，结果发到了班级大群。撤回已经来不及了，老师也在群里。",
+    choices: [
+      { text: "装死", effects: { happy: -4, charm: -3 }, result: "你装死，群里安静了三分钟，老师发了个'呵呵'，你一晚上没睡好。" },
+      { text: "道歉", effects: { charm: 2, happy: -2 }, result: "你道歉，说发错了，老师说'下不为例'，你发誓再也不在群里吐槽。" },
+      { text: "将错就错", effects: { happy: 3, charm: 3 }, result: "你将错就错，说'老师我这是夸你呢'，全班都笑了，老师也笑了，化险为夷。" },
+    ] },
 ];
 
 // ---- v1.1：随机小事（每学期在大事件后出现 2 件，短平快，丰富日常）----
@@ -2315,6 +2496,247 @@ const MICRO_EVENTS = [
     { text: "待会儿", effects: { happy: 4 }, result: "你待了一会儿，安静真好，心情也平静了。" },
     { text: "带本书去", effects: { iq: 2, happy: 3 }, result: "你带了本书去，看了一下午，收获满满。" },
   ] },
+  // v1.10 新增：60 个微事件（m201–m260）
+  { id: "m201", text: "早八前买了包子，边走边吃，差点迟到，但包子真香。", choices: [
+    { text: "下次早点", effects: { happy: 2 }, result: "你决定下次早点，但你知道，下次还这样。" },
+    { text: "挺好", effects: { happy: 3 }, result: "挺好，包子配早八，绝配。" },
+  ] },
+  { id: "m202", text: "食堂出了新菜，黑暗料理，第一个吃的人成了勇士。", choices: [
+    { text: "当勇士", effects: { happy: 4, health: -1 }, result: "你当了勇士，味道一言难尽，但你吃完了，勇士就是勇士。" },
+    { text: "看看", effects: { happy: 1 }, result: "你看看，决定让勇士先上，你殿后。" },
+  ] },
+  { id: "m203", text: "奶茶第二杯半价，你拉上了室友，两个人喝到撑。", choices: [
+    { text: "值", effects: { money: -20, happy: 5 }, result: "值，第二杯半价，不喝不是人。" },
+    { text: "下次", effects: { happy: 1 }, result: "你说下次，室友说'每次都说下次'。" },
+  ] },
+  { id: "m204", text: "水果店降价，你买了一堆，便宜到不敢相信。", choices: [
+    { text: "囤", effects: { money: -30, happy: 5, health: 2 }, result: "你囤了，宿舍成了水果摊，维生素自由了。" },
+    { text: "适量", effects: { money: -15, happy: 3 }, result: "你适量买了点，够吃就行，不浪费。" },
+  ] },
+  { id: "m205", text: "深夜烧烤摊，香味飘进宿舍，你没忍住，下楼了。", choices: [
+    { text: "吃", effects: { money: -40, happy: 7 }, result: "你吃了，烧烤配啤酒，深夜的快乐就是这么简单。" },
+    { text: "忍", effects: { happy: -2 }, result: "你忍了，但香味一直在，忍得好辛苦。" },
+  ] },
+  { id: "m206", text: "食堂突然停电，黑灯瞎火，你摸黑吃完了饭。", choices: [
+    { text: "刺激", effects: { happy: 3 }, result: "刺激，黑灯瞎火吃饭，别有一番风味。" },
+    { text: "等电", effects: { happy: -1 }, result: "你等电，等了十分钟，饭凉了。" },
+  ] },
+  { id: "m207", text: "抢到个大额外卖红包，今天可以加餐了。", choices: [
+    { text: "加餐", effects: { money: -10, happy: 6 }, result: "你加餐了，红包真香，省了不少。" },
+    { text: "存着", effects: { happy: 2 }, result: "你存着，红包会过期，但你决定赌一把。" },
+  ] },
+  { id: "m208", text: "室友给你带了饭，你感动得差点哭出来。", choices: [
+    { text: "谢谢", effects: { happy: 5 }, rel: { aqiang: 3 }, result: "你谢谢他，他说'小事'，兄弟就是兄弟。" },
+    { text: "回请", effects: { money: -20, happy: 5 }, result: "你回请了他，有来有往，感情更好了。" },
+  ] },
+  { id: "m209", text: "今天食堂阿姨手不抖了，肉给得足足的，你受宠若惊。", choices: [
+    { text: "谢谢阿姨", effects: { happy: 5, charm: 2 }, result: "你谢谢阿姨，她笑得合不拢嘴，说'小伙子嘴真甜'。" },
+    { text: "默默吃", effects: { happy: 4 }, result: "你默默吃，肉多就是幸福，简单直接。" },
+  ] },
+  { id: "m210", text: "泡面出了新口味，你买来尝尝，味道还行。", choices: [
+    { text: "不错", effects: { money: -5, happy: 3 }, result: "不错，新口味可以，泡面界又有新贵了。" },
+    { text: "一般", effects: { happy: 1 }, result: "一般，还是经典款好吃，创新有风险。" },
+  ] },
+  { id: "m211", text: "睡过头错过早餐，饿到中午，肚子咕咕叫。", choices: [
+    { text: "点外卖", effects: { money: -20, happy: 3 }, result: "你点外卖，提前吃午饭，饿过劲反而吃不多。" },
+    { text: "忍到中午", effects: { happy: -2, health: -1 }, result: "你忍到中午，中午干了两份饭，补回来了。" },
+  ] },
+  { id: "m212", text: "有人插队，你说了他一句，他瞪了你一眼，但还是排后面去了。", choices: [
+    { text: "干得漂亮", effects: { happy: 4, charm: 2 }, result: "干得漂亮，排队的人都给你点赞，正义虽迟但到。" },
+    { text: "算了", effects: { happy: -1 }, result: "你算了，多一事不如少一事，但心里不爽。" },
+  ] },
+  { id: "m213", text: "和室友拼单点外卖，省了配送费，还凑了满减。", choices: [
+    { text: "划算", effects: { money: -15, happy: 4 }, result: "划算，拼单就是省，数学好的都省钱。" },
+    { text: "下次", effects: { happy: 2 }, result: "你说下次还拼，室友说'必须的'。" },
+  ] },
+  { id: "m214", text: "买的水果坏了一个，心疼，扔了可惜，吃了怕坏肚子。", choices: [
+    { text: "扔了", effects: { happy: -1, money: -5 }, result: "你扔了，心疼三秒，长痛不如短痛。" },
+    { text: "削掉坏的", effects: { happy: 2 }, result: "你削掉坏的吃了，没事，省了。" },
+  ] },
+  { id: "m215", text: "半夜饿了，煮了包泡面，香味把室友香醒了。", choices: [
+    { text: "分他一口", effects: { happy: 4 }, rel: { aqiang: 3 }, result: "你分他一口，他感动了，半夜的泡面是真香。" },
+    { text: "自己吃", effects: { happy: 3 }, result: "你自己吃，他幽怨地看着你，你说'下次给你煮'。" },
+  ] },
+  { id: "m216", text: "你常吃的那家涨价了，贵了两块，你的钱包在滴血。", choices: [
+    { text: "继续吃", effects: { money: -2, happy: 1 }, result: "你继续吃，两块钱，忍了，好吃就行。" },
+    { text: "换一家", effects: { happy: 2 }, result: "你换了一家，便宜两块，味道也不错，因祸得福。" },
+  ] },
+  { id: "m217", text: "超市有免费试吃，你吃了三轮，营业员认识你了。", choices: [
+    { text: "值", effects: { happy: 4 }, result: "值，试吃吃到饱，晚饭都省了。" },
+    { text: "不好意思", effects: { happy: 2 }, result: "你不好意思，第四轮没去，见好就收。" },
+  ] },
+  { id: "m218", text: "室友发了奖学金，请全宿舍吃饭，你敞开吃。", choices: [
+    { text: "恭喜", effects: { happy: 6 }, rel: { aqiang: 4 }, result: "你恭喜他，他说'下次就是你'，你信了。" },
+    { text: "下次我请", effects: { happy: 5 }, result: "你说下次你请，他说'我记下了'，压力给到你了。" },
+  ] },
+  { id: "m219", text: "去晚了，食堂关门了，你看着黑灯的窗口，点了外卖。", choices: [
+    { text: "外卖", effects: { money: -25, happy: 3 }, result: "你点外卖，虽然贵点，但不用饿肚子。" },
+    { text: "泡面", effects: { money: -5, happy: 2 }, result: "你吃泡面，宿舍常备，永远的神。" },
+  ] },
+  { id: "m220", text: "早八前买了杯咖啡，续命，喝完觉得自己能考清华。", choices: [
+    { text: "精神", effects: { money: -15, happy: 4, iq: 2 }, result: "你精神了，咖啡因是早八人的命。" },
+    { text: "心疼钱", effects: { happy: -1 }, result: "你心疼钱，15 块，心在滴血，但精神了。" },
+  ] },
+  { id: "m221", text: "早八点名，你刚好赶到，老师看了你一眼，没说什么。", choices: [
+    { text: "好险", effects: { happy: 3 }, result: "好险，差点就没了，早八人的日常就是极限。" },
+    { text: "下次早点", effects: { happy: 1 }, result: "你说下次早点，但你知道，下次还这样。" },
+  ] },
+  { id: "m222", text: "上课睡着了，被同桌推醒，口水流了一桌子。", choices: [
+    { text: "尴尬", effects: { happy: -1 }, result: "你尴尬，擦了擦口水，假装在思考人生。" },
+    { text: "继续睡", effects: { happy: 2, iq: -1 }, result: "你继续睡，反正也听不懂，不如睡觉。" },
+  ] },
+  { id: "m223", text: "老师拖堂十分钟，全班怨声载道，但没人敢走。", choices: [
+    { text: "忍", effects: { happy: -2 }, result: "你忍，拖堂是老师的特权，学生的宿命。" },
+    { text: "记下来", effects: { iq: 2, happy: 1 }, result: "你记下来，拖堂讲的都是重点，考试要考。" },
+  ] },
+  { id: "m224", text: "选修课老师不点名，你决定下次再去，这次先溜。", choices: [
+    { text: "溜", effects: { happy: 3, iq: -1 }, result: "你溜了，回宿舍打游戏，快乐是真的快乐。" },
+    { text: "留下", effects: { iq: 2, happy: 1 }, result: "你留下，听了听，还挺有意思，没白来。" },
+  ] },
+  { id: "m225", text: "图书馆居然有座，你赶紧占了，觉得自己是天选之子。", choices: [
+    { text: "学习", effects: { iq: 4, happy: 3 }, result: "你学习，效率奇高，有座的图书馆就是天堂。" },
+    { text: "发朋友圈", effects: { happy: 3 }, result: "你发朋友圈，'图书馆有座'，评论区一片羡慕。" },
+  ] },
+  { id: "m226", text: "自习室很安静，你学了一下午，效率奇高，爱上学习。", choices: [
+    { text: "继续", effects: { iq: 5, happy: 4 }, result: "你继续，学到天黑，觉得自己无所不能。" },
+    { text: "休息", effects: { happy: 3, health: 2 }, result: "你休息，劳逸结合，学霸都是会休息的。" },
+  ] },
+  { id: "m227", text: "借了学霸的笔记，字迹工整，重点清晰，爱了爱了。", choices: [
+    { text: "谢谢", effects: { iq: 3, happy: 3 }, result: "你谢谢她，她说'客气啥'，学霸就是大方。" },
+    { text: "请喝奶茶", effects: { money: -15, happy: 4, charm: 2 }, result: "你请喝奶茶，她开心，你也开心，知识是甜的。" },
+  ] },
+  { id: "m228", text: "作业明天交，你今晚赶工，咖啡已经泡上了。", choices: [
+    { text: "赶", effects: { iq: 3, happy: -2, health: -2 }, result: "你赶完了，凌晨两点，交了，睡了，值了。" },
+    { text: "抄", effects: { happy: 1, iq: -1 }, result: "你抄了室友的，交了，心虚，但交了。" },
+  ] },
+  { id: "m229", text: "考试周，图书馆通宵，你也加入了，咖啡续命。", choices: [
+    { text: "卷", effects: { iq: 5, credits: 3, health: -4, happy: -2 }, result: "你卷，通宵三天，考完了，感觉身体被掏空，但过了。" },
+    { text: "睡", effects: { health: 3, happy: 2, iq: -1 }, result: "你睡，睡好了去考，考得还不错，睡眠是最好的复习。" },
+  ] },
+  { id: "m230", text: "成绩出来了，比预想的好，你松了口气，没白卷。", choices: [
+    { text: "开心", effects: { happy: 6 }, result: "你开心，成绩是最好的回报，继续保持。" },
+    { text: "低调", effects: { happy: 4, charm: 2 }, result: "你低调，但嘴角压不住，室友都看出来了。" },
+  ] },
+  { id: "m231", text: "有一门挂了，得补考，你郁闷，开始怀疑人生。", choices: [
+    { text: "补考", effects: { iq: 3, happy: -3 }, result: "你准备补考，这次认真了，过了，虚惊一场。" },
+    { text: "摆烂", effects: { happy: -1 }, result: "你摆烂，补考再说，船到桥头自然直。" },
+  ] },
+  { id: "m232", text: "奖学金公示，你在名单上，你开心得跳起来。", choices: [
+    { text: "请客", effects: { money: -200, happy: 8 }, result: "你请客，全宿舍都为你高兴，奖学金就该这么花。" },
+    { text: "存着", effects: { money: 500, happy: 5 }, result: "你存着，奖学金是荣誉，也是钱，存着踏实。" },
+  ] },
+  { id: "m233", text: "四级考了 425，刚过线，多一分浪费，少一分重考，完美。", choices: [
+    { text: "万幸", effects: { happy: 6 }, result: "你万幸，425 分，运气也是实力的一部分。" },
+    { text: "再刷", effects: { iq: 3, happy: -1 }, result: "你决定再刷个高分，下次一定。" },
+  ] },
+  { id: "m234", text: "计算机二级过了，证书到手，又多了一个证。", choices: [
+    { text: "开心", effects: { happy: 4, iq: 2 }, result: "你开心，证多不压身，简历又厚了一点。" },
+    { text: "继续考", effects: { iq: 3, happy: 2 }, result: "你继续考，下一个，一级一级往上爬。" },
+  ] },
+  { id: "m235", text: "老师提问，你答上来了，全班为你鼓掌，有面子。", choices: [
+    { text: "淡定", effects: { happy: 5, charm: 3 }, result: "你淡定，坐下，假装这很平常，其实心里乐开花。" },
+    { text: "继续", effects: { iq: 2, happy: 3 }, result: "你继续听课，状态来了，一节课都神采奕奕。" },
+  ] },
+  { id: "m236", text: "小组讨论，你说了个好点子，被采纳了，组员都夸你。", choices: [
+    { text: "开心", effects: { happy: 4, charm: 3 }, result: "你开心，被认可的感觉真好，继续加油。" },
+    { text: "低调", effects: { happy: 3 }, result: "你低调，但组长记下了你的功劳。" },
+  ] },
+  { id: "m237", text: "实验课，你的实验一次成功，老师让你给全班演示。", choices: [
+    { text: "演示", effects: { iq: 4, happy: 5, charm: 3 }, result: "你演示，成功了，全班鼓掌，你成了实验课的明星。" },
+    { text: "紧张", effects: { happy: -1 }, result: "你紧张，手抖，但还是成功了，虚惊一场。" },
+  ] },
+  { id: "m238", text: "论文写完了，查重过了，你解放了，感觉重获新生。", choices: [
+    { text: "狂欢", effects: { happy: 8 }, result: "你狂欢，论文是大学生最后的劫，渡过了。" },
+    { text: "平静", effects: { happy: 5 }, result: "你平静，写完的那一刻，反而很平静，成长了。" },
+  ] },
+  { id: "m239", text: "答辩通过了，毕业稳了，你走出教室，阳光正好。", choices: [
+    { text: "开心", effects: { happy: 7 }, result: "你开心，四年没白读，毕业快乐。" },
+    { text: "感慨", effects: { happy: 5 }, result: "你感慨，时间过得真快，一转眼就毕业了。" },
+  ] },
+  { id: "m240", text: "选课系统崩了，你没抢到想选的课，只能捡漏。", choices: [
+    { text: "捡漏", effects: { happy: 2 }, result: "你捡漏，捡了个还不错的，因祸得福。" },
+    { text: "郁闷", effects: { happy: -2 }, result: "你郁闷，系统崩了，人也崩了。" },
+  ] },
+  { id: "m241", text: "室友打呼，你戴上了耳塞，世界安静了。", choices: [
+    { text: "睡", effects: { health: 3, happy: 2 }, result: "你睡了，耳塞是宿舍神器，发明的人该拿诺奖。" },
+    { text: "录下来", effects: { happy: 4 }, result: "你录下来，第二天放给他听，他不信那是他的呼噜。" },
+  ] },
+  { id: "m242", text: "宿舍停电了，你们点蜡烛聊天，聊到半夜。", choices: [
+    { text: "聊天", effects: { happy: 6 }, rel: { aqiang: 4 }, result: "你们聊天，从高中聊到未来，停电的夜晚格外真诚。" },
+    { text: "睡觉", effects: { health: 3, happy: 2 }, result: "你睡觉，没电没网，早睡早起，难得。" },
+  ] },
+  { id: "m243", text: "宿管查寝，你们赶紧收拾，十分钟把宿舍变得像样板间。", choices: [
+    { text: "通过", effects: { happy: 3 }, result: "你们通过了，宿管说'不错'，你们相视一笑。" },
+    { text: "被批", effects: { happy: -2 }, result: "你们被批了，说阳台有灰，你们说明天就擦。" },
+  ] },
+  { id: "m244", text: "宿舍聚餐，点了火锅，热气腾腾，热闹极了。", choices: [
+    { text: "吃", effects: { money: -50, happy: 7 }, rel: { aqiang: 4 }, result: "你们吃，火锅是宿舍的粘合剂，吃完感情更好了。" },
+    { text: "AA", effects: { money: -50, happy: 5 }, result: "你们 AA，谁也不欠谁，下次还聚。" },
+  ] },
+  { id: "m245", text: "室友吵架了，你劝了劝，两个人很快和好了。", choices: [
+    { text: "和事佬", effects: { charm: 4, happy: 3 }, result: "你当了和事佬，他们和好了，你说'都是兄弟'。" },
+    { text: "看戏", effects: { happy: 2 }, result: "你看戏，他们吵完自己和好了，你白担心了。" },
+  ] },
+  { id: "m246", text: "今天你生日，室友给你买了蛋糕，还瞒了你一天。", choices: [
+    { text: "感动", effects: { happy: 8 }, rel: { aqiang: 5 }, result: "你感动，吹蜡烛许愿，宿舍的生日比家里的还热闹。" },
+    { text: "请客", effects: { money: -100, happy: 7 }, result: "你请客，寿星请客，天经地义，大家都开心。" },
+  ] },
+  { id: "m247", text: "表白墙有人表白你，你害羞了，全宿舍都知道了。", choices: [
+    { text: "回应", effects: { charm: 5, happy: 6 }, result: "你回应了，聊了起来，说不定有故事。" },
+    { text: "装没看见", effects: { happy: 2 }, result: "你装没看见，但嘴角压不住，被表白总是开心的。" },
+  ] },
+  { id: "m248", text: "朋友脱单了，请你吃饭，狗粮管饱。", choices: [
+    { text: "祝福", effects: { happy: 5 }, result: "你祝福，吃了顿好的，还吃了狗粮，值了。" },
+    { text: "酸", effects: { happy: 2 }, result: "你酸，但还是祝福了，酸的是自己。" },
+  ] },
+  { id: "m249", text: "朋友失恋了，你陪他喝酒，听他骂前任。", choices: [
+    { text: "陪", effects: { charm: 3, happy: -1 }, result: "你陪他，他喝多了，你把他送回去，兄弟就是这样。" },
+    { text: "开导", effects: { charm: 4, happy: 2 }, result: "你开导他，他想开了，说'下一个更好'，你们都笑了。" },
+  ] },
+  { id: "m250", text: "家里安排相亲，你敷衍了一下，对方也敷衍了一下。", choices: [
+    { text: "应付", effects: { happy: 1 }, result: "你应付，相亲就是走过场，大家都懂。" },
+    { text: "拒绝", effects: { happy: 3 }, result: "你拒绝，说还小，家里说'不小了'，你笑。" },
+  ] },
+  { id: "m251", text: "周末去周边旅游了，山水不错，放松了一下。", choices: [
+    { text: "开心", effects: { money: -200, happy: 7, health: 2 }, result: "你开心，旅游是最好的充电，回来满血复活。" },
+    { text: "穷游", effects: { money: -100, happy: 5 }, result: "你穷游，省钱也开心，学生党有学生党的玩法。" },
+  ] },
+  { id: "m252", text: "看了部好电影，值回票价，出来还在回味。", choices: [
+    { text: "推荐", effects: { money: -40, happy: 5 }, result: "你推荐给朋友，好电影就该分享。" },
+    { text: "二刷", effects: { money: -40, happy: 6 }, result: "你二刷，好电影值得二刷，细节更多了。" },
+  ] },
+  { id: "m253", text: "开黑赢了，连赢五把，心情好到飞起。", choices: [
+    { text: "继续", effects: { happy: 6, iq: -1 }, result: "你继续，赢到不想睡，快乐就是这么简单。" },
+    { text: "见好就收", effects: { happy: 4 }, result: "你见好就收，赢了就跑，快乐且理智。" },
+  ] },
+  { id: "m254", text: "喜欢的明星开演唱会，你抢到了票，激动得睡不着。", choices: [
+    { text: "去", effects: { money: -500, happy: 10 }, result: "你去了，现场太燃了，嗓子喊哑了，值了。" },
+    { text: "太贵", effects: { happy: -2 }, result: "你觉得太贵，没去，在家看直播，也挺好。" },
+  ] },
+  { id: "m255", text: "运动会，你参加了跑步，拿了名次，全班为你欢呼。", choices: [
+    { text: "开心", effects: { happy: 6, health: 3, charm: 3 }, result: "你开心，拿名次的感觉真好，继续保持。" },
+    { text: "累", effects: { health: -2, happy: 4 }, result: "你累，但值了，名次是拼出来的。" },
+  ] },
+  { id: "m256", text: "社团活动，你认识了新朋友，聊得很投缘。", choices: [
+    { text: "加微信", effects: { happy: 4, charm: 3 }, result: "你加了微信，多了个朋友，社团真好。" },
+    { text: "下次", effects: { happy: 2 }, result: "你说下次再聊，来日方长。" },
+  ] },
+  { id: "m257", text: "兼职发工资了，你看着到账短信，笑了。", choices: [
+    { text: "开心", effects: { money: 500, happy: 6 }, result: "你开心，自己挣的钱，花得踏实。" },
+    { text: "存着", effects: { money: 500, happy: 4 }, result: "你存着，钱要省着花，但开心是真的。" },
+  ] },
+  { id: "m258", text: "实习第一天，紧张，但顺利，前辈人很好。", choices: [
+    { text: "加油", effects: { iq: 3, happy: 4 }, result: "你加油，第一天顺利，接下来好好干。" },
+    { text: "紧张", effects: { happy: -1 }, result: "你紧张，但没人看出来，装得很像。" },
+  ] },
+  { id: "m259", text: "面试通过了，拿到 offer，你激动得手抖。", choices: [
+    { text: "开心", effects: { happy: 8, charm: 3 }, result: "你开心，offer 是对你四年的肯定，值了。" },
+    { text: "冷静", effects: { happy: 5 }, result: "你冷静，但嘴角压不住，继续加油。" },
+  ] },
+  { id: "m260", text: "毕业了，拍了毕业照，你看着照片，有点不舍。", choices: [
+    { text: "不舍", effects: { happy: 4 }, result: "你不舍，四年太快，但未来更值得期待。" },
+    { text: "向前看", effects: { happy: 6 }, result: "你向前看，毕业是新的开始，加油。" },
+  ] },
 ];
 // ---- v1.1：连锁剧情（15 条，每条 3 环；抽到第 1 环后，后续学期按顺序出第 2、3 环）----
 const CHAINS = [
@@ -2573,6 +2995,92 @@ const CHAINS = [
         { text: "传承", effects: { happy: 7, charm: 6 }, result: "你把经验传给了学弟学妹，志愿者精神一代代传下去。" },
       ] },
   ] },
+  // v1.10 新增：5 条连锁剧情
+  { id: "dorm-shop", title: "宿舍小卖部", parts: [
+    { text: "你发现宿舍楼买东西不方便，决定在宿舍开个小卖部，卖零食和日用品，室友们都入了股。",
+      choices: [
+        { text: "开干", effects: { money: -300, happy: 5, charm: 3 }, result: "你开干了，进了第一批货，宿舍成了小卖部，楼里都知道了。" },
+        { text: "先试试", effects: { money: -100, happy: 3 }, result: "你先试试，进了点零食，反响不错，决定扩大规模。" },
+      ] },
+    { text: "小卖部生意火爆，整层楼都来买。但宿管阿姨盯上你们了，说宿舍不能做生意。",
+      choices: [
+        { text: "转地下", effects: { money: 500, happy: 4, charm: -2 }, result: "你们转地下了，微信下单，送货上门，宿管抓不着，生意照样好。" },
+        { text: "收敛点", effects: { money: 200, happy: 2 }, result: "你们收敛了，只做熟客，虽然少了，但安全，不被抓。" },
+      ] },
+    { text: "小卖部干了一学期，你们分了红。虽然最后被宿管'招安'了，但你们成了宿舍的传奇。",
+      choices: [
+        { text: "分钱", effects: { money: 800, happy: 8, charm: 5 }, result: "你们分钱了，每人分了不少，这段经历比钱更值钱，简历上都能写一笔。" },
+        { text: "请客", effects: { money: 300, happy: 8 }, result: "你们请客，请全层楼喝奶茶，小卖部光荣退休，传奇落幕。" },
+      ] },
+  ] },
+  { id: "midnight-food", title: "深夜食堂探店", parts: [
+    { text: "你发现学校周边有很多深夜食堂，开到凌晨。决定做个探店计划，把它们全吃一遍。",
+      choices: [
+        { text: "开吃", effects: { money: -100, happy: 7 }, result: "你开吃了，第一家就惊艳了，深夜食堂的氛围，绝了。" },
+        { text: "拉上室友", effects: { money: -100, happy: 8 }, rel: { aqiang: 4 }, result: "你拉上室友，两个人吃遍深夜食堂，成了干饭搭子。" },
+      ] },
+    { text: "你连续探店一个月，成了半个美食博主。朋友圈的探店笔记，点赞越来越多。",
+      choices: [
+        { text: "继续", effects: { charm: 6, happy: 6, money: -200 }, result: "你继续，粉丝多了，有店家请你免费吃，探店成了事业。" },
+        { text: "收敛", effects: { happy: 4, health: 2 }, result: "你收敛了，体重涨了五斤，决定悠着点，好吃的慢慢吃。" },
+      ] },
+    { text: "你的探店笔记火了，有人找你合作。你成了校园美食博主，深夜食堂的传说。",
+      choices: [
+        { text: "接合作", effects: { money: 1000, charm: 7, happy: 8 }, result: "你接合作了，恰饭了，但恰的是真好吃的饭，快乐加倍。" },
+        { text: "纯分享", effects: { charm: 5, happy: 7 }, result: "你纯分享，不接广告，保持初心，朋友们更信你了。" },
+      ] },
+  ] },
+  { id: "kaoyan-buddy", title: "考研搭子", parts: [
+    { text: "你决定考研，在自习室找了个搭子。两个人约好，每天互相监督，谁先走谁请奶茶。",
+      choices: [
+        { text: "认真", effects: { iq: 4, happy: 4 }, result: "你们认真，互相监督，学习效率翻倍，搭子比一个人强多了。" },
+        { text: "先处处", effects: { happy: 3, charm: 3 }, result: "你们先处处，聊得来，学习也认真，搭子成了朋友。" },
+      ] },
+    { text: "备考进入白热化，你们互相鼓励，也互相吵架。昨天因为一道题，两个人冷战了一下午。",
+      choices: [
+        { text: "和好", effects: { happy: 5, iq: 3 }, result: "你们和好了，吵完反而更熟了，考研路上，有个人陪真好。" },
+        { text: "冷静", effects: { iq: 4, happy: 2 }, result: "你们冷静了，各学各的，但还是坐一起，搭子就是搭子。" },
+      ] },
+    { text: "你们都上岸了。查到录取的那天，两个人在自习室抱头痛哭，管理员都笑了。",
+      choices: [
+        { text: "庆祝", effects: { happy: 10, money: -200 }, result: "你们庆祝，吃了顿好的，考研搭子成了过命的交情，一辈子的朋友。" },
+        { text: "感慨", effects: { happy: 8, iq: 2 }, result: "你们感慨，备考的日子很苦，但有搭子，就不孤单，值了。" },
+      ] },
+  ] },
+  { id: "stall-business", title: "摆摊创业", parts: [
+    { text: "你决定摆摊，卖点小东西。进了货，选了夜市的位置，万事俱备，只等开张。",
+      choices: [
+        { text: "开张", effects: { money: -500, happy: 5 }, result: "你开张了，第一天就卖了不少，虽然辛苦，但看到钱，值了。" },
+        { text: "先调研", effects: { iq: 3, happy: 3 }, result: "你先调研，看看别人卖什么，找了个差异化的品类，开张即火。" },
+      ] },
+    { text: "摆摊遇到城管了，你推着车跑了三条街。生意好的时候一天能挣 500，差的时候 50。",
+      choices: [
+        { text: "打游击", effects: { money: 300, happy: 4, health: -2 }, result: "你打游击，和城管斗智斗勇，生意照样做，刺激。" },
+        { text: "找固定摊", effects: { money: -200, happy: 3 }, result: "你找了个固定摊，交了摊位费，合法了，安心了，生意也稳了。" },
+      ] },
+    { text: "摆摊干了一个学期，你挣了一笔钱。虽然辛苦，但你知道了钱是怎么挣的。",
+      choices: [
+        { text: "继续", effects: { money: 2000, happy: 7, charm: 5 }, result: "你继续，规模扩大了，还拉了室友入伙，成了校园小老板。" },
+        { text: "收摊", effects: { money: 1000, happy: 6 }, result: "你收摊，钱挣到了，经验也有了，这段经历比钱更值钱。" },
+      ] },
+  ] },
+  { id: "grad-trip", title: "毕业旅行攒钱", parts: [
+    { text: "你们决定毕业旅行，目的地定了，开始攒钱。每个人每月存 500，专款专用。",
+      choices: [
+        { text: "攒", effects: { money: -500, happy: 4 }, result: "你们攒，建了个群，每天打卡，仪式感拉满。" },
+        { text: "多攒点", effects: { money: -800, happy: 5 }, result: "你们多攒点，旅行基金越来越厚，期待值也越来越高。" },
+      ] },
+    { text: "攒钱的过程很省，吃了一个月泡面。但看着基金越来越多，觉得值了。",
+      choices: [
+        { text: "坚持", effects: { money: -500, happy: 5, health: -1 }, result: "你们坚持，基金够了，泡面没白吃，旅行在招手。" },
+        { text: "兼职", effects: { money: 500, happy: 4 }, result: "你们兼职，挣了点，基金更厚了，还能升级住宿。" },
+      ] },
+    { text: "你们出发了。毕业旅行很开心，照片拍了很多，回忆装了一行李箱。",
+      choices: [
+        { text: "尽兴", effects: { happy: 10, money: -1000 }, result: "你们尽兴，吃了好吃的，看了好风景，毕业旅行是最好的句号。" },
+        { text: "难忘", effects: { happy: 9 }, rel: { aqiang: 6 }, result: "你们难忘，这趟旅行，你们会记一辈子，兄弟也是一辈子。" },
+      ] },
+  ] },
 ];
 
 // ---- v1.1：成就（25 个；check(state, flags) 返回 true 即解锁）----
@@ -2759,6 +3267,70 @@ const YEAR_EVENTS = [
       { text: "拉钩", effects: { happy: 9, charm: 6 }, rel: { aqiang: 10 }, result: "你们拉钩约定，十年后不见不散，宿舍的情谊不会散。" },
       { text: "写下来", effects: { happy: 8, charm: 5 }, rel: { aqiang: 8 }, result: "你们写了下来，贴在宿舍墙上，十年后回来，第一眼就能看到。" },
       { text: "笑笑", effects: { happy: 5 }, result: "你们笑了笑，虽然没说什么，但心里都记住了这个约定。" },
+    ] },
+  // v1.10 新增：10 个分学年事件（大二 3、大三 4、大四 3）
+  // 大二
+  { id: "y2-major-choice", title: "选专业方向", text: "大二要选专业方向了。热门方向人满为患，冷门方向没人去，你纠结了。",
+    year: 2, choices: [
+      { text: "选热门", effects: { iq: 4, credits: 3, happy: -1 }, result: "你选了热门方向，竞争激烈，但资源多，你决定卷。" },
+      { text: "选冷门", effects: { iq: 3, happy: 4 }, result: "你选了冷门方向，人少，老师关注多，意外地舒服。" },
+      { text: "问导师", effects: { iq: 3, happy: 2 }, rel: { daoshi: 6 }, result: "你问导师，导师给了建议，你选了个适合自己的，他对你印象更好了。" },
+    ] },
+  { id: "y2-first-intern", title: "第一次实习", text: "大二暑假第一次实习，端茶倒水、打印文件，但你是真学到了职场的规矩。",
+    year: 2, choices: [
+      { text: "认真干", effects: { iq: 5, money: 800, happy: 3, charm: 3 }, result: "你认真干，带你的前辈夸你靠谱，实习证明闪闪发光。" },
+      { text: "混日子", effects: { money: 800, happy: 2 }, result: "你混日子，钱照拿，但没学到啥，简历上只能写'参与项目'。" },
+      { text: "多问", effects: { iq: 6, happy: 4, charm: 4 }, result: "你多问，前辈们都愿意教你，你学到了很多书本上没有的东西。" },
+    ] },
+  { id: "y2-club-leader", title: "社团骨干", text: "你在社团成了骨干，开会、带新、写策划，忙得飞起。部长说'能者多劳'，你说'我谢谢你'。",
+    year: 2, choices: [
+      { text: "扛起", effects: { charm: 7, happy: 4, iq: -2, health: -2 }, result: "你扛起来了，活动办得有声有色，你成了社团的顶梁柱。" },
+      { text: "推掉", effects: { happy: 3 }, result: "你推掉了，说学业为重，部长理解，轻松了，但少了个履历。" },
+      { text: "带新人", effects: { charm: 5, happy: 5 }, result: "你带新人，把活分出去，自己轻松了，还落了个'好学长'的名声。" },
+    ] },
+  // 大三
+  { id: "y3-crossroad", title: "大三岔路口", text: "大三了，考研、保研、找工作，三条路摆在面前。室友们都选了，你还没想好。",
+    year: 3, choices: [
+      { text: "考研", effects: { iq: 5, credits: 4, happy: -3 }, result: "你选了考研，买了资料，定了目标，接下来是一年硬仗。" },
+      { text: "保研", effects: { iq: 4, credits: 5, happy: 2 }, result: "你选了保研，开始刷绩点、搞科研，目标是本校。" },
+      { text: "找工作", effects: { charm: 5, happy: 4, iq: 2 }, result: "你选了找工作，开始投实习、练面试，秋招见。" },
+    ] },
+  { id: "y3-hard-course", title: "杀手课", text: "大三的专业课是全校闻名的'杀手课'，挂科率 30%。老师说'我这门课，及格就是优秀'。",
+    year: 3, choices: [
+      { text: "死磕", effects: { iq: 7, credits: 5, health: -4, happy: -3 }, result: "你死磕，熬了无数个夜，考了 85，全班前三，老师记住你了。" },
+      { text: "求稳", effects: { iq: 4, credits: 3, happy: 1 }, result: "你求稳，不求高分，但求不挂，考了 72，万幸。" },
+      { text: "组学习小组", effects: { iq: 5, happy: 4, charm: 3 }, result: "你组了学习小组，抱团取暖，全过了，还成了朋友。" },
+    ] },
+  { id: "y3-intern-formal", title: "正式实习", text: "大三的实习是正经的，有工资、有导师、有项目。你第一次感受到了职场，第一次拿到了'工资'。",
+    year: 3, choices: [
+      { text: "好好表现", effects: { iq: 6, money: 2000, charm: 5, happy: 4 }, result: "你好好表现，导师夸你，转正机会留给你了，简历镀金。" },
+      { text: "摸鱼", effects: { money: 2000, happy: 3 }, result: "你摸鱼，钱拿了，活没干多少，导师对你印象一般。" },
+      { text: "多学", effects: { iq: 7, happy: 5 }, result: "你多学，把项目吃透了，写进了简历，面试的时候有得聊。" },
+    ] },
+  { id: "y3-kaoyan-room", title: "考研自习室", text: "你决定考研，抢到了考研自习室的座位。从今天起，你的座位就是你的阵地。",
+    year: 3, choices: [
+      { text: "制定计划", effects: { iq: 5, credits: 3, happy: -2 }, result: "你制定了计划，每天 12 小时，雷打不动，稳扎稳打。" },
+      { text: "找搭子", effects: { charm: 4, iq: 3, happy: 4 }, result: "你找了个搭子，两个人互相监督，学习不孤单，效率翻倍。" },
+      { text: "先试试", effects: { iq: 3, happy: 2 }, result: "你先试试，适应了节奏，觉得考研也没那么可怕。" },
+    ] },
+  // 大四
+  { id: "y4-autumn-recruit", title: "秋招", text: "秋招开始了。宣讲会、笔试、面试，你投了几十份简历，邮箱天天刷，手机不敢静音。",
+    year: 4, choices: [
+      { text: "海投", effects: { charm: 4, happy: -3, iq: 2 }, result: "你海投，笔试面到吐，终于拿了几个 offer，有选择了。" },
+      { text: "精准投", effects: { iq: 5, happy: 2 }, result: "你精准投，只投心仪的，准备充分，面试通过率高。" },
+      { text: "先实习转正", effects: { happy: 4, money: 1000 }, result: "你先实习转正，秋招压力小了，有保底，心态稳了。" },
+    ] },
+  { id: "y4-thesis-defense", title: "毕业论文答辩", text: "答辩那天，你紧张得手心出汗。评委老师坐在下面，你的 PPT 放了 20 页。",
+    year: 4, choices: [
+      { text: "稳住", effects: { iq: 5, credits: 4, happy: 5 }, result: "你稳住了，讲得清楚，答得利落，评委点头，优秀论文。" },
+      { text: "紧张", effects: { iq: 2, happy: -2 }, result: "你紧张，磕磕绊绊，但内容扎实，评委说'内容不错，下次自信点'，过了。" },
+      { text: "超常发挥", effects: { iq: 6, charm: 4, happy: 7 }, result: "你超常发挥，讲得评委都笑了，全场鼓掌，你成了答辩的传说。" },
+    ] },
+  { id: "y4-farewell", title: "毕业散伙", text: "毕业聚餐，全宿舍都喝多了。说了很多平时不会说的话，平时不对付的两个人抱头痛哭。",
+    year: 4, choices: [
+      { text: "喝", effects: { happy: 8, health: -3 }, rel: { aqiang: 8 }, result: "你喝了，喝多了，说了很多心里话，阿强说'一辈子兄弟'，你们都哭了。" },
+      { text: "拍照", effects: { happy: 7, charm: 3 }, result: "你拍照，拍了很多，合影里每个人都笑着，这些照片会留一辈子。" },
+      { text: "写信", effects: { happy: 6, charm: 5 }, result: "你写信，给每个人写了一封，四年的话都在信里，他们看哭了。" },
     ] },
 ];
 
