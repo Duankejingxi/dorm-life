@@ -3096,7 +3096,7 @@ const ACHIEVEMENTS = [
   { id: "survivor", name: "🎓 顺利毕业", desc: "打满 8 个学期正常毕业", check: (s, f) => !!f.completedGame },
   { id: "explorer", name: "🗺️ 见多识广", desc: "一局内遇到 30 个不同事件", check: (s, f) => (f.eventsSeen || 0) >= 30 },
   { id: "collector", name: "🏆 结局收集者", desc: "解锁 10 个结局", check: (s, f) => (f.endingsCount || 0) >= 10 },
-  { id: "master", name: "👑 全结局", desc: "解锁全部 56 个结局", check: (s, f) => (f.endingsCount || 0) >= 56 },
+  { id: "master", name: "👑 全结局", desc: "解锁全部 60 个结局", check: (s, f) => (f.endingsCount || 0) >= 60 },
   { id: "gamer", name: "🎮 游戏达人", desc: "一局内打游戏 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.game >= 4) },
   { id: "worker", name: "💼 打工皇帝", desc: "一局内打工 4 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.work >= 4) },
   { id: "bookworm", name: "📖 书虫", desc: "一局内学习 6 次以上", check: (s, f) => (f.actionCounts && f.actionCounts.study >= 6) },
@@ -3457,6 +3457,15 @@ const ENDINGS = [
     desc: "你当了四年宿舍长，宿舍被你管得井井有条，还拿了校级文明宿舍。毕业了，室友们都说，没有你这个宿舍长，大学得少一半快乐。" },
   { id: "campus-couple", title: "校园情侣", emoji: "💑",
     desc: "你和 TA 从表白到毕业，感情越来越稳定。毕业那天，你们一起拍了毕业照，约定以后每年都回来看看，校园情侣修成正果。" },
+  // v1.11：4 个新结局（电竞教练、校园主持人、宿舍创业、剧本杀店长）
+  { id: "esports-coach", title: "电竞教练", emoji: "🎮",
+    desc: "你在电竞社从队员打成了教练，带着学弟学妹拿了高校联赛冠军。毕业了，俱乐部直接签你当青训教练，电竞这条路你走通了。" },
+  { id: "campus-host", title: "校园主持人", emoji: "🎤",
+    desc: "你主持了四年大大小小的晚会和比赛，从迎新晚会到毕业典礼，话筒一拿，全场都听你的。毕业了，电视台向你抛来了橄榄枝。" },
+  { id: "dorm-startup", title: "宿舍创业", emoji: "💡",
+    desc: "你和室友在宿舍里捣鼓出了一个小项目，拿了创业大赛的奖，还拉到了第一笔投资。毕业了，你们没找工作，直接把公司开了起来。" },
+  { id: "script-host", title: "剧本杀店长", emoji: "🕵️",
+    desc: "你从剧本杀爱好者变成了店长，店里天天爆满，你带的本场场封神。毕业了，你开了自己的第二家店，剧本杀成了你的事业。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -3479,6 +3488,8 @@ function judgeEnding(s) {
   // v1.5：辩论冠军（智力高、魅力高、学分 50–59，卡在保研线下但辩论出彩）、交换生（智力 80–84、学分高、有点钱）
   // 放在考研判定之前，不然会被考研上岸抢走
   if (s.iq >= 85 && s.charm >= 80 && s.credits >= 50 && s.credits < 60) return "debate-champion";
+  // v1.11：校园主持人（魅力 85+、人脉 75+、学分 50+、智力 65–74；放在交换生之前，不然会被抢走）
+  if (s.charm >= 85 && (s.connections || 0) >= 75 && s.credits >= 50 && s.iq >= 65 && s.iq < 75) return "campus-host";
   if (s.iq >= 80 && s.iq < 85 && s.credits >= 65 && s.money >= 2000 && s.money < 5000) return "exchange-student";
   // v1.7：学生会主席（人脉够广、魅力够高、学分够、智力 75–84，智力 85+ 会被保研抢走）
   if ((s.connections || 0) >= 85 && s.charm >= 80 && s.credits >= 60 && s.iq >= 75 && s.iq < 85) return "student-union-president";
@@ -3489,6 +3500,8 @@ function judgeEnding(s) {
   if (s.iq >= 80 && s.charm >= 75) return "dachang";
   if (s.iq >= 75 && s.charm >= 70 && (s.connections || 0) >= 60) return "civil";
   if (s.money >= 8000 && s.charm >= 70) return "startup";
+  // v1.11：宿舍创业（金钱 10000+、人脉 70+、快乐 75+、学分 45+、魅力 <70；放在外卖站长之前，不然会被抢走）
+  if (s.money >= 10000 && (s.connections || 0) >= 70 && s.happy >= 75 && s.credits >= 45 && s.charm < 70) return "dorm-startup";
   // v1.7：外卖站长（外卖员兼职、钱够多、身体够好、人脉够广；放在创业失败之前，不然会被抢走）
   if (s.job === "delivery" && s.money >= 5000 && s.health >= 80 && (s.connections || 0) >= 65) return "delivery-station";
   if (s.money >= 5000 && s.charm < 60 && s.iq >= 70) return "startup-fail";
@@ -3520,8 +3533,12 @@ function judgeEnding(s) {
   // v1.6：校园舞王（魅力 90+、快乐 80+、健康 75+、学分 40+；放在网红主播之前，不然会被抢走）
   if (s.charm >= 90 && s.happy >= 80 && s.health >= 75 && s.credits >= 40) return "dance-king";
   if (s.charm >= 85 && s.happy >= 80) return "influencer";
+  // v1.11：剧本杀店长（魅力 80–84、快乐 85+、人脉 75+、金钱 3000+、学分 40+；放在游戏达人之前，不然会被抢走）
+  if (s.charm >= 80 && s.charm < 85 && s.happy >= 85 && (s.connections || 0) >= 75 && s.money >= 3000 && s.credits >= 40) return "script-host";
   if (s.happy >= 90 && s.charm >= 70) return "gamer-pro";
   if (s.happy >= 85 && s.charm >= 70 && s.iq >= 60) return "esports-pro";
+  // v1.11：电竞教练（电竞社、人脉够广、快乐 80–84、学分够；快乐 85+ 会被电竞选手抢走）
+  if (s.club === "esports" && (s.connections || 0) >= 75 && s.happy >= 80 && s.happy < 85 && s.credits >= 40) return "esports-coach";
   if (s.iq >= 70 && s.charm >= 70 && s.credits >= 45) return "teacher";
   if (s.iq >= 80 && s.happy >= 70) return "writer";
   if (s.charm >= 85 && s.happy >= 75) return "artist";

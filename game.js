@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 56;
+  const TOTAL_ENDINGS = 60;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
