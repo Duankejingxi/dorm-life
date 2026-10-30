@@ -3,31 +3,31 @@
 
 // 每学期选 3 个行动（v1.3：每学期 3 个行动，效果比 v1.2 下调，3 个加起来约等于以前 1.8 个）
 const ACTIONS = [
-  { id: "study", icon: "📚", name: "上课学习", desc: "认真听课，泡图书馆。智力、学分涨，快乐掉一点。",
+  { id: "study", cost: 2, icon: "📚", name: "上课学习", desc: "认真听课，泡图书馆。智力、学分涨，快乐掉一点。",
     effects: { iq: 5, credits: 4, happy: -3 }, variance: 2,
     log: ["你泡在图书馆，笔记记得满满当当。", "你上课坐第一排，老师都记住你了。"] },
-  { id: "work", icon: "💰", name: "打工赚钱", desc: "发传单、做家教、跑腿。钱多了，人累点，还能认识点人。",
+  { id: "work", cost: 2, icon: "💰", name: "打工赚钱", desc: "发传单、做家教、跑腿。钱多了，人累点，还能认识点人。",
     effects: { money: 500, health: -3, happy: -3, iq: -1, connections: 2 }, variance: 2, moneyVariance: 60,
     log: ["你打了不少零工，钱包鼓了一点，人也累了一点。", "你一边上课一边打工，月底数钱的时候笑了。"] },
-  { id: "gym", icon: "🏋️", name: "健身运动", desc: "跑步、撸铁、打球。身体好了，气质也好了，还能认识健身搭子。",
+  { id: "gym", cost: 1, icon: "🏋️", name: "健身运动", desc: "跑步、撸铁、打球。身体好了，气质也好了，还能认识健身搭子。",
     effects: { health: 5, charm: 3, money: -60, happy: 2, connections: 1 }, variance: 2, rel: { aqiang: 2 },
     log: ["你天天泡操场，体测轻轻松松。", "你练出了线条，走路都带风。"] },
-  { id: "game", icon: "🎮", name: "打游戏", desc: "开黑、上分、通宵。快乐拉满，脑子放假。",
+  { id: "game", cost: 1, icon: "🎮", name: "打游戏", desc: "开黑、上分、通宵。快乐拉满，脑子放假。",
     effects: { happy: 7, iq: -3, credits: -1, money: -60 }, variance: 2,
     log: ["你上分如喝水，快乐得冒泡。", "你游戏里风生水起，现实里作业堆成山。"] },
-  { id: "social", icon: "🎉", name: "社交聚会", desc: "社团、聚餐、认识新朋友。魅力、人脉都涨，钱包瘪。",
+  { id: "social", cost: 1, icon: "🎉", name: "社交聚会", desc: "社团、聚餐、认识新朋友。魅力、人脉都涨，钱包瘪。",
     effects: { charm: 5, happy: 4, money: -120, connections: 5 }, variance: 2, rel: { aqiang: 4, xiaomei: 4, xuezhang: 3, daoshi: 2 },
     log: ["你认识了一大圈人，朋友圈热闹得很。", "你饭局不断，人缘越来越好。"] },
-  { id: "slack", icon: "😴", name: "摆烂躺平", desc: "不卷了。睡到自然醒，快乐最重要。",
+  { id: "slack", cost: 1, icon: "😴", name: "摆烂躺平", desc: "不卷了。睡到自然醒，快乐最重要。",
     effects: { happy: 4, health: -2, iq: -2 }, variance: 2,
     log: ["你彻底躺平，睡了个痛快。", "你把“松弛感”贯彻到底。"] },
-  { id: "club", icon: "🎪", name: "参加社团活动", desc: "去自己社团的活动，不同社团加成不同。没加社团点这个没用。",
+  { id: "club", cost: 1, icon: "🎪", name: "参加社团活动", desc: "去自己社团的活动，不同社团加成不同。没加社团点这个没用。",
     effects: {}, variance: 0, clubAction: true,
     log: ["你参加了社团活动。"] },
-  { id: "nightchat", icon: "🌙", name: "宿舍夜聊", desc: "熄灯后和一个人夜聊到半夜，聊人生聊八卦。随机一个人的关系大涨，心情也好。",
+  { id: "nightchat", cost: 1, icon: "🌙", name: "宿舍夜聊", desc: "熄灯后和一个人夜聊到半夜，聊人生聊八卦。随机一个人的关系大涨，心情也好。",
     effects: {}, variance: 0, nightchat: true,
     log: ["你们夜聊到半夜，关系更铁了。"] },
-  { id: "confess", icon: "💌", name: "表白", desc: "向关系最好的那个人表白。关系 ≥80 才能成功，失败会扣关系和心情。",
+  { id: "confess", cost: 2, icon: "💌", name: "表白", desc: "向关系最好的那个人表白。关系 ≥80 才能成功，失败会扣关系和心情。",
     effects: {}, variance: 0, confess: true,
     log: ["你鼓起勇气表白了。"] },
 ];
@@ -3081,6 +3081,42 @@ const CHAINS = [
         { text: "难忘", effects: { happy: 9 }, rel: { aqiang: 6 }, result: "你们难忘，这趟旅行，你们会记一辈子，兄弟也是一辈子。" },
       ] },
   ] },
+  { id: "chain-night-market", title: "夜市摆摊",
+    parts: [
+      { text: "你和室友决定去夜市摆摊，卖手工艺品，进货花了 500 块。",
+        choices: [
+          { text: "去摆！", effects: { money: -500 }, result: "你们进货了，晚上去夜市摆摊。" },
+          { text: "算了", effects: { happy: -2 }, result: "你们放弃了，500 块省下来了。" },
+        ] },
+      { text: "第一晚，生意惨淡，只卖了 50 块，室友想放弃了。",
+        choices: [
+          { text: "坚持", effects: { happy: -2 }, result: "你们决定再坚持一晚。" },
+          { text: "放弃", effects: { money: 50 }, result: "你们放弃了，剩下的货自己用了。" },
+        ] },
+      { text: "第二晚，你们换了位置，生意火爆，一晚赚了 800！",
+        choices: [
+          { text: "继续干", effects: { money: 800, happy: 6 }, result: "你们成了夜市常客，每周都去，赚了不少。" },
+          { text: "见好就收", effects: { money: 300, happy: 3 }, result: "你们见好就收，赚了点零花钱。" },
+        ] },
+    ] },
+  { id: "chain-dorm-cat", title: "宿舍猫",
+    parts: [
+      { text: "一只流浪猫总在宿舍楼下转悠，阿强说想收养，但宿管不让。",
+        choices: [
+          { text: "偷偷养", effects: { happy: 4 }, result: "你们偷偷养了，给它取名“楼楼”。" },
+          { text: "只投喂", effects: { happy: 2, money: -20 }, result: "你们每天投喂，猫很亲人。" },
+        ] },
+      { text: "猫怀孕了，生了三只小猫，宿舍热闹了，但宿管开始怀疑了。",
+        choices: [
+          { text: "送人", effects: { happy: -2 }, result: "你们把小猫送人了，楼楼留下了。" },
+          { text: "继续养", effects: { happy: 3 }, result: "你们继续养，每天轮流铲屎。" },
+        ] },
+      { text: "宿管发现了，但看猫可爱，睁一只眼闭一只眼，楼楼成了宿舍楼的团宠。",
+        choices: [
+          { text: "开心", effects: { happy: 6 }, result: "楼楼成了网红猫，你们的宿舍也出名了。" },
+          { text: "担心", effects: { happy: 2 }, result: "你们还是有点担心，但楼楼很乖。" },
+        ] },
+    ] },
 ];
 
 // ---- v1.1：成就（25 个；check(state, flags) 返回 true 即解锁）----

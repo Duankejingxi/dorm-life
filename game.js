@@ -129,9 +129,7 @@
   function renderRel() {
     NPCS.forEach((n) => {
       const v = state.rel[n.id] || 0;
-      const bar = $("relBar-" + n.id);
       const num = $("relNum-" + n.id);
-      if (bar) bar.style.width = v + "%";
       if (num) num.textContent = v;
     });
   }
@@ -139,27 +137,18 @@
   function buildRelPanel() {
     const panel = $("relPanel");
     if (!panel || panel.children.length > 0) return;
+    // v2.0：紧凑横滑 chips（一屏布局）
     NPCS.forEach((n) => {
-      const row = document.createElement("div");
-      row.className = "stat-row rel-row";
-      const label = document.createElement("span");
-      label.className = "stat-label";
-      label.textContent = n.name + " · " + n.role;
-      const barWrap = document.createElement("div");
-      barWrap.className = "stat-bar";
-      const fill = document.createElement("div");
-      fill.className = "stat-fill rel";
-      fill.id = "relBar-" + n.id;
-      fill.style.width = n.start + "%";
-      barWrap.appendChild(fill);
-      const num = document.createElement("span");
-      num.className = "stat-num";
+      const chip = document.createElement("div");
+      chip.className = "rel-chip";
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = n.name + " ";
+      const num = document.createElement("b");
       num.id = "relNum-" + n.id;
       num.textContent = n.start;
-      row.appendChild(label);
-      row.appendChild(barWrap);
-      row.appendChild(num);
-      panel.appendChild(row);
+      chip.appendChild(nameSpan);
+      chip.appendChild(num);
+      panel.appendChild(chip);
     });
   }
 
@@ -262,6 +251,7 @@
       rel: rel0,
       log: [], over: false, endingId: null, inLove: null,
       background: pickedBackground, talent: pickedTalent, club: pickedClub, job: pickedJob,
+      ap: 6, // v2.0：行动点，每学期 6 点，行动消耗 1-2 点
     };
     // v1.4：开局家境 + 天赋加成（默认小康 + 普通人 = 无加成，和以前一样）
     // v1.5：开局社团加成（默认不参加 = 无加成）
@@ -315,6 +305,7 @@
   function startSemester() {
     stepIndex = 0;
     actionsDone = 0;
+    state.ap = 6; // v2.0：每学期重置 6 行动点
     if (state.semester > 1) payJob(); // 第 2 学期起，每学期初发工资
     advanceStep();
   }
@@ -328,12 +319,48 @@
   }
 
   function showActionPhase() {
+    // v2.0：行动点用完，自动跳过这个行动步骤
+    if (state.ap <= 0) {
+      stepIndex++;
+      advanceStep();
+      return;
+    }
     $("actionBox").classList.remove("hidden");
     $("eventCard").classList.add("hidden");
     $("resultBox").classList.add("hidden");
     $("shopPanel").classList.add("hidden");
     $("actionHint").classList.remove("hidden");
-    $("actionHint").textContent = semName() + "，选一个行动（已选 " + actionsDone + "/" + ACTIONS_PER_SEMESTER + "）。";
+    $("actionHint").textContent = semName() + "，怎么过？（点行动消耗行动点，也可以直接进入事件）";
+    // v2.0：更新行动点显示，禁用点数不够的按钮
+    $("apNum").textContent = state.ap;
+    $("actionBox").querySelectorAll("[data-action]").forEach((btn) => {
+      const aid = btn.getAttribute("data-action");
+      if (aid === "shop") return;
+      const a = ACTIONS.find((x) => x.id === aid);
+      if (a && (a.cost || 1) > state.ap) {
+        btn.disabled = true;
+        btn.style.opacity = "0.4";
+      } else {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+      }
+    });
+    // v2.0：进入事件按钮（提前结束行动阶段）——放在 actionBox 末尾，全宽
+    let endBtn = $("endActionBtn");
+    if (!endBtn) {
+      endBtn = document.createElement("button");
+      endBtn.id = "endActionBtn";
+      endBtn.className = "btn gold-btn end-action-btn";
+      endBtn.textContent = "进入事件 ▶";
+      endBtn.addEventListener("click", () => {
+        $("actionBox").classList.add("hidden");
+        endBtn.classList.add("hidden");
+        stepIndex++;
+        advanceStep();
+      });
+      $("actionBox").appendChild(endBtn);
+    }
+    endBtn.classList.remove("hidden");
   }
 
   function doAction(actionId) {
@@ -350,11 +377,13 @@
       flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
       const cd = applyEffects(ca.effects, ca.variance);
       addLog(ca.log[Math.floor(Math.random() * ca.log.length)] + fmtChange(cd));
-      actionsDone++;
-      stepIndex++;
+      // v2.0：扣行动点，留在行动阶段（点数用完才推进）
+      state.ap -= (a.cost || 1);
+      actionsDone++; // 测试兼容计数
       $("actionBox").classList.add("hidden");
+      const eab1 = $("endActionBtn"); if (eab1) eab1.classList.add("hidden");
       if (checkEarlyEnding()) return;
-      advanceStep();
+      if (state.ap <= 0) { stepIndex++; advanceStep(); } else { showActionPhase(); }
       return;
     }
     // v1.7：宿舍夜聊——随机挑一个人，关系 +6、快乐 +3
@@ -366,11 +395,13 @@
       relPatch[npc.id] = 6;
       applyRel(relPatch);
       addLog("熄灯后，你和" + npc.name + "夜聊到半夜，聊了好多心里话，关系更铁了。（" + npc.name + " 关系 +6）");
-      actionsDone++;
-      stepIndex++;
+      // v2.0：扣行动点，留在行动阶段（点数用完才推进）
+      state.ap -= (a.cost || 1);
+      actionsDone++; // 测试兼容计数
       $("actionBox").classList.add("hidden");
+      const eab2 = $("endActionBtn"); if (eab2) eab2.classList.add("hidden");
       if (checkEarlyEnding()) return;
-      advanceStep();
+      if (state.ap <= 0) { stepIndex++; advanceStep(); } else { showActionPhase(); }
       return;
     }
     // v1.8：表白——向关系最好的那个人表白；关系 ≥80 成功（快乐 +10，记下恋爱对象），否则失败（快乐 -5，那个人关系 -3）
@@ -392,22 +423,26 @@
         applyRel(relPatch);
         addLog("💔 你向" + best.name + "表白了，TA 说还是做朋友吧……（快乐 -5，" + best.name + " 关系 -3）");
       }
-      actionsDone++;
-      stepIndex++;
+      // v2.0：扣行动点，留在行动阶段（点数用完才推进）
+      state.ap -= (a.cost || 1);
+      actionsDone++; // 测试兼容计数
       $("actionBox").classList.add("hidden");
+      const eab3 = $("endActionBtn"); if (eab3) eab3.classList.add("hidden");
       if (checkEarlyEnding()) return;
-      advanceStep();
+      if (state.ap <= 0) { stepIndex++; advanceStep(); } else { showActionPhase(); }
       return;
     }
     flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
     const d = applyEffects(a.effects, a.variance, a.moneyVariance);
     const rd = applyRel(a.rel);
     addLog(a.log[Math.floor(Math.random() * a.log.length)] + fmtChange(d, rd));
-    actionsDone++;
-    stepIndex++;
+    // v2.0：扣行动点，留在行动阶段（点数用完才推进）
+    state.ap -= (a.cost || 1);
+    actionsDone++; // 测试兼容计数
     $("actionBox").classList.add("hidden");
+    const eab4 = $("endActionBtn"); if (eab4) eab4.classList.add("hidden");
     if (checkEarlyEnding()) return;
-    advanceStep();
+    if (state.ap <= 0) { stepIndex++; advanceStep(); } else { showActionPhase(); }
   }
 
   // ---- v1.3：商店（花钱买东西，买一次算一个行动）----
@@ -457,10 +492,11 @@
     const d = applyEffects(item.effects, 0);
     addLog(item.log + fmtChange(d));
     $("shopPanel").classList.add("hidden");
-    actionsDone++;
-    stepIndex++;
+    // v2.0：买东西算 1 行动点，留在行动阶段（点数用完才推进）
+    state.ap -= 1;
+    actionsDone++; // 测试兼容计数
     if (checkEarlyEnding()) return;
-    advanceStep();
+    if (state.ap <= 0) { stepIndex++; advanceStep(); } else { showActionPhase(); }
   }
 
   // 连锁剧情的一环拼成一个“事件”对象
@@ -531,7 +567,7 @@
     } else if (img) {
       img.classList.add("hidden");
     }
-    $("eventTitle").textContent = (kind === "micro" ? "✨ 小事 · " : "🎲 ") + ev.title;
+    $("eventTitle").textContent = kind === "micro" ? "✨ 小事" : "🎲 " + (ev.title || "事件");
     $("eventText").textContent = ev.text;
     const box = $("eventChoices");
     box.innerHTML = "";
@@ -761,7 +797,8 @@
     b.setAttribute("data-action", a.id);
     const title = document.createElement("span");
     title.className = "action-title";
-    title.textContent = a.icon + " " + a.name;
+    // v2.0：显示行动点消耗
+    title.innerHTML = a.icon + " " + a.name + ' <span class="cost">⚡' + (a.cost || 1) + '</span>';
     const desc = document.createElement("span");
     desc.className = "action-desc";
     desc.textContent = a.desc;
@@ -823,6 +860,20 @@
   $("nextBtn").addEventListener("click", nextSemester);
   $("shareBtn").addEventListener("click", shareEnding);
   $("againBtn").addEventListener("click", () => { showScreen("startScreen"); renderEndingsCount(); renderAchievements(); });
+
+  // v2.0：标签页切换（游戏 / 记录）
+  $("tabBtnGame").addEventListener("click", () => {
+    $("tabBtnGame").classList.add("active");
+    $("tabBtnLog").classList.remove("active");
+    $("tabGame").classList.remove("hidden");
+    $("tabLog").classList.add("hidden");
+  });
+  $("tabBtnLog").addEventListener("click", () => {
+    $("tabBtnLog").classList.add("active");
+    $("tabBtnGame").classList.remove("active");
+    $("tabLog").classList.remove("hidden");
+    $("tabGame").classList.add("hidden");
+  });
 
   buildRelPanel();
   renderEndingsCount();

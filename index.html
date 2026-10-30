@@ -49,19 +49,28 @@
       <p class="result-line" id="semLabel">大一上 · 第 1 / 8 学期</p>
     </header>
 
-    <div class="panel stats-panel">
-      <div class="stat-row"><span class="stat-label">❤️ 健康</span><div class="stat-bar"><div class="stat-fill health" id="barHealth" style="width:70%"></div></div><span class="stat-num" id="numHealth">70</span></div>
-      <div class="stat-row"><span class="stat-label">🧠 智力</span><div class="stat-bar"><div class="stat-fill iq" id="barIq" style="width:60%"></div></div><span class="stat-num" id="numIq">60</span></div>
-      <div class="stat-row"><span class="stat-label">✨ 魅力</span><div class="stat-bar"><div class="stat-fill charm" id="barCharm" style="width:60%"></div></div><span class="stat-num" id="numCharm">60</span></div>
-      <div class="stat-row"><span class="stat-label">😊 快乐</span><div class="stat-bar"><div class="stat-fill happy" id="barHappy" style="width:70%"></div></div><span class="stat-num" id="numHappy">70</span></div>
-      <div class="stat-row"><span class="stat-label">🤝 人脉</span><div class="stat-bar"><div class="stat-fill connections" id="barConnections" style="width:60%"></div></div><span class="stat-num" id="numConnections">60</span></div>
-      <div class="stat-row money-row"><span class="stat-label">💰 金钱</span><span class="stat-num big" id="numMoney">¥500</span><span class="stat-label">📚 学分</span><span class="stat-num big" id="numCredits">0</span></div>
-      <h3 class="section-title">👥 人际关系</h3>
-      <div id="relPanel"></div>
+    <!-- v2.0：一屏布局，标签页切换（游戏 / 记录），页面不滚动 -->
+    <nav class="tab-bar">
+      <button class="tab-btn active" id="tabBtnGame">🎮 游戏</button>
+      <button class="tab-btn" id="tabBtnLog">📜 记录</button>
+    </nav>
+
+    <div id="tabGame">
+    <div class="panel stats-panel compact">
+      <div class="stat-grid">
+        <div class="stat-chip"><span>❤️</span><div class="mini-bar"><div class="stat-fill health" id="barHealth" style="width:70%"></div></div><b id="numHealth">70</b></div>
+        <div class="stat-chip"><span>🧠</span><div class="mini-bar"><div class="stat-fill iq" id="barIq" style="width:60%"></div></div><b id="numIq">60</b></div>
+        <div class="stat-chip"><span>✨</span><div class="mini-bar"><div class="stat-fill charm" id="barCharm" style="width:60%"></div></div><b id="numCharm">60</b></div>
+        <div class="stat-chip"><span>😊</span><div class="mini-bar"><div class="stat-fill happy" id="barHappy" style="width:70%"></div></div><b id="numHappy">70</b></div>
+        <div class="stat-chip"><span>🤝</span><div class="mini-bar"><div class="stat-fill connections" id="barConnections" style="width:60%"></div></div><b id="numConnections">60</b></div>
+        <div class="stat-chip"><span>💰</span><b id="numMoney" class="money-num">¥500</b><span>📚</span><b id="numCredits">0</b></div>
+      </div>
+      <div id="relPanel" class="rel-row"></div>
     </div>
 
     <div class="panel">
       <p class="result-line" id="actionHint">大一上，你打算怎么过？选一个行动。</p>
+      <p class="result-line ap-line" id="apLine">⚡ 行动点 <b id="apNum">6</b> / 6</p>
       <div id="actionBox" class="action-grid"></div>
       <div id="shopPanel" class="hidden">
         <p class="result-line">🛒 商店（买一次算一个行动）</p>
@@ -81,10 +90,13 @@
         <button class="btn gold-btn" id="nextBtn">下一学期 ▶</button>
       </div>
     </div>
+    </div><!-- /tabGame -->
 
-    <div class="panel">
-      <h3 class="log-title">📖 人生记录</h3>
-      <div id="logList" class="log-list"></div>
+    <div id="tabLog" class="hidden">
+      <div class="panel">
+        <h3 class="log-title">📖 人生记录</h3>
+        <div id="logList" class="log-list scrollable"></div>
+      </div>
     </div>
   </section>
 
@@ -107,10 +119,11 @@
   </section>
 
   <footer>
-    <p>宿舍人生 v1.11 · 纯前端文字模拟器，打开就能玩</p>
+    <p>宿舍人生 v2.0 · 纯前端文字模拟器，打开就能玩</p>
   </footer>
 </div>
 <script src="data.js"></script>
+<script src="storygen.js"></script>
 <script src="scenes.js"></script>
 <script src="game.js"></script>
 </body>

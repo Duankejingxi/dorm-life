@@ -198,3 +198,108 @@ footer p { margin: 0; }
 
 /* 优化：开局选项说明（手机上没有 hover，说明直接显示出来） */
 .pick-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 6px 0 14px; }
+
+/* v2.0：一屏布局 + 标签页 */
+#gameScreen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+#gameScreen.hidden { display: none; }
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d4a94e;
+  background: transparent;
+  color: #d4a94e;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #d4a94e;
+  color: #1a1a2e;
+  font-weight: bold;
+}
+#tabGame, #tabLog { flex: 1; display: flex; flex-direction: column; }
+#tabGame.hidden, #tabLog.hidden { display: none; }
+
+/* 紧凑属性面板 */
+.stats-panel.compact { padding: 8px 12px; }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+.stat-chip .mini-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stat-chip .mini-bar .stat-fill { height: 100%; }
+.stat-chip b { font-size: 13px; min-width: 20px; text-align: right; }
+.stat-chip .money-num { color: #ffd700; }
+.rel-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.rel-row .rel-chip {
+  flex: 0 0 auto;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* 行动点 */
+.ap-line { color: #ffd700; font-weight: bold; margin: 4px 0; }
+.ap-line b { font-size: 18px; }
+
+/* 记录页内部滚动，页面本身不滚 */
+#tabLog .panel { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.log-list.scrollable {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100dvh - 220px);
+  min-height: 200px;
+}
+
+/* 事件卡紧凑 */
+.event-card { margin: 8px 0; }
+.event-card .event-scene { max-height: 120px; object-fit: cover; }
+#eventText { font-size: 14px; line-height: 1.5; margin: 8px 0; }
+.choice-list .btn { margin: 4px 0; padding: 10px; font-size: 14px; }
+
+/* 行动按钮显示消耗 */
+.action-grid .btn .cost { color: #ffd700; font-size: 12px; }
+
+/* v2.0：进入事件按钮（行动阶段提前结束） */
+.end-action-btn {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+}
