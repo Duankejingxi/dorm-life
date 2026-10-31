@@ -172,7 +172,15 @@
   function renderStats() {
     const set = (barId, numId, v) => {
       $(barId).style.width = clamp(v, 0, 100) + "%";
-      $(numId).textContent = v;
+      const el = $(numId);
+      const old = el.textContent;
+      el.textContent = v;
+      // v2.1：数字变化时 bump 动画
+      if (old !== String(v)) {
+        el.classList.remove("bump");
+        void el.offsetWidth; // 重启动画
+        el.classList.add("bump");
+      }
     };
     set("barHealth", "numHealth", state.health);
     set("barIq", "numIq", state.iq);
@@ -182,6 +190,17 @@
     $("numMoney").textContent = (state.money >= 0 ? "¥" : "-¥") + Math.abs(state.money);
     $("numCredits").textContent = state.credits;
     $("semLabel").textContent = semName() + " · 第 " + state.semester + " / 8 学期";
+    // v2.1：行动点脉冲
+    const apEl = $("apNum");
+    if (apEl) {
+      const oldAp = apEl.textContent;
+      apEl.textContent = state.ap;
+      if (oldAp !== String(state.ap)) {
+        apEl.classList.remove("pulse");
+        void apEl.offsetWidth;
+        apEl.classList.add("pulse");
+      }
+    }
   }
 
   function renderEndingsCount() {

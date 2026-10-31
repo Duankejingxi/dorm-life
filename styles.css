@@ -303,3 +303,112 @@ footer p { margin: 0; }
   grid-column: 1 / -1;
   margin-top: 8px;
 }
+
+/* v2.1：交互动画 + 视觉打磨（用户：交互动画做得很差） */
+
+/* 事件卡入场：滑入+淡入 */
+.event-card {
+  animation: cardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 选项按钮：按压缩放 + 悬停上浮 */
+.choice-list .btn, .action-grid .btn {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.choice-list .btn:active, .action-grid .btn:active {
+  transform: scale(0.96);
+  filter: brightness(1.2);
+}
+.choice-list .btn:hover, .action-grid .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 169, 78, 0.25);
+}
+
+/* 属性条：宽度变化动画 */
+.stat-fill, .mini-bar .stat-fill {
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 属性数字：变化时闪一下（JS 加 .bump 类） */
+.stat-chip b.bump, .stat-num.bump {
+  animation: bump 0.4s ease;
+}
+@keyframes bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); color: #ffd700; }
+  100% { transform: scale(1); }
+}
+
+/* 标签页切换：淡入 */
+#tabGame, #tabLog {
+  animation: tabIn 0.25s ease;
+}
+@keyframes tabIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.tab-btn {
+  transition: all 0.15s ease;
+}
+.tab-btn:active { transform: scale(0.97); }
+
+/* 行动点：消耗时脉冲 */
+#apNum.pulse {
+  animation: apPulse 0.3s ease;
+  display: inline-block;
+}
+@keyframes apPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); color: #ff6b6b; }
+  100% { transform: scale(1); }
+}
+
+/* 结局卡：金色光晕入场 */
+#endingScreen .panel {
+  animation: endingGlow 0.6s ease;
+}
+@keyframes endingGlow {
+  from { opacity: 0; transform: scale(0.95); box-shadow: 0 0 0 rgba(212,169,78,0); }
+  to { opacity: 1; transform: scale(1); box-shadow: 0 0 40px rgba(212,169,78,0.3); }
+}
+
+/* 日志：新条目滑入 */
+.log-list > div:first-child {
+  animation: logIn 0.3s ease;
+}
+@keyframes logIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* 标题发光 */
+.game-head h2 {
+  text-shadow: 0 0 20px rgba(212, 169, 78, 0.5);
+  animation: titleGlow 3s ease-in-out infinite;
+}
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(212,169,78,0.5); }
+  50% { text-shadow: 0 0 30px rgba(212,169,78,0.8); }
+}
+
+/* 背景微妙动态 */
+body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+  background-size: 200% 200%;
+  animation: bgShift 15s ease infinite;
+}
+@keyframes bgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
