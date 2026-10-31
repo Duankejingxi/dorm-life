@@ -78,7 +78,10 @@
       </div>
 
       <div id="eventCard" class="event-card hidden">
-        <img id="eventScene" class="event-scene hidden" alt="场景配图">
+        <div id="eventSceneWrap" class="event-scene-wrap hidden">
+          <img id="eventScene" class="event-scene" alt="场景配图">
+          <div id="eventSceneTitle" class="event-scene-title"></div>
+        </div>
         <h3 id="eventTitle">🎲 事件</h3>
         <p id="eventText"></p>
         <div id="eventChoices" class="choice-list"></div>
@@ -109,6 +112,8 @@
       <p id="endingDesc"></p>
       <p class="result-line" id="endingStats"></p>
       <button class="btn gold-btn" id="shareBtn">📋 复制分享</button>
+      <button class="share-btn" id="posterBtn">🎨 生成结局海报</button>
+      <canvas id="shareCanvas" width="750" height="1000"></canvas>
       <p class="result-line achieve-line" id="shareMsg"></p>
       <h3 class="section-title">📖 人生回顾</h3>
       <div class="log-list" id="endingLog"></div>
@@ -119,7 +124,7 @@
   </section>
 
   <footer>
-    <p>宿舍人生 v2.1 · 纯前端文字模拟器，打开就能玩</p>
+    <p>宿舍人生 v2.2 · 纯前端文字模拟器，打开就能玩</p>
   </footer>
 </div>
 <script src="data.js"></script>

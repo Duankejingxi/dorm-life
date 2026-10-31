@@ -580,13 +580,23 @@
     currentKind = kind;
     $("actionHint").classList.add("hidden"); // 事件期间不显示“选一个行动”，免得和事件卡片打架
     const img = $("eventScene");
-    if (img && (kind === "big" || kind === "chain") && typeof SCENES !== "undefined" && SCENES[sceneFor(ev)]) {
+    const wrap = $("eventSceneWrap");
+    const sceneTitle = $("eventSceneTitle");
+    if (img && wrap && (kind === "big" || kind === "chain") && typeof SCENES !== "undefined" && SCENES[sceneFor(ev)]) {
       img.src = SCENES[sceneFor(ev)];
-      img.classList.remove("hidden");
-    } else if (img) {
-      img.classList.add("hidden");
+      wrap.classList.remove("hidden");
+      img.classList.remove("hidden"); // v2.2：保持测试兼容
+      // v2.2：标题 overlay 在图上（h3 保留，测试依赖 textContent）
+      const titleText = kind === "micro" ? "✨ 小事" : "🎲 " + (ev.title || "事件");
+      sceneTitle.textContent = titleText;
+      $("eventTitle").textContent = titleText;
+    } else if (wrap) {
+      wrap.classList.add("hidden");
+      if (img) img.classList.add("hidden"); // v2.2：保持测试兼容
+      $("eventTitle").textContent = kind === "micro" ? "✨ 小事" : "🎲 " + (ev.title || "事件");
+    } else {
+      $("eventTitle").textContent = kind === "micro" ? "✨ 小事" : "🎲 " + (ev.title || "事件");
     }
-    $("eventTitle").textContent = kind === "micro" ? "✨ 小事" : "🎲 " + (ev.title || "事件");
     $("eventText").textContent = ev.text;
     const box = $("eventChoices");
     box.innerHTML = "";
@@ -934,3 +944,120 @@
     get achievements() { return loadAchievements(); },
   };
 })();
+
+  // v2.2：生成结局海报（canvas，王者荣耀风）
+  function generatePoster() {
+    if (!state || !state.endingId) return;
+    const e = ENDINGS.find((x) => x.id === state.endingId);
+    const canvas = $("shareCanvas");
+    const ctx = canvas.getContext("2d");
+    const W = 750, H = 1000;
+    
+    // 背景：深色渐变
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#1a1a2e");
+    bg.addColorStop(0.5, "#16213e");
+    bg.addColorStop(1, "#0f0f1a");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+    
+    // 金色边框
+    ctx.strokeStyle = "#d4a94e";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(20, 20, W-40, H-40);
+    ctx.strokeStyle = "rgba(212,169,78,0.3)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(35, 35, W-70, H-70);
+    
+    // 标题
+    ctx.fillStyle = "#f5d67b";
+    ctx.font = "bold 48px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("宿舍人生", W/2, 120);
+    ctx.font = "28px sans-serif";
+    ctx.fillStyle = "#d4a94e";
+    ctx.fillText("— 大学四年模拟器 —", W/2, 165);
+    
+    // 结局 emoji（大）
+    ctx.font = "120px sans-serif";
+    ctx.fillText(e.emoji, W/2, 300);
+    
+    // 结局名
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 56px sans-serif";
+    ctx.fillText(e.title, W/2, 380);
+    
+    // 玩家名
+    ctx.fillStyle = "#d4a94e";
+    ctx.font = "32px sans-serif";
+    ctx.fillText(state.name + " 的四年", W/2, 430);
+    
+    // 属性（两列）
+    ctx.textAlign = "left";
+    ctx.font = "28px sans-serif";
+    ctx.fillStyle = "#fff";
+    const stats = [
+      ["❤️ 健康", state.health], ["🧠 智力", state.iq],
+      ["✨ 魅力", state.charm], ["😊 快乐", state.happy],
+      ["🤝 人脉", state.connections], ["💰 金钱", "¥"+state.money],
+      ["📚 学分", state.credits], ["🏆 成就", loadAchievements().length + "/" + ACHIEVEMENTS.length]
+    ];
+    stats.forEach((s, i) => {
+      const x = i % 2 === 0 ? 120 : 420;
+      const y = 520 + Math.floor(i/2) * 60;
+      ctx.fillStyle = "#d4a94e";
+      ctx.fillText(s[0], x, y);
+      ctx.fillStyle = "#fff";
+      ctx.fillText(String(s[1]), x + 140, y);
+    });
+    
+    // 结局描述（换行）
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#ccc";
+    ctx.font = "24px sans-serif";
+    const desc = e.desc || "";
+    const maxW = 600;
+    let line = "", y = 820;
+    for (const ch of desc) {
+      if (ctx.measureText(line + ch).width > maxW) {
+        ctx.fillText(line, W/2, y);
+        y += 36;
+        line = ch;
+        if (y > 920) break;
+      } else {
+        line += ch;
+      }
+    }
+    if (line && y <= 920) ctx.fillText(line, W/2, y);
+    
+    // 底部
+    ctx.fillStyle = "#d4a94e";
+    ctx.font = "22px sans-serif";
+    ctx.fillText("duankejingxi.github.io/dorm-life", W/2, 960);
+    
+    // 下载
+    const a = document.createElement("a");
+    a.download = "宿舍人生-" + e.title + ".png";
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+    $("shareMsg").textContent = "✅ 海报已生成，长按保存发朋友圈吧";
+  }
+  
+  // 绑定海报按钮（v2.2：guard，防止测试桩没有 addEventListener）
+  try {
+    if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+      document.addEventListener("DOMContentLoaded", () => {
+        const pb = $("posterBtn");
+        if (pb) pb.addEventListener("click", generatePoster);
+      });
+      // 如果 DOM 已加载，直接绑定（测试环境）
+      const pb2 = (typeof $ !== "undefined") ? $("posterBtn") : null;
+      if (pb2 && typeof pb2.addEventListener === "function") {
+        // 避免重复绑定：用标记
+        if (!pb2._posterBound) {
+          pb2.addEventListener("click", generatePoster);
+          pb2._posterBound = true;
+        }
+      }
+    }
+  } catch (e) { /* 测试桩环境忽略 */ }
