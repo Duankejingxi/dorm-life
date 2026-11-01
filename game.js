@@ -348,6 +348,17 @@
     $("eventCard").classList.add("hidden");
     $("resultBox").classList.add("hidden");
     $("shopPanel").classList.add("hidden");
+    // v2.3：行动点教学（第一学期首次，只一次）
+    try {
+      const seen = (() => { try { return localStorage.getItem("dormlife-aphelp-seen-v1"); } catch (e) { return "1"; } })();
+      if (!seen && state.semester === 1 && $("apHelp")) {
+        setTimeout(() => {
+          if ($("apHelp") && !$("actionBox").classList.contains("hidden")) {
+            $("apHelp").classList.remove("hidden");
+          }
+        }, 800);
+      }
+    } catch (e) {}
     $("actionHint").classList.remove("hidden");
     $("actionHint").textContent = semName() + "，怎么过？（点行动消耗行动点，也可以直接进入事件）";
     // v2.0：更新行动点显示，禁用点数不够的按钮
@@ -889,6 +900,24 @@
   $("nextBtn").addEventListener("click", nextSemester);
   $("shareBtn").addEventListener("click", shareEnding);
   $("againBtn").addEventListener("click", () => { showScreen("startScreen"); renderEndingsCount(); renderAchievements(); });
+  // v2.3：行动点教学浮层
+  try {
+    const apHelpBtn = $("apHelpBtn");
+    const apHelp = $("apHelp");
+    const apHelpClose = $("apHelpClose");
+    if (apHelpBtn && apHelp) {
+      apHelpBtn.addEventListener("click", () => apHelp.classList.toggle("hidden"));
+    }
+    if (apHelpClose && apHelp) {
+      apHelpClose.addEventListener("click", () => {
+        apHelp.classList.add("hidden");
+        try { localStorage.setItem("dormlife-aphelp-seen-v1", "1"); } catch (e) {}
+      });
+    }
+    // v2.2：结局海报按钮
+    const posterBtn = $("posterBtn");
+    if (posterBtn) posterBtn.addEventListener("click", generatePoster);
+  } catch (e) {}
 
   // v2.0：标签页切换（游戏 / 记录）
   $("tabBtnGame").addEventListener("click", () => {
@@ -1042,22 +1071,3 @@
     a.click();
     $("shareMsg").textContent = "✅ 海报已生成，长按保存发朋友圈吧";
   }
-  
-  // 绑定海报按钮（v2.2：guard，防止测试桩没有 addEventListener）
-  try {
-    if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
-      document.addEventListener("DOMContentLoaded", () => {
-        const pb = $("posterBtn");
-        if (pb) pb.addEventListener("click", generatePoster);
-      });
-      // 如果 DOM 已加载，直接绑定（测试环境）
-      const pb2 = (typeof $ !== "undefined") ? $("posterBtn") : null;
-      if (pb2 && typeof pb2.addEventListener === "function") {
-        // 避免重复绑定：用标记
-        if (!pb2._posterBound) {
-          pb2.addEventListener("click", generatePoster);
-          pb2._posterBound = true;
-        }
-      }
-    }
-  } catch (e) { /* 测试桩环境忽略 */ }

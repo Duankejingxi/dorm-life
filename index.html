@@ -70,7 +70,14 @@
 
     <div class="panel">
       <p class="result-line" id="actionHint">大一上，你打算怎么过？选一个行动。</p>
-      <p class="result-line ap-line" id="apLine">⚡ 行动点 <b id="apNum">6</b> / 6</p>
+      <p class="result-line ap-line" id="apLine">⚡ 行动点 <b id="apNum">6</b> / 6 <button class="help-btn" id="apHelpBtn" title="行动点是什么？">？</button></p>
+      <div id="apHelp" class="help-pop hidden">
+        <b>⚡ 行动点怎么玩</b><br>
+        每学期有 6 点行动力。上课/打工/表白花 2 点，其他花 1 点。<br>
+        点数用完自动进入事件，也可以随时点「进入事件」提前结束。<br>
+        合理分配：想保研就多上课，想赚钱就多打工！
+        <button class="btn small" id="apHelpClose">知道了</button>
+      </div>
       <div id="actionBox" class="action-grid"></div>
       <div id="shopPanel" class="hidden">
         <p class="result-line">🛒 商店（买一次算一个行动）</p>
@@ -124,7 +131,7 @@
   </section>
 
   <footer>
-    <p>宿舍人生 v2.2 · 纯前端文字模拟器，打开就能玩</p>
+    <p>宿舍人生 v2.3 · 纯前端文字模拟器，打开就能玩</p>
   </footer>
 </div>
 <script src="data.js"></script>
