@@ -620,7 +620,227 @@ choices: [
         { text: "错过", effects: {'happy': -3}, result: "你错过了，{person}吃到了，你馋哭了。" },
         { text: "打包", effects: {'money': -15, 'happy': 5}, result: "你打包了两份，一份晚上吃。" },
       ],
-    }
+    },
+    {
+      prefix: "g-midnight-snack", n: 40,
+      slots: { food: F.food, person: F.person.slice(0, 6), time: ["十一点", "十二点", "一点"] },
+      title: "深夜放毒",
+      text: "{time}了，{person}在宿舍煮{food}，香味飘满整个楼道，整层楼都馋哭了。",
+      choices: [
+        { text: "蹭一口", effects: { happy: 6, connections: 2 }, result: "你蹭了一口，{person}大方地分了你半碗，深夜的{food}格外香。" },
+        { text: "自己也煮", effects: { money: -15, happy: 5 }, result: "你也煮了一份，两个人深夜干饭，快乐翻倍。" },
+        { text: "忍住睡觉", effects: { health: 3, happy: -4 }, result: "你忍住了，但香味让你失眠到两点。" },
+      ],
+    },
+    {
+      prefix: "g-umbrella", n: 40,
+      slots: { person: ["阿强", "小美", "学长"], weather: ["暴雨", "大雨", "阵雨"] },
+      title: "没带伞",
+      text: "外面下{weather}，你没带伞，{person}有伞，问你要不要一起走。",
+      choices: [
+        { text: "一起走", effects: { happy: 4, connections: 3 }, result: "你们挤在一把伞下，半边身子都湿了，但聊得很开心。" },
+        { text: "淋雨跑回去", effects: { health: -5, happy: 3 }, result: "你淋雨跑回宿舍，成了落汤鸡，但觉得很爽。" },
+        { text: "等雨停", effects: { happy: -2 }, result: "你在教学楼等了一小时，雨越下越大。" },
+      ],
+    },
+    {
+      prefix: "g-group-project", n: 40,
+      slots: { person: F.person.slice(0, 6), task: ["PPT", "报告", "视频"] },
+      title: "小组作业有划水的",
+      text: "小组作业做{task}，{person}从头到尾没出现，答辩前一天说他来整合。",
+      choices: [
+        { text: "让他做最难的部分", effects: { iq: 2, connections: -2 }, result: "你把最难的部分甩给他，他熬夜做完了，质量还行。" },
+        { text: "忍了，自己做完", effects: { happy: -5, iq: 3 }, result: "你熬夜做完了，答辩拿了高分，但你记住了这个人。" },
+        { text: "跟老师反映", effects: { connections: -3, happy: 2 }, result: "老师单独给他布置了任务，他再也不敢划水了。" },
+      ],
+    },
+    {
+      prefix: "g-confession-wall", n: 40,
+      slots: { person: ["小美", "阿强", "隔壁班的同学"] },
+      title: "表白墙吃瓜",
+      text: "表白墙上有人匿名表白{person}，评论区已经盖了 200 楼，全在猜是谁。",
+      choices: [
+        { text: "围观吃瓜", effects: { happy: 4 }, result: "你吃了三个小时的瓜，最后发现表白的是{person}自己。" },
+        { text: "帮TA打听", effects: { connections: 3, happy: 2 }, result: "你帮{person}打听到了，是暗恋三年的老同学。" },
+        { text: "不感兴趣", effects: { happy: 0 }, result: "你划过去了，继续背单词。" },
+      ],
+    },
+    {
+      prefix: "g-dorm-inspection", n: 40,
+      slots: { time: ["周三下午", "周五上午", "周一早上"] },
+      title: "查寝突击",
+      text: "{time}查寝，宿舍乱得像被打劫过，宿管阿姨已经走到门口了。",
+      choices: [
+        { text: "光速整理", effects: { happy: 3, health: -2 }, result: "你们 5 分钟把宿舍塞成了样板间，阿姨给了优秀。" },
+        { text: "摆烂认命", effects: { happy: -3 }, result: "被记了不合格，写了 500 字检查。" },
+        { text: "贿赂阿姨", effects: { money: -20, happy: 5 }, result: "你塞了两包薯片，阿姨笑着给了良好。" },
+      ],
+    },
+    {
+      prefix: "g-part-time", n: 40,
+      slots: { job: ["发传单", "家教", "外卖", "奶茶店"], pay: ["80", "100", "120"] },
+      title: "兼职机会",
+      text: "群里有人招{job}兼职，一天{pay}块，时间灵活，你有点心动。",
+      choices: [
+        { text: "去试试", effects: { money: 100, happy: 3, health: -3 }, result: "你干了一天，累但充实，{pay}块到手。" },
+        { text: "学习更重要", effects: { iq: 4, happy: -2 }, result: "你拒绝了，多背了 50 个单词。" },
+        { text: "叫上室友一起", effects: { money: 80, connections: 4 }, result: "你们一起去，边干边聊，一天很快过去。" },
+      ],
+    },
+    {
+      prefix: "g-birthday", n: 40,
+      slots: { person: ["阿强", "小美", "你自己"] },
+      title: "{person}过生日",
+      text: "今天是{person}生日，宿舍决定给他/她一个惊喜。",
+      choices: [
+        { text: "买蛋糕", effects: { money: -60, connections: 5, happy: 5 }, result: "蛋糕+蜡烛+合唱生日歌，{person}感动哭了。" },
+        { text: "AA 聚餐", effects: { money: -50, connections: 4, happy: 4 }, result: "你们去吃了火锅，{person}请了奶茶。" },
+        { text: "发红包", effects: { money: -30, connections: 2 }, result: "你在群里发了红包，{person}抢得最快。" },
+      ],
+    },
+    {
+      prefix: "g-exam-week", n: 40,
+      slots: { subject: ["高数", "英语", "专业课"], place: ["图书馆", "自习室", "宿舍"] },
+      title: "考试周",
+      text: "考试周到了，{subject}还没复习完，你在{place}开启了极限模式。",
+      choices: [
+        { text: "通宵突击", effects: { iq: 6, health: -8, happy: -3 }, result: "你通宵了三天，{subject}过了，但黑眼圈到下巴。" },
+        { text: "稳扎稳打", effects: { iq: 4, health: -2 }, result: "你每天睡 6 小时，稳稳地过了。" },
+        { text: "求佛保佑", effects: { happy: 2 }, result: "你去拜了考神，{subject} 60 分飘过。" },
+      ],
+    },
+    {
+      prefix: "g-canteen-auntie", n: 40,
+      slots: { food: F.food },
+      title: "食堂阿姨手抖",
+      text: "打{food}时阿姨手一抖，肉全掉回去了，你眼睁睁看着。",
+      choices: [
+        { text: "让阿姨多给点", effects: { happy: 5 }, result: "阿姨笑了，给你多加了一勺，你赢了。" },
+        { text: "默默接受", effects: { happy: -2 }, result: "你啥也没说，端着没肉的{food}走了。" },
+        { text: "换个窗口", effects: { happy: 1 }, result: "你换了个窗口，这个阿姨手不抖。" },
+      ],
+    },
+    {
+      prefix: "g-wifi-down", n: 40,
+      slots: { time: ["晚上", "中午", "凌晨"] },
+      title: "断网了",
+      text: "{time}宿舍断网了，游戏打到一半、剧看到高潮，全没了。",
+      choices: [
+        { text: "开热点", effects: { money: -10, happy: 3 }, result: "你开了热点，流量哗哗地流，但游戏赢了。" },
+        { text: "夜聊", effects: { connections: 4, happy: 4 }, result: "没网反而聊high了，聊到两点。" },
+        { text: "早睡", effects: { health: 5, happy: -2 }, result: "你难得十一点就睡了，第二天精神爆棚。" },
+      ],
+    },
+    {
+      prefix: "g-found-money", n: 40,
+      slots: { amount: ["50", "100", "20"], place: ["操场", "图书馆", "食堂"] },
+      title: "捡到钱",
+      text: "你在{place}捡到 {amount} 块钱，四下无人。",
+      choices: [
+        { text: "交到失物处", effects: { happy: 5, connections: 2 }, result: "你交到了失物处，失主找到后请你喝了奶茶。" },
+        { text: "等失主", effects: { happy: 3 }, result: "你在原地等了半小时，失主回来了，千恩万谢。" },
+        { text: "私吞", effects: { money: 50, happy: -5 }, result: "你拿了钱，但一晚上都没睡好。" },
+      ],
+    },
+    {
+      prefix: "g-sports-meet", n: 40,
+      slots: { event: ["100米", "跳远", "4x100接力"] },
+      title: "运动会",
+      text: "运动会报名，班长求你报{event}，说班里没人了。",
+      choices: [
+        { text: "为班争光", effects: { health: 4, connections: 5, happy: 5 }, result: "你拿了第三，全班为你欢呼，你成了名人。" },
+        { text: "当拉拉队", effects: { happy: 3, connections: 2 }, result: "你负责加油，嗓子喊哑了，但很开心。" },
+        { text: "拒绝", effects: { happy: -2 }, result: "你拒绝了，班长找了别人，你有点后悔。" },
+      ],
+    },
+    {
+      prefix: "g-rainy-class", n: 40,
+      slots: { subject: ["早八", "晚课", "选修课"] },
+      title: "暴雨还要上课",
+      text: "外面暴雨，{subject}还要点名，你纠结去不去。",
+      choices: [
+        { text: "风雨无阻", effects: { iq: 3, health: -3 }, result: "你去了，全班只到了三分之一，老师感动给了平时分。" },
+        { text: "请假", effects: { happy: 2 }, result: "你请了假，在宿舍看雨，舒服。" },
+        { text: "找人代答到", effects: { happy: 1, connections: -1 }, result: "你找人代答到了，但提心吊胆了一节课。" },
+      ],
+    },
+    {
+      prefix: "g-dorm-pet", n: 40,
+      slots: { pet: ["仓鼠", "乌龟", "金鱼"] },
+      title: "想养宠物",
+      text: "{person}想在宿舍养只{pet}，问你们同不同意。",
+      choices: [
+        { text: "同意", effects: { happy: 6, connections: 3 }, result: "你们养了{pet}，它成了宿舍团宠，查寝时藏在衣柜里。" },
+        { text: "反对", effects: { happy: -2, connections: -2 }, result: "你反对了，{person}有点失落。" },
+        { text: "养仙人掌", effects: { happy: 2 }, result: "你们折中养了仙人掌，不用喂，还防辐射（并没有）。" },
+      ],
+    },
+    {
+      prefix: "g-midnight-movie", n: 40,
+      slots: { movie: ["恐怖片", "喜剧片", "爱情片"] },
+      title: "深夜看片",
+      text: "熄灯后，宿舍用笔记本看{movie}，{person}吓得钻进了被子。",
+      choices: [
+        { text: "看到天亮", effects: { happy: 6, health: -4 }, result: "你们看到了三点，{movie}真好看，就是第二天起不来。" },
+        { text: "看一半睡觉", effects: { happy: 2, health: 2 }, result: "你们理智地睡了，梦里还在演剧情。" },
+        { text: "换喜剧片", effects: { happy: 5 }, result: "换成喜剧片，笑到肚子疼，{person}不害怕了。" },
+      ],
+    },
+    {
+      prefix: "g-scholarship", n: 40,
+      slots: { amount: ["5000", "8000", "3000"] },
+      title: "奖学金",
+      text: "奖学金评选，你的成绩够{amount}那档，但名额只有一个，竞争者是学霸室友。",
+      choices: [
+        { text: "公平竞争", effects: { iq: 3, connections: 2 }, result: "你们公平竞争，你拿到了，室友真心祝贺你。" },
+        { text: "让给室友", effects: { connections: 5, happy: -3 }, result: "你让了，室友请你吃了大餐，说欠你一个人情。" },
+        { text: "都想要", effects: { happy: -2 }, result: "你们闹得不愉快，最后都没拿到。" },
+      ],
+    },
+    {
+      prefix: "g-travel-plan", n: 40,
+      slots: { place: ["西安", "成都", "重庆"], person: F.person.slice(0, 6) },
+      title: "假期旅行",
+      text: "小长假，{person}提议去{place}玩，AA制，你心动了。",
+      choices: [
+        { text: "去！", effects: { money: -800, happy: 10, connections: 5 }, result: "{place}三天两夜，吃了火锅看了夜景，朋友圈被点赞爆了。" },
+        { text: "太贵了", effects: { money: 0, happy: -4 }, result: "你没去，看着他们的朋友圈，酸了。" },
+        { text: "穷游", effects: { money: -300, happy: 6 }, result: "你规划了穷游版，青旅+公交，照样玩得很开心。" },
+      ],
+    },
+    {
+      prefix: "g-confession-season", n: 40,
+      slots: { person: ["小美", "阿强"] },
+      title: "表白季",
+      text: "毕业季，{person}想跟暗恋的人表白，找你出主意。",
+      choices: [
+        { text: "帮TA策划", effects: { connections: 5, happy: 5 }, result: "你策划了天台表白，成功了，{person}请你吃饭。" },
+        { text: "劝TA冷静", effects: { connections: 1, happy: -1 }, result: "你劝TA冷静，TA没听，表白失败，回来找你喝酒。" },
+        { text: "自己也表白", effects: { happy: 8, charm: 3 }, result: "你也被感染了，跟TA一起表白，都成功了，双喜临门。" },
+      ],
+    },
+    {
+      prefix: "g-internship", n: 40,
+      slots: { company: ["大厂", "创业公司", "国企"] },
+      title: "实习 offer",
+      text: "你拿到了{company}的实习 offer，但要在上课时间去，每周三天。",
+      choices: [
+        { text: "去实习", effects: { money: 2000, iq: 4, happy: 5 }, result: "你去了{company}，学到了很多，还拿了 return offer。" },
+        { text: "以学业为重", effects: { iq: 5, happy: -2 }, result: "你拒绝了，专心考研，最后上了岸。" },
+        { text: "远程实习", effects: { money: 1000, iq: 3, happy: 3 }, result: "你谈了远程，每周去一天，鱼和熊掌兼得。" },
+      ],
+    },
+    {
+      prefix: "g-dorm-cooking", n: 40,
+      slots: { food: ["火锅", "烧烤", "麻辣烫"], person: F.person.slice(0, 6) },
+      title: "宿舍违禁",
+      text: "{person}偷偷在宿舍煮{food}，宿管阿姨的脚步声越来越近了。",
+      choices: [
+        { text: "望风", effects: { connections: 4, happy: 5 }, result: "你望风，{person}光速吃完，阿姨啥也没发现。" },
+        { text: "一起吃", effects: { happy: 7 }, result: "你们冒险吃完，{food}真香，就是心跳 180。" },
+        { text: "举报", effects: { connections: -5, happy: -3 }, result: "你举报了，{person}被没收了锅，跟你绝交三天。" },
+      ],
+    },
 ];
 
 /* ---------- 微事件模板（更短，一句话的事） ---------- */
