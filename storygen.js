@@ -2926,6 +2926,127 @@ choices: [
 ],
 },
 
+
+{
+prefix: "r9-fresh-checkin", n: 40,
+year: 1,
+slots: { volunteer: ["学长", "学姐", "穿红马甲的志愿者"], place: ["宿舍楼下", "校门口", "报到大厅"]},
+title: "新生报到",
+text: "开学第一天，你拖着行李箱站在{place}，人山人海。一个{volunteer}冲过来接过你的箱子，热情得让你不好意思。",
+choices: [
+{ text: "跟着走", effects: { connections: 4, happy: 4}, result: "你跟着{volunteer}办完所有手续，还加了新生群。第一天就认识了三个人，大学开局顺利。"},
+{ text: "自己摸索", effects: { iq: 2, happy: -1}, result: "你拒绝了帮助，自己看地图找路。虽然多走了半小时，但校园布局已经印在脑子里了。"},
+{ text: "请他喝水", effects: { money: -5, connections: 6, happy: 5}, result: "你买了瓶水塞给{volunteer}。他愣了一下，笑着说你是今年第一个请他喝水的新生。"},
+],
+},
+{
+prefix: "r9-fresh-homesick", n: 40,
+year: 1,
+slots: { food: ["红烧肉", "饺子", "妈妈做的面"], time: ["熄灯后", "深夜", "躺在床上"]},
+title: "第一次想家",
+text: "{time}，宿舍安静下来，你突然想家了。想{food}的味道，想自己的床，想爸妈在客厅看电视的声音。",
+choices: [
+{ text: "给家里打电话", effects: { happy: 6}, result: "你拨通了家里的电话，妈妈说第一句话你就哽咽了。聊了半小时，挂掉后心里踏实多了。"},
+{ text: "忍着不说", effects: { happy: -4, health: -1}, result: "你把被子蒙过头顶，假装睡觉。其实大家都醒着，谁也没拆穿谁。"},
+{ text: "跟室友聊聊", effects: { connections: 5, happy: 4}, result: "你小声说想家了，没想到三个人异口同声说我也是。那晚你们聊到半夜，关系近了一大步。"},
+],
+},
+{
+prefix: "r9-fresh-club-rush", n: 40,
+year: 1,
+slots: { club: ["街舞社", "辩论队", "摄影协会"], senior: ["社长", "副社长", "大二的老部员"]},
+title: "百团大战",
+text: "社团招新摆满了整条路，{club}的{senior}拉着你不让走，说你们社今年就差你一个了。你手里已经被塞了五张传单。",
+choices: [
+{ text: "加入试试", effects: { connections: 6, happy: 5, money: -50}, result: "你交了会费加入{club}。第一次活动就认识了一群有意思的人，朋友圈一下子热闹起来。"},
+{ text: "再看看", effects: { happy: 2}, result: "你说再考虑考虑，转了一圈又回来了。{senior}看到你就笑，说就知道你会回来。"},
+{ text: "都不加", effects: { happy: -1, iq: 2}, result: "你一个都没加，觉得社团浪费时间。后来看到别人玩得开心，你有点后悔，但也更清楚自己要什么。"},
+],
+},
+{
+prefix: "r9-fresh-course-pick", n: 40,
+year: 1,
+slots: { course: ["大学物理", "高等数学", "线性代数"], teacher: ["传说中的杀手教授", "口碑很好的老师", "新来的年轻老师"]},
+title: "抢课大战",
+text: "选课系统开了，{course}的{teacher}的课三秒就没了。你盯着屏幕狂点刷新，手心全是汗。",
+choices: [
+{ text: "抢到了", effects: { happy: 6, iq: 3}, result: "你抢到了！全宿舍就你手速最快。{teacher}的课果然名不虚传，一学期下来收获巨大。"},
+{ text: "没抢到", effects: { happy: -4}, result: "没抢到，只能选了个冷门时间段的。后来发现那个老师讲得也不错，是金子总会发光。"},
+{ text: "找学长要课", effects: { connections: 4, happy: 3}, result: "你找学长打听，知道了哪个老师给分高、哪个老师点名严。信息差就是生产力。"},
+],
+},
+{
+prefix: "r9-fresh-laundry", n: 40,
+year: 1,
+slots: { mistake: ["把白衣服染成了粉色", "把毛衣洗缩水了", "忘拿衣服被阿姨喊"], item: ["洗衣机", "手洗盆", "烘干机"]},
+title: "第一次洗衣服",
+text: "长这么大第一次自己洗衣服，你站在{item}前发呆。结果{mistake}，你看着那件衣服，欲哭无泪。",
+choices: [
+{ text: "请教宿管阿姨", effects: { connections: 3, happy: 3}, result: "宿管阿姨看你可怜，手把手教你。从此你掌握了洗衣服的终极奥义。"},
+{ text: "问室友", effects: { connections: 4, happy: 2}, result: "室友笑到打鸣，但还是教你了。作为交换，你请他喝了杯奶茶。"},
+{ text: "百度一下", effects: { iq: 2}, result: "你查了教程，下次就不会错了。独立生活技能+1。"},
+],
+},
+{
+prefix: "r9-fresh-icebreak", n: 40,
+year: 1,
+slots: { game: ["真心话大冒险", "谁是卧底", "UNO"], snack: ["瓜子", "辣条", "奶茶"]},
+title: "宿舍破冰夜",
+text: "开学第一周的晚上，有人提议玩{game}破冰。桌上摆着{snack}，四个人都有点拘谨，但眼里有光。",
+choices: [
+{ text: "主动讲段子", effects: { charm: 5, connections: 6, happy: 6}, result: "你讲了个段子，全宿舍笑翻。从那晚起，你就是宿舍的气氛担当。"},
+{ text: "认真玩游戏", effects: { connections: 4, happy: 4}, result: "你认真玩{game}，虽然话不多，但大家记住了你这个靠谱的人。"},
+{ text: "默默吃东西", effects: { happy: 2}, result: "你 mostly 在吃{snack}，偶尔附和两句。慢热也没关系，时间会证明一切。"},
+],
+},
+{
+prefix: "r9-fresh-ceremony", n: 40,
+year: 1,
+slots: { speaker: ["校长", "优秀毕业生", "院士"], place: ["大礼堂", "操场", "体育馆"]},
+title: "开学典礼",
+text: "开学典礼在{place}举行，{speaker}上台发言。你坐在后排，听着那些关于梦想和未来的话，心里有点燃，又有点慌。",
+choices: [
+{ text: "认真听", effects: { iq: 3, happy: 3}, result: "{speaker}讲到动情处，全场鼓掌。你在备忘录里记下了一句话，四年后你还会想起它。"},
+{ text: "拍照发朋友圈", effects: { connections: 3, happy: 4}, result: "你拍了张全景发朋友圈，配文新的开始。高中同学纷纷点赞，有人说好羡慕。"},
+{ text: "走神了", effects: { happy: 1}, result: "你走神了，想着中午吃什么。典礼结束时你有点愧疚，但肚子是诚实的。"},
+],
+},
+{
+prefix: "r9-fresh-food-tour", n: 40,
+year: 1,
+slots: { shop: ["黄焖鸡", "麻辣烫", "烤冷面"], friend: ["室友", "新认识的同学", "高中校友"]},
+title: "探索美食街",
+text: "学校后街的美食一条街，你和{friend}决定一家一家吃过去。{shop}的队伍排到了拐角，香味勾得人走不动道。",
+choices: [
+{ text: "排队也要吃", effects: { money: -25, happy: 8}, result: "你们排了二十分钟，吃到第一口{shop}时觉得值了。这就是大学的味道。"},
+{ text: "换家人少的", effects: { money: -15, happy: 5}, result: "你们换了家人少的店，意外发现了宝藏小店。以后这就是你们的秘密基地。"},
+{ text: "每家都尝一口", effects: { money: -30, happy: 7, health: -2}, result: "你们开启了特种兵模式，一晚上吃了五家。撑到走不动，但快乐也是真的。"},
+],
+},
+{
+prefix: "r9-fresh-dorm-duty", n: 40,
+year: 1,
+slots: { task: ["扫地", "倒垃圾", "拖地"], mate: ["阿强", "室友", "对床"]},
+title: "第一次值日",
+text: "宿舍排了值日表，这周轮到你{task}。{mate}在旁边打游戏，你拿着扫把，心里有点不平衡。",
+choices: [
+{ text: "认真打扫", effects: { connections: 3, happy: 3}, result: "你把宿舍打扫得干干净净。{mate}看到后不好意思了，主动说下次他多干点。"},
+{ text: "拉他一起", effects: { connections: 5, happy: 4}, result: "你把{mate}从床上拽起来一起干。两个人边干边聊，值日变成了卧谈会。"},
+{ text: "糊弄一下", effects: { happy: -2, connections: -2}, result: "你随便扫了两下。晚上{mate}阴阳怪气说了句，宿舍气氛有点僵。"},
+],
+},
+{
+prefix: "r9-fresh-first-exam", n: 40,
+year: 1,
+slots: { subject: ["高数", "大英", "思修"], place: ["图书馆", "自习室", "宿舍"]},
+title: "大学第一考",
+text: "大学第一次考试是{subject}，考前一周你在{place}突击。高中那套学习方法好像不太管用了，你有点慌。",
+choices: [
+{ text: "通宵复习", effects: { iq: 5, health: -4, happy: -2}, result: "你通宵了两晚，走进考场时眼冒金星。但卷子发下来，你发现都会做。"},
+{ text: "佛系备考", effects: { happy: 3, iq: 2}, result: "你按部就班复习，没熬夜。考试那天状态很好，超常发挥。"},
+{ text: "抱学霸大腿", effects: { connections: 4, iq: 4}, result: "你找学霸划了重点，还蹭了他的笔记。考完请他吃了顿饭，这波不亏。"},
+],
+},
 ];
 
 const MICRO = [
