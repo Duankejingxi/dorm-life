@@ -617,3 +617,20 @@ p, .btn { font-size: 15px; }
 .event-card .flavor { color: #4a4e69; } /* 次要文字深灰 */
 .hint { color: #6b7280; }
 .count-line { color: #6b7280; }
+
+/* v3.0-hotfix2：修未选中按钮白字白底（用户截图反馈） */
+.btn {
+  color: #1a1d29;
+  background: #f7f8fa;
+  border: 1px solid #e8eaef;
+}
+.pick-btn {
+  color: #1a1d29;
+  background: #f7f8fa;
+  border: 1px solid #e8eaef;
+}
+.pick-btn.picked {
+  background: linear-gradient(180deg, #f5c542, #e8a90c);
+  color: #231303;
+  border: none;
+}
