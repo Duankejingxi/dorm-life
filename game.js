@@ -8,7 +8,7 @@
   const ENDINGS_KEY = "dorm-life-endings-v1";
   const ACHIEVE_KEY = "dorm-life-achievements-v1";
   const GAMES_KEY = "dorm-life-games-v1";
-  const TOTAL_ENDINGS = 60;
+  const TOTAL_ENDINGS = 100;
   // v1.3：每学期 8 个遭遇，穿插进行：行动 → 大事件 → 行动 → 小事 → 行动 → 大事件 → 小事 → 小事
   const STEP_QUEUE = ["action", "big", "action", "micro", "action", "big", "micro", "micro"];
   const ACTIONS_PER_SEMESTER = 3;
@@ -443,9 +443,15 @@
       });
       flags.actionCounts[actionId] = (flags.actionCounts[actionId] || 0) + 1;
       if (best && bestRel >= 80) {
-        state.inLove = best.id;
-        applyEffects({ happy: 10 }, 1);
-        addLog("💌 你向" + best.name + "表白了，TA 答应了！你们在一起了。（快乐 +10）");
+        // v3.0/第5轮：已经在一起了再点就是约会（快乐 +4），堵住无限表白刷快乐的 exploit
+        if (state.inLove === best.id) {
+          applyEffects({ happy: 4 }, 1);
+          addLog("💑 你和" + best.name + "去约会了，牵手压马路，买了两杯奶茶。（快乐 +4）");
+        } else {
+          state.inLove = best.id;
+          applyEffects({ happy: 10 }, 1);
+          addLog("💌 你向" + best.name + "表白了，TA 答应了！你们在一起了。（快乐 +10）");
+        }
       } else if (best) {
         applyEffects({ happy: -5 }, 1);
         const relPatch = {};
@@ -546,7 +552,7 @@
     const year = yearOf();
     // 大事件池：按学年过滤、排除最近用过的；再加未开始的连锁第 1 环
     // v1.6：兼职专属事件只刷自己那份兼职的（没打工的刷不到）
-    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && usedEventIds.indexOf(e.id) === -1);
+    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && (!e.minRel || (state && state.rel && (state.rel[e.minRel.npc] || 0) >= e.minRel.value)) && usedEventIds.indexOf(e.id) === -1);
     CHAINS.forEach((c) => {
       if (startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
         pool.push(chainEvent(c.id, 1));

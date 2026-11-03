@@ -16,7 +16,7 @@ const ACTIONS = [
     effects: { happy: 7, iq: -3, credits: -1, money: -60 }, variance: 2,
     log: ["你上分如喝水，快乐得冒泡。", "你游戏里风生水起，现实里作业堆成山。"] },
   { id: "social", cost: 1, icon: "🎉", name: "社交聚会", desc: "社团、聚餐、认识新朋友。魅力、人脉都涨，钱包瘪。",
-    effects: { charm: 5, happy: 4, money: -120, connections: 5 }, variance: 2, rel: { aqiang: 4, xiaomei: 4, xuezhang: 3, daoshi: 2 },
+    effects: { charm: 5, happy: 4, money: -120, connections: 5 }, variance: 2, rel: { aqiang: 4, xiaomei: 4, xuezhang: 4, daoshi: 3 },
     log: ["你认识了一大圈人，朋友圈热闹得很。", "你饭局不断，人缘越来越好。"] },
   { id: "slack", cost: 1, icon: "😴", name: "摆烂躺平", desc: "不卷了。睡到自然醒，快乐最重要。",
     effects: { happy: 4, health: -2, iq: -2 }, variance: 2,
@@ -27,7 +27,7 @@ const ACTIONS = [
   { id: "nightchat", cost: 1, icon: "🌙", name: "宿舍夜聊", desc: "熄灯后和一个人夜聊到半夜，聊人生聊八卦。随机一个人的关系大涨，心情也好。",
     effects: {}, variance: 0, nightchat: true,
     log: ["你们夜聊到半夜，关系更铁了。"] },
-  { id: "confess", cost: 2, icon: "💌", name: "表白", desc: "向关系最好的那个人表白。关系 ≥80 才能成功，失败会扣关系和心情。",
+  { id: "confess", cost: 2, icon: "💌", name: "表白", desc: "向关系最好的那个人表白。关系 ≥80 才能成功，失败会扣关系和心情。在一起后再点就是约会（快乐 +4）。",
     effects: {}, variance: 0, confess: true,
     log: ["你鼓起勇气表白了。"] },
 ];
@@ -3375,13 +3375,13 @@ EVENTS.push(...YEAR_EVENTS);
 
 const ENDINGS = [
   { id: "sick", title: "病倒休学", emoji: "🤒", early: true,
-    desc: "身体垮了。连续熬夜加生病，你不得不休学一年。健康才是本钱，这次算是交了学费。" },
+    desc: "身体垮了。连续熬夜、感冒拖成肺炎，你不得不休学一年。躺在病床上你才明白：健康才是本钱，拿命换的绩点不值。这次，算是交了学费。" },
   { id: "debt", title: "欠债退学", emoji: "💸", early: true,
-    desc: "钱花光了，还欠了一屁股债。你不得不退学打工还钱。大学这条路，暂时走不下去了。" },
+    desc: "钱花光了，还欠了一屁股网贷。你不得不退学打工还钱。走出校门那天你回头看了一眼：大学这条路暂时走不下去了，但人生的路还长。" },
   { id: "baoyan", title: "保研成功", emoji: "🎓",
     desc: "四年苦读没有白费。你以优异的成绩保研本校，继续深造。学弟学妹口中的“大神”，就是你。" },
   { id: "kaoyan", title: "考研上岸", emoji: "📚",
-    desc: "备考的日子很苦，但你挺过来了。收到录取通知的那一刻，所有的通宵都值了。" },
+    desc: "备考那一年，你每天在图书馆坐到闭馆。收到录取通知的那一刻手都在抖——所有的通宵、自习室的冷板凳，都值了。" },
   { id: "dachang", title: "大厂 Offer", emoji: "💼",
     desc: "凭着过硬的专业能力和出色的面试表现，你拿到了大厂的 Offer。毕业即就业，还是高薪的那种。" },
   { id: "startup", title: "创业成功", emoji: "🚀",
@@ -3391,7 +3391,7 @@ const ENDINGS = [
   { id: "happy", title: "快乐躺平", emoji: "😌",
     desc: "四年过得开开心心，没卷也没垮。毕业了，找了份轻松的工作，日子过得舒舒服服。快乐也是一种成功。" },
   { id: "delay", title: "延毕一年", emoji: "📉",
-    desc: "学分不够，延毕一年。看着同届的同学毕业离校，你在空荡荡的宿舍里多住了一年。" },
+    desc: "学分不够，延毕一年。毕业季看着同届同学穿学士服合影，你在空荡荡的宿舍里多住了一年。这一年你补完了学分，也补上了对时间的敬畏。" },
   { id: "normal", title: "平凡毕业", emoji: "🎓",
     desc: "四年平平淡淡地过去了。你拿到了毕业证，找了份普通的工作，过上了普通的生活。平凡，但也挺好。" },
   // ---- v1.1 新增结局（22 个）----
@@ -3404,15 +3404,15 @@ const ENDINGS = [
   { id: "baoyan-fail", title: "保研失败", emoji: "😔",
     desc: "就差一点点。保研名额没轮到你，失落了一阵子，但你很快振作起来，考研上岸了另一所学校，也挺好。" },
   { id: "kaoyan-retry", title: "考研二战", emoji: "📚",
-    desc: "第一次没考上，你决定再战一年。二战的日子更苦，但你挺过来了，这次一定行。" },
+    desc: "第一次差 3 分没考上，你决定再战一年。二战的冬天更冷，图书馆的座位更难抢，但你挺过来了。查到分数那天，你对着屏幕哭了五分钟。" },
   { id: "abroad", title: "出国留学", emoji: "✈️",
     desc: "你拿到了国外名校的 offer，飞往大洋彼岸。异国的四年，你见识了不一样的世界，回来的时候整个人都不一样了。" },
   { id: "civil", title: "考公上岸", emoji: "🏛️",
-    desc: "千军万马过独木桥，你上岸了。铁饭碗端在手里，父母特别高兴，你也松了口气。" },
+    desc: "申论行测刷了上万道题，面试练到嗓子哑。千军万马过独木桥，你上岸了。拿到录用通知那天，爸妈做了满满一桌菜，你第一次看到爸爸眼眶红了。" },
   { id: "startup-fail", title: "创业失败", emoji: "💔",
     desc: "你创业了，但项目没做起来，钱烧光了，团队也散了。失败的教训比成功更值钱，你带着经验重新出发。" },
   { id: "small-boss", title: "小老板", emoji: "🏪",
-    desc: "你开了家小店，生意不温不火，但足够养活自己。当自己的老板，自由自在，挺好。" },
+    desc: "毕业你没找工作，在学校后街开了家小店。生意不温不火，但足够养活自己，还能给学弟学妹打折。当自己的老板，自由自在，挺好。" },
   { id: "influencer", title: "网红主播", emoji: "📱",
     desc: "你成了小有名气的主播，直播间每晚都有几千人看，广告接到手软。毕业即网红，这条路你走通了。" },
   { id: "esports-pro", title: "电竞选手", emoji: "🎮",
@@ -3422,11 +3422,11 @@ const ENDINGS = [
   { id: "teacher", title: "当老师", emoji: "👩‍🏫",
     desc: "你考了教师资格证，当了老师。站在讲台上的那一刻，你想起当年教过你的老师，薪火相传。" },
   { id: "writer", title: "作家", emoji: "✍️",
-    desc: "你的小说出版了，签售会排起了长队。大学四年写下的几十万字，终于变成了铅字。" },
+    desc: "宿舍熄灯后你打着手电写的那本小说，出版了。签售会那天排起了长队，有读者说你的书陪她度过了整个高三。四年的几十万字，终于变成了铅字。" },
   { id: "artist", title: "艺术家", emoji: "🎨",
-    desc: "你的作品在展览上获奖了，还办了个展。艺术这条路不好走，但你走出了自己的风格。" },
+    desc: "你的毕业作品在全国美展上拿了奖，还办了个展。开幕那天，大学时教你素描的老师也来了。艺术这条路不好走，但你走出了自己的风格。" },
   { id: "photographer", title: "摄影师", emoji: "📷",
-    desc: "你成了摄影师，拍人、拍风景、拍故事。你的照片里有光，有温度，有生活。" },
+    desc: "你成了摄影师，背着相机走南闯北，拍人、拍风景、拍故事。那张在宿舍天台拍的星空拿了奖——你的照片里有光，有温度，有生活。" },
   { id: "volunteer-star", title: "公益之星", emoji: "❤️",
     desc: "你坚持做公益四年，支教、敬老院、志愿者，哪里需要你就去哪里。毕业那年，你拿到了公益之星的称号。" },
   { id: "freelancer", title: "自由职业", emoji: "💻",
@@ -3436,7 +3436,7 @@ const ENDINGS = [
   { id: "gap-year", title: "间隔年", emoji: "🌍",
     desc: "毕业后你没急着工作，背起行囊去旅行了一年。走过很多地方，见过很多人，回来的时候，你知道自己想要什么了。" },
   { id: "inherit", title: "回家继承小卖部", emoji: "🏠",
-    desc: "你回家继承了爸妈的小卖部，生意红红火火。每天守着小店，日子过得悠闲又满足。" },
+    desc: "你回家继承了爸妈的小卖部，顺手做了个线上团购，生意红红火火。每天守着小店跟街坊聊天，日子悠闲又满足。同学聚会时你说：这才是生活。" },
   { id: "happy-rich", title: "平凡但幸福", emoji: "😊",
     desc: "你找了份普通的工作，收入不高但够花，周末和朋友聚聚，日子过得平平淡淡但特别幸福。平凡，也是一种成功。" },
   // ---- v1.2 新增结局（4 个，和人际关系挂钩）----
@@ -3502,6 +3502,87 @@ const ENDINGS = [
     desc: "你和室友在宿舍里捣鼓出了一个小项目，拿了创业大赛的奖，还拉到了第一笔投资。毕业了，你们没找工作，直接把公司开了起来。" },
   { id: "script-host", title: "剧本杀店长", emoji: "🕵️",
     desc: "你从剧本杀爱好者变成了店长，店里天天爆满，你带的本场场封神。毕业了，你开了自己的第二家店，剧本杀成了你的事业。" },
+  // ---- v3.0 新增结局（40 个，大三/大四篇）----
+  { id: "baoyan-mit", title: "保研 MIT", emoji: "🌍",
+    desc: "你以全系第一的成绩拿到了 MIT 的全奖 offer。签证官看到你的成绩单，直接给了五年签。出国那天，全系都来送你。" },
+  { id: "startup-unicorn", title: "独角兽创始人", emoji: "🦄",
+    desc: "大三你做的 APP 爆火，毕业前拿到了三轮融资，估值 10 亿。福布斯 30 Under 30 名单上，你是最年轻的那个。" },
+  { id: "olympic-gold", title: "奥运金牌", emoji: "🥇",
+    desc: "四年苦练，你入选了国家队。奥运会上，你为国争光拿下金牌。国歌响起的那一刻，你想起了每天五点起床训练的操场。" },
+  { id: "forbes-30", title: "福布斯新贵", emoji: "💎",
+    desc: "毕业前你已经财务自由。福布斯把你评为 30 Under 30，你的创业故事被写进了商学院的案例库。" },
+  { id: "nobel-nom", title: "学术新星", emoji: "🔬",
+    desc: "你在导师指导下发了三篇顶刊，本科毕业就被顶尖实验室抢着要。学术圈都说，你是下一个诺奖的有力竞争者。" },
+  { id: "bigtech-sp", title: "大厂 SP", emoji: "💰",
+    desc: "你拿到了大厂的 SP offer（Special Offer），年薪 60 万+。面试官说，你是他面过最强的一届应届生。" },
+  { id: "kaoyan-985-top", title: "考研榜眼", emoji: "🏆",
+    desc: "你以专业第二的成绩考上了 985。复试时导师直接说：就要你了。备考的 400 天，每天 12 小时，都值了。" },
+  { id: "civil-central", title: "中央选调", emoji: "🏛️",
+    desc: "你通过了中央选调生的选拔，去了部委工作。同学聚会时，大家都说你是最有前途的那个。" },
+  { id: "ivyleague", title: "藤校深造", emoji: "🎓",
+    desc: "你拿到了常春藤的全奖 offer。家里砸锅卖铁供你读书，你用一张录取通知书回报了他们。" },
+  { id: "surgeon", title: "外科医生", emoji: "⚕️",
+    desc: "你保研到了顶尖医学院的临床专业。八年本博连读很苦，但穿上白大褂的那一刻，你觉得一切都值了。" },
+  { id: "pilot", title: "民航飞行员", emoji: "✈️",
+    desc: "你通过了航司的层层选拔，成为了飞行员。第一次单飞时，你在驾驶舱里看到了日出，云海翻涌。" },
+  { id: "diplomat", title: "外交官", emoji: "🌐",
+    desc: "你考进了外交部，派驻海外。同学群里，你发的 each 国风景照总能收获一堆点赞。" },
+  { id: "architect-star", title: "明星建筑师", emoji: "🏗️",
+    desc: "你的毕业设计拿了国际大奖，毕业就被知名事务所签下。你设计的第一个作品，成了城市的新地标。" },
+  { id: "lawyer-top", title: "红圈所律师", emoji: "⚖️",
+    desc: "你通过了法考，进了红圈所。第一年很苦，但你的名字已经出现在了几个大案子的代理人名单里。" },
+  { id: "pe-investor", title: "PE 投资人", emoji: "📈",
+    desc: "你进了顶级 PE，从分析师做起。你的第一个项目就赚了 10 倍，老板说你眼光毒辣。" },
+  { id: "consultant-mbb", title: "MBB 顾问", emoji: "💼",
+    desc: "你拿到了 MBB 三家的 offer，选了最喜欢的那家。出差住五星酒店，飞商务舱，但每周工作 80 小时。" },
+  { id: "pm-tencent", title: "大厂产品经理", emoji: "📱",
+    desc: "你成了大厂的产品经理，负责千万 DAU 的产品。用户骂你的时候，你躲在被子里哭；用户夸你的时候，你请全组喝奶茶。" },
+  { id: "algo-engineer", title: "算法工程师", emoji: "🤖",
+    desc: "你成了算法工程师，调的模型上线后效果提升了 30%。你的论文被引用了 500 次，成了领域内的小名人。" },
+  { id: "game-producer", title: "游戏制作人", emoji: "🎮",
+    desc: "你进了游戏大厂做制作人，你主导的项目上线首月流水破亿。玩家在论坛里把你夸上了天。" },
+  { id: "journalist-top", title: "调查记者", emoji: "📰",
+    desc: "你成了调查记者，蹲了三个月写出的深度报道推动了政策改变。有人发短信威胁你，你回了四个字：真相值得。大学时写的第一篇稿子，没白写。" },
+  { id: "chef-michelin", title: "米其林主厨", emoji: "👨‍🍳",
+    desc: "你没走专业路，去学了厨艺。十年后，你的餐厅摘了米其林三星。食客说，你的菜里有故事。" },
+  { id: "writer-famous", title: "畅销书作家", emoji: "✍️",
+    desc: "你大学时写的小说出版了，卖了 100 万册。签售会上，读者排了三条街。你终于靠文字养活了自己。" },
+  { id: "director", title: "青年导演", emoji: "🎬",
+    desc: "你拍的毕业作品入围了国际电影节。毕业后你拉到投资，拍了第一部院线电影，票房破 10 亿。" },
+  { id: "singer-star", title: "选秀出道", emoji: "🎤",
+    desc: "你参加了选秀，从海选一路唱到总决赛，C 位出道。单曲空降热搜第一，粉丝后援会人数破百万。宿舍群里，阿强把你的海报贴在了床头。" },
+  { id: "esports-champion", title: "世界冠军", emoji: "🏆",
+    desc: "你带领战队拿下了世界冠军，捧杯的那一刻，全场高喊你的 ID。你的反应速度，被做成了教学视频。" },
+  { id: "travel-king", title: "环球旅行家", emoji: "🌍",
+    desc: "毕业后你花了一年走遍了 30 个国家。你的游记全网阅读破亿，旅行社抢着请你代言。" },
+  { id: "food-critic", title: "美食评论家", emoji: "🍜",
+    desc: "你成了知名美食评论家，一篇探店视频播放破千万。店家听说你要来，又紧张又期待。当年带你吃遍学校后街的室友，现在是你视频里的常驻嘉宾。" },
+  { id: "fitness-idol", title: "健身偶像", emoji: "💪",
+    desc: "你练出了八块腹肌，全网粉丝 500 万。你的健身课程卖爆了，学员说跟着你练，三个月脱胎换骨。" },
+  { id: "volunteer-leader", title: "公益领袖", emoji: "❤️",
+    desc: "你创立的公益组织帮助了 10 万山区儿童。毕业典礼上，校长亲自为你颁发了公益之星奖。" },
+  { id: "dorm-legend", title: "宿舍传奇", emoji: "👑",
+    desc: "你是全校最有名的宿舍长，你的宿舍拿了四年文明宿舍。毕业时，宿管阿姨抱着你哭了，说再也遇不到这么好的学生了。" },
+  { id: "kaoyan-warrior", title: "考研战神", emoji: "📖",
+    desc: "二战上岸 985。你把经验写成了帖子，全网阅读 2000 万。评论区都在说：谢谢你，让我坚持了下来。" },
+  { id: "civil-warrior", title: "考公斗士", emoji: "💪",
+    desc: "三战终于上岸。你把申论范文背了 100 篇，行测刷了 5 万道题。上岸那天，你把所有的书都烧了。" },
+  { id: "startup-phoenix", title: "创业凤凰", emoji: "🔥",
+    desc: "第一次创业失败，欠了 50 万。你打工还钱，三年后二次创业成功。投资人说，欣赏你的是那股不服输的劲。" },
+  { id: "freelance-king", title: "自由职业王", emoji: "💻",
+    desc: "你成了顶级自由职业者，时薪 2000，接单接到手软。你在洱海边买了房，工作累了就去看海。" },
+  { id: "teacher-village", title: "乡村教师", emoji: "🏫",
+    desc: "你放弃了大厂 offer，去山区支教。孩子们的笑脸，是你收到过最好的 offer。" },
+  { id: "doctor-border", title: "无国界医生", emoji: "🌍",
+    desc: "你加入了无国界医生，去战地救人。子弹从头顶飞过时，你正在给伤员缝合。宿舍群里大家说你疯了，你说：学医那天就想好了，哪里需要去哪里。" },
+  { id: "archaeologist", title: "考古学家", emoji: "🏺",
+    desc: "你成了考古学家，跟着导师参与了重大遗址的发掘。你亲手挖出的那件青铜器，被送进了国家博物馆。展柜前你站了很久：三千年，它等的人是你。" },
+  { id: "astronaut", title: "航天员", emoji: "🚀",
+    desc: "你通过了层层选拔，成为航天员。发射那天，全校师生挤在礼堂看直播。你在太空里给母校拍了张照片，配文：从宿舍的窗户，到舷窗。" },
+  { id: "mayor", title: "最年轻镇长", emoji: "🏛️",
+    desc: "你考上了选调生，被派到乡镇当镇长。三年后，你带领全镇脱贫，成了全省最年轻的处级干部。" },
+  { id: "judge", title: "青年法官", emoji: "⚖️",
+    desc: "法考和公考双双通过，你成了全市最年轻的法官。你判的第一个案子，被写进了司法解释。敲下法槌时你想起：大一那场模拟法庭，是起点。" },
 ];
 
 // 结局判定（按顺序，第一个满足的胜出；延毕/退学排在前面——学分不够毕不了业，再快乐也没用）
@@ -3512,6 +3593,52 @@ function judgeEnding(s) {
   if (s.credits < 15) return "delay2";
   if (s.credits < 30) return "delay";
   if (s.credits >= 30 && s.credits < 35 && s.money >= 8000) return "dropout-startup";
+  // v3.0：40 个新结局（按特异性从高到低排列，避免偷取已有结局）
+  // Tier S: 绝对精英（credits>=95 或 money>=50000 或 health>=98）
+  if (s.credits >= 95 && s.iq >= 92 && s.charm >= 80) return "baoyan-mit";
+  if (s.iq >= 98 && s.credits >= 95) return "nobel-nom";
+  if (s.money >= 50000 && s.charm >= 90 && (s.connections || 0) >= 85) return "startup-unicorn";
+  if (s.health >= 98 && s.charm >= 85 && s.happy >= 90) return "olympic-gold";
+  // Tier A: 顶尖职业（iq>=88 且特定组合）
+  if (s.iq >= 94 && s.credits >= 80 && s.credits < 82) return "algo-engineer";
+  if (s.iq >= 93 && s.credits >= 82 && s.credits < 85 && s.charm < 80) return "kaoyan-985-top";
+  if (s.iq >= 92 && s.credits >= 85 && s.charm >= 85 && s.money < 5000) return "bigtech-sp";
+  if (s.iq >= 91 && s.happy >= 91 && s.charm < 70 && s.health < 85) return "writer-famous";
+  if (s.iq >= 91 && s.health >= 89 && s.happy >= 91 && s.charm < 70 && s.credits < 60) return "doctor-border";
+  if (s.iq >= 91 && s.credits >= 83 && s.charm >= 82 && s.charm < 85) return "judge";
+  if (s.iq >= 90 && s.charm >= 90 && (s.connections || 0) >= 90 && s.credits < 60) return "diplomat";
+  if (s.iq >= 89 && s.charm >= 89 && (s.connections || 0) >= 86 && s.credits < 60) return "consultant-mbb";
+  if (s.iq >= 89 && s.money >= 25000 && s.charm >= 80 && s.charm < 85) return "ivyleague";
+  if (s.iq >= 89 && s.credits >= 89 && s.health >= 87 && s.charm < 70) return "surgeon";
+  if (s.iq >= 89 && s.credits >= 76 && s.credits < 80 && s.charm < 70 && s.health >= 75) return "lawyer-top";
+  if (s.iq >= 89 && s.credits >= 82 && s.happy >= 87 && s.charm < 70) return "archaeologist";
+  // Tier B: 高级职业（iq 84-88）
+  if (s.iq >= 86 && (s.connections || 0) >= 89 && s.credits >= 82 && s.charm >= 82 && s.charm < 85) return "civil-central";
+  if (s.iq >= 86 && s.money >= 16000 && s.charm >= 87 && s.charm < 90) return "pe-investor";
+  if (s.iq >= 86 && s.charm >= 86 && (s.connections || 0) >= 82 && s.iq < 88 && s.charm < 88) return "pm-tencent";
+  if (s.iq >= 86 && s.charm >= 82 && s.credits >= 77 && s.iq < 88 && s.charm < 85) return "architect-star";
+  if (s.iq >= 84 && s.charm >= 84 && (s.connections || 0) >= 79 && s.iq < 85) return "journalist-top";
+  if (s.iq >= 83 && s.happy >= 89 && s.charm >= 82 && s.charm < 85 && s.iq < 84) return "game-producer";
+  if (s.iq >= 83 && (s.connections || 0) >= 91 && s.credits >= 79 && s.iq < 84) return "mayor";
+  // Tier C: 精英生活（charm/happy 主导）
+  if (s.charm >= 95 && s.happy >= 89) return "singer-star";
+  if (s.happy >= 95 && s.charm >= 87 && s.charm < 90) return "esports-champion";
+  if (s.charm >= 93 && s.happy >= 89 && s.charm < 95) return "director";
+  if (s.charm >= 91 && s.happy >= 91 && s.money >= 6000 && s.money < 10000) return "chef-michelin";
+  if (s.health >= 96 && s.charm >= 91 && s.happy >= 89 && s.health < 98) return "fitness-idol";
+  if (s.charm >= 91 && s.happy >= 91 && s.money >= 11000 && s.money < 18000) return "food-critic";
+  if (s.money >= 20000 && s.money < 30000 && s.happy >= 91 && s.charm >= 87 && s.charm < 90) return "travel-king";
+  if ((s.connections || 0) >= 93 && s.happy >= 93 && s.charm >= 88) return "dorm-legend";
+  if ((s.connections || 0) >= 93 && s.happy >= 93 && s.charm >= 87 && s.charm < 88) return "volunteer-leader";
+  if (s.health >= 92 && s.iq >= 82 && s.charm >= 82 && s.health < 95 && s.iq < 83) return "pilot";
+  // Tier D: 逆袭故事（特定窄区间）
+  if (s.credits >= 57 && s.credits < 60 && s.iq >= 83 && s.iq < 84 && s.happy >= 77) return "kaoyan-warrior";
+  if (s.iq >= 75 && s.iq < 76 && (s.connections || 0) >= 79 && s.credits >= 63) return "civil-warrior";
+  if (s.money >= 4500 && s.money < 5000 && s.charm >= 82 && s.happy >= 87 && s.iq >= 72 && s.iq < 75) return "startup-phoenix";
+  if (s.happy >= 92 && s.money >= 9000 && s.money < 15000 && s.iq >= 82 && s.iq < 85) return "freelance-king";
+  if (s.iq >= 79 && s.iq < 80 && s.charm >= 82 && s.credits >= 72 && s.happy >= 89) return "teacher-village";
+  if (s.health >= 96 && s.iq >= 89 && s.charm >= 87 && s.health < 98 && s.iq < 90) return "astronaut";
+  if (s.money >= 30000 && s.charm >= 88 && s.iq >= 80 && (s.connections || 0) >= 80 && s.money < 50000) return "forbes-30";
   if (s.iq >= 90 && s.credits >= 80) return "phd";
   // v1.8：保研清北（学分 90+、智力 85–89、魅力 70+；放在奖学金学霸之前，不然会被抢走）
   if (s.credits >= 90 && s.iq >= 85 && s.iq < 90 && s.charm >= 70) return "top-baoyan";
