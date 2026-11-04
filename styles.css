@@ -585,8 +585,8 @@ body {
   padding: 8px;
 }
 .tab-btn.active {
-  background: #fff;
-  color: #1a1d29;
+  background: #4f7cff;
+  color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
