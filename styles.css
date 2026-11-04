@@ -495,8 +495,8 @@ body {
 /* 1. 全局：去金粉化，用系统字体 */
 body {
   font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: #f2f3f5; /* 浅灰背景，像市面 App */
-  color: #1a1d29;
+  background: #1a1d29; /* 深色背景 */
+  color: #f7f0ea;
   animation: none; /* 删掉背景漂移 */
 }
 .game-head h2 {
@@ -509,7 +509,7 @@ body {
 
 /* 2. 卡片：白底 16px 圆角 轻阴影 */
 .panel, .event-card, #gameScreen .panel {
-  background: #ffffff;
+  background: #2a2d3a;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   border: none;
@@ -532,12 +532,12 @@ body {
   color: #fff;
 }
 .btn.secondary {
-  background: #f2f3f5;
-  color: #1a1d29;
-  border: 1px solid #e0e2e8;
+  background: #2a2d3a;
+  color: #f7f0ea;
+  border: 1px solid #3a3d4a;
 }
 .choice-list .btn {
-  background: #f7f8fa;
+  background: #2a2d3a;
   color: #1a1d29;
   border: 1px solid #e8eaef;
   text-align: left;
@@ -552,7 +552,7 @@ body {
 
 /* 4. 属性：清晰的进度条 */
 .stat-chip {
-  background: #f7f8fa;
+  background: #2a2d3a;
   border-radius: 12px;
   padding: 10px;
   border: none;
@@ -621,12 +621,12 @@ p, .btn { font-size: 15px; }
 /* v3.0-hotfix2：修未选中按钮白字白底（用户截图反馈） */
 .btn {
   color: #1a1d29;
-  background: #f7f8fa;
+  background: #2a2d3a;
   border: 1px solid #e8eaef;
 }
 .pick-btn {
   color: #1a1d29;
-  background: #f7f8fa;
+  background: #2a2d3a;
   border: 1px solid #e8eaef;
 }
 .pick-btn.picked {
