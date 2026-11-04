@@ -3706,8 +3706,8 @@ function judgeEnding(s) {
   if (s.iq >= 80 && s.happy >= 70) return "writer";
   if (s.charm >= 85 && s.happy >= 75) return "artist";
   if (s.charm >= 80 && s.happy >= 80 && s.money >= 3000 && s.credits < 45) return "travel-blogger"; // v1.4
-  if (s.charm >= 80 && s.happy >= 75) return "photographer";
   if (s.charm >= 80 && s.happy >= 80 && s.money < 2000) return "volunteer-star";
+  if (s.charm >= 80 && s.happy >= 75) return "photographer";
   if (s.happy >= 80 && s.money >= 2000) return "freelancer";
   if (s.happy >= 80 && s.money >= 1000 && s.credits < 45) return "gap-year";
   if (s.happy >= 70 && s.money < 1000) return "inherit";
