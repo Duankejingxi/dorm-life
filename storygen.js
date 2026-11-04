@@ -3047,6 +3047,127 @@ choices: [
 { text: "抱学霸大腿", effects: { connections: 4, iq: 4}, result: "你找学霸划了重点，还蹭了他的笔记。考完请他吃了顿饭，这波不亏。"},
 ],
 },
+
+{
+prefix: "r10-qiuzhao-early", n: 40,
+year: 4,
+slots: { company: ["大厂", "国企", "独角兽"], num: ["30", "50", "80"]},
+title: "秋招提前批",
+text: "秋招提前批开了，{company}的岗位放出来了。你一口气海投了{num}份简历，邮箱塞满了自动回复。",
+choices: [
+{ text: "精修简历", effects: { connections: 3, iq: 2}, result: "你找学长改了三版简历，STAR 法则重写项目经历，HR 回复率明显高了。"},
+{ text: "广撒网", effects: { happy: -2, iq: 1}, result: "你继续海投，每天刷邮箱十几次。焦虑归焦虑，面试机会确实多了。"},
+{ text: "主攻一家", effects: { iq: 4, happy: -3}, result: "你决定主攻{company}，把它的面经刷了三遍。笔试顺利通过，进面试了。"},
+],
+},
+{
+prefix: "r10-group-interview", n: 40,
+year: 4,
+slots: { topic: ["外卖柜进小区", "共享单车涨价", "AI 客服替代人工"], role: ["计时员", "总结者", "破冰者"]},
+title: "无领导小组面",
+text: "群面 8 进 3，题目是「{topic}」，你主动当了{role}。旁边有个 Aggressive 的同学一直在抢话。",
+choices: [
+{ text: "稳住节奏", effects: { connections: 4, happy: 2}, result: "你不抢话但每次发言都切中要害，还帮被打断的同学圆了场。面试官多看了你两眼。"},
+{ text: "强势输出", effects: { connections: -2, iq: 3}, result: "你火力全开主导了讨论，但那个抢话的同学脸色不太好看。HR 说你「很有想法」。"},
+{ text: "做好辅助", effects: { connections: 5}, result: "你把{role}做到极致，时间把控精准，最后还做了漂亮的总结。团队氛围被你带起来了。"},
+],
+},
+{
+prefix: "r10-intern-defense", n: 40,
+year: 4,
+slots: { project: ["用户增长", "推荐算法", "供应链优化"], boss: ["导师", "总监", "HRBP"]},
+title: "实习转正答辩",
+text: "实习转正答辩，你讲{project}项目，{boss}坐在台下。PPT 翻到数据那页，你手心开始出汗。",
+choices: [
+{ text: "自信陈述", effects: { iq: 4, connections: 3}, result: "你把项目讲得很透，数据、复盘、改进点一气呵成。{boss}点头了，转正基本稳了。"},
+{ text: "承认不足", effects: { happy: 2, connections: 4}, result: "你主动讲了项目里的坑和学到的教训。{boss}说「诚实比完美更难得」，给了通过。"},
+{ text: "紧张忘词", effects: { happy: -5, iq: 1}, result: "你紧张得卡了壳，但深呼吸后把核心结论讲完了。{boss}让你再实习一个月观察。"},
+],
+},
+{
+prefix: "r10-kaogong", n: 40,
+year: 4,
+slots: { subject: ["行测", "申论", "专业课"], place: ["图书馆", "出租屋", "自习室"]},
+title: "考公备考",
+text: "你决定考公，每天泡在{place}刷{subject}。室友拿了大厂 offer，你盯着 1:200 的报录比发呆。",
+choices: [
+{ text: "死磕到底", effects: { iq: 5, health: -3, happy: -3}, result: "你每天刷 200 道题，{subject}正确率稳步上升。进面的希望越来越大。"},
+{ text: "两手准备", effects: { iq: 3, connections: 2}, result: "你一边备考一边投简历，虽然累，但心里踏实：考不上也有退路。"},
+{ text: "找人倾诉", effects: { happy: 5, connections: 3}, result: "你跟考上的学长聊了一晚，他告诉你心态比刷题重要。你找回了节奏。"},
+],
+},
+{
+prefix: "r10-kaoyan2", n: 40,
+year: 4,
+slots: { score: ["差 10 分", "差 30 分", "过了线但复试被刷"], choice: ["二战", "找工作", "先工作再考"]},
+title: "考研落榜",
+text: "考研成绩出来了，{score}。看着「拟录取」名单里没有你，手机在手里震了好久你都没接。",
+choices: [
+{ text: "决定二战", effects: { iq: 4, happy: -4, money: -5}, result: "你决定二战，租了个小房间闭关。爸妈说「我们供你」，你鼻子一酸。"},
+{ text: "转向求职", effects: { happy: 3, connections: 2}, result: "你收拾心情加入春招，发现实习经历很加分，很快拿到了几个面试。"},
+{ text: "Gap 一年", effects: { happy: 5, health: 3, money: -3}, result: "你决定 gap 一年，一边兼职一边想清楚到底要什么。人生不是只有一条赛道。"},
+],
+},
+{
+prefix: "r10-thesis-proposal", n: 40,
+year: 4,
+slots: { topic: ["推荐系统", "碳中和路径", "乡村振兴"], teacher: ["导师", "系主任", "外审专家"]},
+title: "毕设开题",
+text: "毕业设计开题，你的题目是「{topic}」，{teacher}坐在答辩席正中间，推了推眼镜。",
+choices: [
+{ text: "充分准备", effects: { iq: 5, credit: 3}, result: "你把文献综述做了 30 页，{teacher}只问了两个小问题就让你过了，还夸选题有新意。"},
+{ text: "临阵磨枪", effects: { iq: 2, happy: -4}, result: "你开题前一晚才赶完 PPT，被{teacher}问住了三次，回去大改。好在给了第二次机会。"},
+{ text: "请教前辈", effects: { connections: 4, iq: 3}, result: "你提前找毕业的学长取了经，避开了所有坑。开题一次过，{teacher}很满意。"},
+],
+},
+{
+prefix: "r10-sanfang", n: 40,
+year: 4,
+slots: { company: ["大厂", "国企", "银行"], salary: ["25k", "18k", "15k"]},
+title: "签三方",
+text: "{company}给了 offer，月薪{salary}，催你签三方。但你手里还有个在流程中的心仪公司，deadline 就在这周。",
+choices: [
+{ text: "果断签约", effects: { happy: 5, money: 5}, result: "你签了三方，心里一块石头落地。毕业旅行可以安心玩了。"},
+{ text: "冒险等", effects: { happy: -4, connections: 2}, result: "你决定等等看，{company}的 HR 天天催你。煎熬了一周，心仪公司也发了 offer，赌赢了。"},
+{ text: "毁约赔钱", effects: { money: -8, happy: -2}, result: "你先签了{company}，后来心仪公司来了，你赔了违约金跳槽。肉疼，但值得。"},
+],
+},
+{
+prefix: "r10-spring-recruit", n: 40,
+year: 4,
+slots: { company: ["中厂", "创业公司", "外企"], way: ["内推", "海投", "宣讲会"]},
+title: "春招补录",
+text: "秋招颗粒无收，春招成了最后的机会。你通过{way}拿到了{company}的面试，宿舍里就你还没定去向。",
+choices: [
+{ text: "全力以赴", effects: { iq: 4, happy: -2}, result: "你把{company}的业务研究透了，面试时对答如流。三天后收到了 offer，宿舍开香槟庆祝。"},
+{ text: "调整心态", effects: { happy: 4, connections: 3}, result: "你不再死磕大厂，{company}的氛围其实很对你胃口。面试官说你「很真诚」。"},
+{ text: "请教学长", effects: { connections: 5, iq: 2}, result: "在{company}的学长给了你内推和面经，你一路绿灯。学长说「等你来，一起干」。"},
+],
+},
+{
+prefix: "r10-grad-trip", n: 40,
+year: 4,
+slots: { place: ["川西", "新疆", "海南"], buddy: ["室友", "对象", "一个人"]},
+title: "毕业旅行",
+text: "答辩结束，和{buddy}去了{place}毕业旅行。这是学生时代最后一次说走就走的旅行。",
+choices: [
+{ text: "尽情撒欢", effects: { happy: 8, money: -5, health: 2}, result: "你们在{place}玩到不想回来，拍了上千张照片。这段记忆会存很久很久。"},
+{ text: "穷游计划", effects: { happy: 5, money: -2}, result: "你们做了详细攻略，穷游{place}，花小钱办大事，还认识了一群驴友。"},
+{ text: "边走边想", effects: { happy: 4, iq: 3}, result: "在{place}的星空下，你想通了很多事。回来后，对未来的焦虑少了一大半。"},
+],
+},
+{
+prefix: "r10-farewell", n: 40,
+year: 4,
+slots: { person: ["阿强", "小美", "全宿舍"], food: ["火锅", "烧烤", "小龙虾"]},
+title: "散伙饭",
+text: "散伙饭定了{food}，{person}都来了。四年前的开学第一天，你们也是这样围坐在一起，只是那时谁也不认识谁。",
+choices: [
+{ text: "开怀畅饮", effects: { happy: 6, health: -2}, result: "你们喝到半夜，{person}抱着你哭，说「苟富贵勿相忘」。你笑着笑着也哭了。"},
+{ text: "认真告别", effects: { happy: 4, connections: 5}, result: "你给每个人都写了卡片，{person}说这是他收到过最走心的礼物。大家建了个「十年之约」群。"},
+{ text: "拍照留念", effects: { happy: 5}, result: "你们拍了几十张合影，从宿舍拍到校门口。{person}说：「毕业不散，我们江湖再见。」"},
+],
+},
 ];
 
 const MICRO = [
