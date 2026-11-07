@@ -563,9 +563,15 @@
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
+  // 第 14 轮：微事件也按学年/学期过滤（与 pickRandomEvent 同款逻辑）：
+  // sem "autumn" = 奇数学期（1/3/5/7，秋冬），"spring" = 偶数学期（2/4/6/8，春夏）；
+  // 无 year/sem 的微事件任何学期都能刷出；池空时回退到不过滤的全池。
   function pickRandomMicro() {
-    let pool = MICRO_EVENTS.filter((e) => usedMicroIds.indexOf(e.id) === -1);
-    if (pool.length === 0) { usedMicroIds = []; pool = MICRO_EVENTS.slice(); }
+    const year = yearOf();
+    const isAutumn = state.semester % 2 === 1;
+    let pool = MICRO_EVENTS.filter((e) => (!e.year || e.year === year) && (!e.sem || (e.sem === "autumn") === isAutumn) && usedMicroIds.indexOf(e.id) === -1);
+    if (pool.length === 0) { usedMicroIds = []; pool = MICRO_EVENTS.filter((e) => (!e.year || e.year === year) && (!e.sem || (e.sem === "autumn") === isAutumn)); }
+    if (pool.length === 0) { pool = MICRO_EVENTS.slice(); }
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
