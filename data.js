@@ -379,7 +379,7 @@ const EVENTS = [
       { text: "点蜡烛聊天", effects: { charm: 5, happy: 6 }, result: "你们点蜡烛聊天，聊到半夜，关系更好了。" },
       { text: "直接睡觉", effects: { health: 5 }, result: "你直接睡了，难得睡了个整觉。" },
     ] },
-  { id: "ac-broken", title: "空调坏了", text: "夏天最热的时候，宿舍空调坏了，风扇转得像要散架。",
+  { id: "ac-broken", sem: "spring", title: "空调坏了", text: "夏天最热的时候，宿舍空调坏了，风扇转得像要散架。",
     choices: [
       { text: "报修", effects: { happy: 3, health: 2 }, result: "你报修了，师傅第二天就来修好了，凉快了。" },
       { text: "去图书馆蹭空调", effects: { iq: 4, happy: 3 }, result: "你去图书馆蹭空调，顺便看了一下午书。" },
@@ -793,13 +793,13 @@ const EVENTS = [
       { text: "学习", effects: { iq: 5, happy: 2 }, result: "你学习了一下午，雨天学习效率特别高。" },
       { text: "看剧", effects: { happy: 6, iq: -1 }, result: "你看了一下午剧，雨天追剧也太舒服了。" },
     ] },
-  { id: "snow", title: "下雪了", text: "下雪了，校园一片白，南方来的同学兴奋得不行。",
+  { id: "snow", sem: "autumn", title: "下雪了", text: "下雪了，校园一片白，南方来的同学兴奋得不行。",
     choices: [
       { text: "打雪仗", effects: { happy: 9, health: 3, charm: 4 }, result: "你们打雪仗了，玩到浑身是雪，笑得停不下来。" },
       { text: "堆雪人", effects: { happy: 7, charm: 3 }, result: "你们堆了个雪人，还给它戴了围巾，成了校园一景。" },
       { text: "在宿舍看雪", effects: { happy: 4 }, result: "你在宿舍看雪，暖和又安静，也挺好。" },
     ] },
-  { id: "hot-day", title: "高温天", text: "高温天，宿舍像蒸笼，风扇转得再快也没用。",
+  { id: "hot-day", sem: "spring", title: "高温天", text: "高温天，宿舍像蒸笼，风扇转得再快也没用。",
     choices: [
       { text: "去图书馆", effects: { iq: 4, happy: 3 }, result: "你去图书馆蹭空调，顺便看了一下午书。" },
       { text: "买冰棍", effects: { money: -10, happy: 5 }, result: "你买了冰棍，一根接一根，凉快了不少。" },
@@ -1410,7 +1410,7 @@ const EVENTS = [
       { text: "接一半", effects: { money: 100, happy: 2 }, result: "你接了一半，做得挺好，赚了 100。" },
       { text: "不接", effects: { happy: 1 }, result: "你没接，觉得时间不够用。" },
     ] },
-  { id: "campus-snow", title: "雪天", text: "下雪了，校园一片白，南方来的同学兴奋得不行。",
+  { id: "campus-snow", sem: "autumn", title: "雪天", text: "下雪了，校园一片白，南方来的同学兴奋得不行。",
     choices: [
       { text: "打雪仗", effects: { happy: 9, health: 3, charm: 4 }, result: "你们打雪仗了，玩到浑身是雪，笑得停不下来。" },
       { text: "堆雪人", effects: { happy: 7, charm: 3 }, result: "你们堆了个雪人，还给它戴了围巾，成了校园一景。" },
@@ -1604,7 +1604,7 @@ const EVENTS = [
       { text: "再刷高分", effects: { iq: 5, happy: -2 }, result: "你决定再刷个高分，报了下一次，每天听听力，耳朵都起茧了。" },
       { text: "请客庆祝", effects: { money: -100, happy: 8 }, result: "你请客庆祝，室友说你 425 分也好意思庆祝，你说'过线就是胜利'。" },
     ] },
-  { id: "driver-license", title: "考驾照", text: "暑假去考驾照，科目二挂了两次。教练的脸比锅底还黑，你的钱包比脸还白。",
+  { id: "driver-license", sem: "spring", title: "考驾照", text: "暑假去考驾照，科目二挂了两次。教练的脸比锅底还黑，你的钱包比脸还白。",
     choices: [
       { text: "继续考", effects: { money: -500, happy: -3, iq: 2 }, result: "你继续考，第三次过了，拿证那天，你觉得自己是秋名山车神。" },
       { text: "先缓缓", effects: { happy: 3 }, result: "你先缓缓，等开学再说，教练说'你随时来，我随时在'，听着像诅咒。" },
@@ -1905,13 +1905,13 @@ const MICRO_EVENTS = [
     { text: "买杯热饮", effects: { money: -10, happy: 4 }, result: "你买了杯热饮，捧在手里暖暖的。" },
     { text: "回宿舍取暖", effects: { happy: 2 }, result: "你回宿舍取暖了，被窝里最暖和。" },
   ] },
-  { id: "m055", text: "今天特别热，宿舍像蒸笼一样。", choices: [
+  { id: "m055", sem: "spring", text: "今天特别热，宿舍像蒸笼一样。", choices: [
     { text: "去图书馆", effects: { iq: 2, happy: 3 }, result: "你去图书馆蹭空调了，凉快又安静。" },
     { text: "买冰棍", effects: { money: -5, happy: 4 }, result: "你买了根冰棍，凉快了不少。" },
   ] },
-  { id: "m056", text: "晚霞特别美，整个天空都是粉色的。", choices: [
-    { text: "拍照", effects: { happy: 5 }, result: "你拍了照片，发了朋友圈，收获了一堆赞。" },
-    { text: "静静看", effects: { happy: 4 }, result: "你静静看了会儿，晚霞真美，心情也好了。" },
+  { id: "m056", text: "傍晚的晚霞把云烧成了橘红色，连教学楼的玻璃都映成了金色。", choices: [
+    { text: "叫室友来看", effects: { happy: 5, connections: 2 }, result: "你把室友都叫到阳台，一排人趴在栏杆上看晚霞，像在看一场免费的电影。" },
+    { text: "拍段延时", effects: { happy: 4, charm: 2 }, result: "你架起手机拍了段延时，云烧完又暗下去，视频发到朋友圈被赞爆了。" },
   ] },
   { id: "m057", text: "今天有彩虹，挂在天边特别好看。", choices: [
     { text: "拍照", effects: { happy: 5 }, result: "你拍了照片，彩虹真难得，运气真好。" },
@@ -1933,7 +1933,7 @@ const MICRO_EVENTS = [
     { text: "看星星", effects: { happy: 5 }, result: "你看了会儿星星，城市里难得有这么多星星。" },
     { text: "许愿", effects: { happy: 4 }, result: "你对着流星许了个愿，希望它能实现。" },
   ] },
-  { id: "m062", text: "今天起风了，落叶满天飞，特别有诗意。", choices: [
+  { id: "m062", sem: "autumn", text: "今天起风了，落叶满天飞，特别有诗意。", choices: [
     { text: "拍照", effects: { happy: 4 }, result: "你拍了照片，落叶纷飞的校园真美。" },
     { text: "踩落叶", effects: { happy: 4 }, result: "你踩着落叶走，咔嚓咔嚓的，特别解压。" },
   ] },
@@ -2746,7 +2746,7 @@ const MICRO_EVENTS = [
     { text: "回家看看", effects: { happy: 6 }, result: "你回家了，妈妈做了你爱吃的菜，假期过得特别踏实。" },
     { text: "去周边古镇走走", effects: { money: -120, happy: 7 }, result: "你去了周边的古镇，青石板路、老茶馆，拍了不少照片。" },
   ] },
-  { id: "m263", year: 4, text: "毕业季跳蚤市场，毕业的学长在楼下摆摊甩卖，旧书论斤卖。", choices: [
+  { id: "m263", year: 4, sem: "spring", text: "毕业季跳蚤市场，毕业的学长在楼下摆摊甩卖，旧书论斤卖。", choices: [
     { text: "淘几本旧书", effects: { money: -20, happy: 4, iq: 2 }, result: "你淘了几本旧书，扉页上还有学长的笔记，赚到了。" },
     { text: "淘个小风扇", effects: { money: -15, happy: 5 }, result: "你淘了个小风扇，九成新，夏天有着落了。" },
   ] },
@@ -2766,7 +2766,7 @@ const MICRO_EVENTS = [
     { text: "赶紧下车换乘", effects: { happy: 2, iq: 1 }, result: "你赶紧下车换乘，虽然绕了路，但摸清了这条线。" },
     { text: "将错就错逛逛", effects: { money: -20, happy: 5 }, result: "你将错就错逛了逛，误打误撞发现了一条好吃的小吃街。" },
   ] },
-  { id: "m268", text: "体测 1000 米，跑到第三圈腿已经不是自己的了，终点还在前面。", choices: [
+  { id: "m268", sem: "autumn", text: "体测 1000 米，跑到第三圈腿已经不是自己的了，终点还在前面。", choices: [
     { text: "咬牙跑完", effects: { health: 5, happy: 4 }, result: "你咬牙跑完了，冲过终点的那一刻，觉得自己无所不能。" },
     { text: "走一段歇一段", effects: { health: 2, happy: 2 }, result: "你走一段歇一段，总算跑完了，成绩一般，但重在参与。" },
   ] },
@@ -2774,9 +2774,91 @@ const MICRO_EVENTS = [
     { text: "接着笑", effects: { happy: 6, charm: 2 }, result: "你接着笑，老师也笑了，说终于有人懂他的幽默。" },
     { text: "憋住假装记笔记", effects: { happy: 3 }, result: "你憋住笑假装记笔记，肩膀一抖一抖的，老师也没揭穿你。" },
   ] },
-  { id: "m270", text: "早上六点去操场看日出，太阳升起来的时候，整个操场都亮了。", choices: [
+  { id: "m270", text: "起了个大早去操场看日出，太阳升起来的时候，整个操场都亮了。", choices: [
     { text: "顺便晨跑两圈", effects: { health: 5, happy: 5 }, result: "你顺便晨跑了两圈，出了一身汗，新的一天元气满满。" },
     { text: "坐着看完再走", effects: { happy: 6 }, result: "你坐在看台上看完了日出，安静又治愈，值得早起。" },
+  ] },
+  // ---- 第 15 轮新增：10 条微事件（m271–m280），每条均带 year/sem 过滤 ----
+  { id: "m271", year: 1, sem: "autumn", text: "开学第一天，爸妈送你到宿舍，帮你铺好床、摆好东西，临走时在门口站了好一会儿。", choices: [
+    { text: "送他们到校门口", effects: { happy: 5, connections: 2 }, result: "你把他们送到校门口，看着他们上车，心里有点空，又有点期待接下来的四年。" },
+    { text: "笑着说快走吧", effects: { happy: 4, charm: 2 }, result: "你笑着催他们快走，转身回宿舍的路上，眼眶还是有点热。长大了，就是从这一天开始的。" },
+  ] },
+  { id: "m272", sem: "spring", text: "过完年返校，行李箱里一半是妈妈塞的年货和吃的，拉链都快合不上了。", choices: [
+    { text: "分给室友一起吃", effects: { happy: 6, connections: 4 }, result: "你把吃的分给全宿舍，妈妈的味道一夜传遍整层楼，室友都说你妈真好。" },
+    { text: "藏起来慢慢吃", effects: { happy: 4, health: 2 }, result: "你把吃的藏进柜子深处，每天拿一点出来，像在拆妈妈寄来的盲盒。" },
+  ] },
+  { id: "m273", sem: "autumn", text: "宿舍楼下的桂花开了，整条路都是甜甜的香气，连风里都是桂花味。", choices: [
+    { text: "去树下坐坐", effects: { happy: 6, health: 2 }, result: "你在桂花树下坐了一下午，香气裹着阳光，秋天原来可以这么温柔。" },
+    { text: "摘点回去泡茶", effects: { happy: 5 }, result: "你摘了点桂花回去泡茶，宿舍都香了，室友问你是不是偷了秋天的味道。" },
+  ] },
+  { id: "m274", year: 4, sem: "autumn", text: "考研网上报名开始了，照片审核、选报考点，填错一项就得重来，你对着屏幕检查了三遍。", choices: [
+    { text: "仔细核对再提交", effects: { iq: 3, happy: 2 }, result: "你逐项核对完才点提交，报名成功的回执一出，心里一块石头落了地。" },
+    { text: "找研友互相检查", effects: { connections: 3, happy: 3 }, result: "你和研友互相检查报名信息，两个人一起过了一遍，谁都没出错。" },
+  ] },
+  { id: "m275", sem: "spring", text: "端午节，食堂窗口挂起了粽子，蜜枣的、咸肉的，排队的人都快拐到门口了。", choices: [
+    { text: "买两个蜜枣的", effects: { money: -10, happy: 6 }, result: "你买了两个蜜枣粽子，蘸着白糖吃，甜到了心里，端午的味道就是这个。" },
+    { text: "买个咸肉的尝尝", effects: { money: -12, happy: 6 }, result: "你买了个咸肉粽子，油润咸香，一口下去就明白了为什么有人为咸甜粽子吵架。" },
+  ] },
+  { id: "m276", sem: "autumn", text: "供暖第一天，暖气片烫得能摊手，宿舍一下子从冷库变成了温室。", choices: [
+    { text: "开窗透透气", effects: { happy: 4, health: 2 }, result: "你开窗透了透气，冷风和暖气一中和，宿舍的温度刚刚好。" },
+    { text: "穿短袖待着", effects: { happy: 5 }, result: "你在宿舍穿起了短袖，外面天寒地冻，屋里温暖如春，这就是北方的冬天。" },
+  ] },
+  { id: "m277", sem: "spring", text: "春天，十佳歌手大赛开始海选了，报名表贴在宿舍楼下，听说去年冠军现在是校园红人。", choices: [
+    { text: "报名试试", effects: { charm: 4, happy: 6 }, result: "你报了名，清唱了一首，评委居然让你进了复赛。走出教室时，你觉得自己离舞台近了一步。" },
+    { text: "去当观众", effects: { happy: 4 }, result: "你没报名，去当了观众。台上的人唱得投入，台下的你听得过瘾，当观众也挺好。" },
+  ] },
+  { id: "m278", year: 2, sem: "autumn", text: "大二开学班委换届，班长的位置空出来了，辅导员问有没有人愿意试试。", choices: [
+    { text: "毛遂自荐", effects: { connections: 4, charm: 3, happy: 3 }, result: "你举了手，竞选演讲讲得磕磕绊绊但很真诚，同学们居然都投了你。" },
+    { text: "先当个委员", effects: { connections: 3, happy: 2 }, result: "你没争班长，先当了个委员，活儿不多，还能慢慢学着管事。" },
+  ] },
+  { id: "m279", sem: "spring", text: "春天，献血车开进了校园，红十字会的帐篷前排起了队，班里已经有好几个人报了名。", choices: [
+    { text: "撸起袖子献血", effects: { happy: 6, health: -2, charm: 2 }, result: "你献了 200cc，护士递给你一盒牛奶和一张献血证。走出车门时，觉得自己做了件挺了不起的事。" },
+    { text: "先观望下次再说", effects: { happy: 2 }, result: "你有点怕针，先在旁边看着。看到同学们一个个笑着走出来，你想，下次一定去。" },
+  ] },
+  { id: "m280", year: 1, sem: "autumn", text: "开学没多久，辅导员说可以申请助学金了，要填家庭情况表，还要交证明材料。", choices: [
+    { text: "认真准备材料", effects: { money: 1500, happy: 4 }, result: "你认真准备了材料，申请通过了，助学金到账那天，你给家里打了个电话。" },
+    { text: "问问学长怎么办", effects: { connections: 3, happy: 2 }, result: "你问了学长怎么办，他手把手教你填表、跑流程，少走了好多弯路。" },
+  ] },
+  // ---- 第 16 轮新增：10 条微事件（m281–m290），大四 5 条 + 大一 5 条，均带 year/sem 过滤 ----
+  { id: "m281", year: 4, sem: "autumn", text: "毕业论文开题答辩，导师当场指出你开题报告里好几处问题，让你回去重写。", choices: [
+    { text: "连夜改开题", effects: { iq: 3, happy: -2, health: -1 }, result: "你连夜改好了开题报告，第二天交上去，导师点头说这次像样了。" },
+    { text: "找学长取经", effects: { connections: 3, iq: 2 }, result: "你找了写过论文的学长取经，他把自己的开题报告借你参考，少走了很多弯路。" },
+  ] },
+  { id: "m282", year: 4, sem: "spring", text: "毕业答辩，穿着正装站在答辩教室里，PPT 翻到最后一页，评委老师开始提问了。", choices: [
+    { text: "沉着应答", effects: { charm: 4, iq: 3, happy: 5 }, result: "你沉着地回答了每个问题，评委点头通过，答辩顺利结束。" },
+    { text: "紧张忘词", effects: { happy: -2, iq: 1 }, result: "你紧张得忘词了，卡了半天才想起来，评委让你回去把论文再改改。" },
+  ] },
+  { id: "m283", year: 4, sem: "spring", text: "毕业散伙饭，全班最后一顿饭，吃着吃着就有人哭了，班长举起杯子说不出话。", choices: [
+    { text: "举杯敬四年", effects: { happy: 8, connections: 3, money: -80 }, result: "你举杯敬这四年，敬所有一起熬过的夜，敬这帮一起长大的人。" },
+    { text: "默默吃饭", effects: { happy: 4 }, result: "你默默吃着饭，听着大家的故事，心里明白，这顿饭吃完就真的散了。" },
+  ] },
+  { id: "m284", year: 4, sem: "autumn", text: "考研倒计时 30 天，图书馆的座位要靠抢，研友圈里都在晒自己的复习进度。", choices: [
+    { text: "闭关冲刺", effects: { iq: 5, health: -3, happy: -2 }, result: "你闭关冲刺了一个月，真题刷了三遍，上考场的时候心里特别稳。" },
+    { text: "稳住节奏", effects: { iq: 3, health: 2 }, result: "你稳住了节奏，该学学该睡睡，反而越到后期状态越好。" },
+  ] },
+  { id: "m285", year: 4, sem: "autumn", text: "HR 打来电话谈薪资，问你的期望薪资是多少，你第一次正儿八经和人谈钱。", choices: [
+    { text: "大胆要价", effects: { charm: 4, money: 500, happy: 3 }, result: "你大胆报了价，HR 居然接受了，还夸你对自己有清晰的定位。" },
+    { text: "稳妥接受", effects: { happy: 4, money: 200 }, result: "你稳妥地接受了对方的报价，先入行再说，路还长着呢。" },
+  ] },
+  { id: "m286", year: 1, sem: "autumn", text: "军训最后一天会操，你们方队要走正步接受检阅，教官说这是军训的最后一仗。", choices: [
+    { text: "咬牙走好", effects: { health: 4, happy: 6, charm: 2 }, result: "你咬牙走完了全程，方队整整齐齐，检阅结束的那一刻，全班都欢呼起来。" },
+    { text: "浑水摸鱼", effects: { happy: 3 }, result: "你浑水摸鱼混过去了，虽然没被发现，但看着别人拿奖还是有点羡慕。" },
+  ] },
+  { id: "m287", year: 1, sem: "autumn", text: "第一次班会，轮到你上台自我介绍了，全班几十双眼睛看着你，你手心都出汗了。", choices: [
+    { text: "落落大方", effects: { charm: 5, connections: 3, happy: 4 }, result: "你落落大方地介绍了自己，还讲了个小笑话，全班都记住了你。" },
+    { text: "磕磕绊绊", effects: { charm: 2, happy: 2 }, result: "你磕磕绊绊讲完了，虽然紧张，但大家还是给了你掌声。" },
+  ] },
+  { id: "m288", year: 1, sem: "autumn", text: "百团大战，社团招新的摊位摆满了整条路，学长学姐拉着你逛，传单塞满了你的手。", choices: [
+    { text: "加入心仪社团", effects: { connections: 4, happy: 5, charm: 2 }, result: "你加入了心仪的社团，第一次活动就认识了一堆志同道合的朋友。" },
+    { text: "先逛逛再说", effects: { happy: 3 }, result: "你先逛了一圈再说，拿了一堆传单回去慢慢研究，不着急做决定。" },
+  ] },
+  { id: "m289", year: 1, sem: "autumn", text: "攒了一周的衣服，第一次自己手洗，洗衣粉放多了，泡沫弄得到处都是。", choices: [
+    { text: "认真洗干净", effects: { health: 2, happy: 3 }, result: "你认真把衣服一件件洗干净了，晾在阳台上，成就感满满。" },
+    { text: "扔洗衣机了事", effects: { money: -5, happy: 2 }, result: "你索性扔进了洗衣机，投了几个币，坐等衣服自己洗干净。" },
+  ] },
+  { id: "m290", year: 1, text: "因为一点小事和室友吵了一架，冷战了两天，谁先开口说话成了难题。", choices: [
+    { text: "主动和好", effects: { connections: 5, happy: 5 }, result: "你主动开口和好了，室友也松了口气，两个人一起吃了顿饭，就当什么都没发生过。" },
+    { text: "等对方先开口", effects: { happy: -1, connections: -1 }, result: "你等对方先开口，结果僵了好几天，最后还是在楼道里相视一笑，算了。" },
   ] },
 ];
 // ---- v1.1：连锁剧情（15 条，每条 3 环；抽到第 1 环后，后续学期按顺序出第 2、3 环）----
@@ -3353,7 +3435,7 @@ const YEAR_EVENTS = [
       { text: "选冷门", effects: { iq: 3, happy: 4 }, result: "你选了冷门方向，人少，老师关注多，意外地舒服。" },
       { text: "问导师", effects: { iq: 3, happy: 2 }, rel: { daoshi: 6 }, result: "你问导师，导师给了建议，你选了个适合自己的，他对你印象更好了。" },
     ] },
-  { id: "y2-first-intern", title: "第一次实习", text: "大二暑假第一次实习，端茶倒水、打印文件，但你是真学到了职场的规矩。",
+  { id: "y2-first-intern", sem: "spring", title: "第一次实习", text: "大二暑假第一次实习，端茶倒水、打印文件，但你是真学到了职场的规矩。",
     year: 2, choices: [
       { text: "认真干", effects: { iq: 5, money: 800, happy: 3, charm: 3 }, result: "你认真干，带你的前辈夸你靠谱，实习证明闪闪发光。" },
       { text: "混日子", effects: { money: 800, happy: 2 }, result: "你混日子，钱照拿，但没学到啥，简历上只能写'参与项目'。" },
@@ -3391,7 +3473,7 @@ const YEAR_EVENTS = [
       { text: "先试试", effects: { iq: 3, happy: 2 }, result: "你先试试，适应了节奏，觉得考研也没那么可怕。" },
     ] },
   // 大四
-  { id: "y4-autumn-recruit", title: "秋招", text: "秋招开始了。宣讲会、笔试、面试，你投了几十份简历，邮箱天天刷，手机不敢静音。",
+  { id: "y4-autumn-recruit", sem: "autumn", title: "秋招", text: "秋招开始了。宣讲会、笔试、面试，你投了几十份简历，邮箱天天刷，手机不敢静音。",
     year: 4, choices: [
       { text: "海投", effects: { charm: 4, happy: -3, iq: 2 }, result: "你海投，笔试面到吐，终于拿了几个 offer，有选择了。" },
       { text: "精准投", effects: { iq: 5, happy: 2 }, result: "你精准投，只投心仪的，准备充分，面试通过率高。" },
