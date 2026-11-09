@@ -550,15 +550,17 @@
 
   function pickRandomEvent() {
     const year = yearOf();
-    // 大事件池：按学年过滤、排除最近用过的；再加未开始的连锁第 1 环
+    const isAutumn = state.semester % 2 === 1;
+    // 大事件池：按学年/学期过滤、排除最近用过的；再加未开始的连锁第 1 环
     // v1.6：兼职专属事件只刷自己那份兼职的（没打工的刷不到）
-    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && (!e.minRel || (state && state.rel && (state.rel[e.minRel.npc] || 0) >= e.minRel.value)) && usedEventIds.indexOf(e.id) === -1);
+    // 第 15 轮：大事件也按 sem 过滤（与 pickRandomMicro 同款逻辑；此前 EVENTS 全无 sem 标签，genBig 也不透传）
+    let pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.sem || (e.sem === "autumn") === isAutumn) && (!e.club || e.club === (state && state.club)) && (!e.job || e.job === (state && state.job)) && (!e.minRel || (state && state.rel && (state.rel[e.minRel.npc] || 0) >= e.minRel.value)) && usedEventIds.indexOf(e.id) === -1);
     CHAINS.forEach((c) => {
       if (startedChains.indexOf(c.id) === -1 && completedChains.indexOf(c.id) === -1) {
         pool.push(chainEvent(c.id, 1));
       }
     });
-    if (pool.length === 0) { usedEventIds = []; pool = EVENTS.filter((e) => !e.year || e.year === year); }
+    if (pool.length === 0) { usedEventIds = []; pool = EVENTS.filter((e) => (!e.year || e.year === year) && (!e.sem || (e.sem === "autumn") === isAutumn)); }
     if (pool.length === 0) pool = EVENTS.slice();
     return pool[Math.floor(Math.random() * pool.length)];
   }

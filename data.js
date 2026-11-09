@@ -1410,11 +1410,11 @@ const EVENTS = [
       { text: "接一半", effects: { money: 100, happy: 2 }, result: "你接了一半，做得挺好，赚了 100。" },
       { text: "不接", effects: { happy: 1 }, result: "你没接，觉得时间不够用。" },
     ] },
-  { id: "campus-snow", sem: "autumn", title: "雪天", text: "下雪了，校园一片白，南方来的同学兴奋得不行。",
+  { id: "campus-snow", sem: "autumn", title: "雪天", text: "雪下了一夜，校园银装素裹，连平时最爱睡懒觉的同学都起了个大早。",
     choices: [
-      { text: "打雪仗", effects: { happy: 9, health: 3, charm: 4 }, result: "你们打雪仗了，玩到浑身是雪，笑得停不下来。" },
-      { text: "堆雪人", effects: { happy: 7, charm: 3 }, result: "你们堆了个雪人，还给它戴了围巾，成了校园一景。" },
-      { text: "在宿舍看雪", effects: { happy: 4 }, result: "你在宿舍看雪，暖和又安静，也挺好。" },
+      { text: "打雪仗", effects: { happy: 9, health: 3, charm: 4 }, result: "雪仗打到手套都湿透了，你们笑得停不下来，鞋里全是雪。" },
+      { text: "堆雪人", effects: { happy: 7, charm: 3 }, result: "你们在图书馆门口堆了个大雪人，还拿胡萝卜当鼻子，路过的人都掏出手机拍照。" },
+      { text: "在宿舍看雪", effects: { happy: 4 }, result: "你窝在宿舍窗边看雪，暖和又安静，雪落下来一点声音都没有。" },
     ] },
   { id: "dorm-clean3", title: "宿舍卫生", text: "宿舍卫生检查又来了，你们宿舍有点乱，检查的人已经到楼下了。",
     choices: [

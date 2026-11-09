@@ -2571,7 +2571,7 @@ text: "大二要专业分流了：{dir1}还是{dir2}？听说{dir1}卷但出路�
 choices: [
 { text: "选热门的{dir1}", effects: { iq: 4, happy: -2}, result: "你选了{dir1}。第一周课就听懵了，但你想，难才值钱。"},
 { text: "选感兴趣的{dir2}", effects: { happy: 6, iq: 2}, result: "你选了{dir2}，第一节课就听入迷了。兴趣是最好的老师，这话不假。"},
-{ text: "问学长再定", effects: { connections: 4, iq: 3}, result: "你请学长吃了顿饭，他把两个方向的利弊掰开揉碎讲了一遍。你心里有谱了。", rel: { senior: 3 }},
+{ text: "问学长再定", effects: { connections: 4, iq: 3}, result: "你请学长吃了顿饭，他把两个方向的利弊掰开揉碎讲了一遍。你心里有谱了。", rel: { xuezhang: 3 }},
 ],
 },
 {
@@ -2643,7 +2643,7 @@ title: "暑期实习准备",
 text: "大二暑假想去{company}实习，但人家要{skill}。你看了眼自己的简历，一片空白，开始慌了。",
 choices: [
 { text: "恶补{skill}", effects: { iq: 6, happy: -3}, result: "你每天学{skill}到半夜，做了三个项目放进简历。投出去一周，收到了面试。"},
-{ text: "找学长内推", effects: { connections: 5, happy: 2}, result: "你找学长内推，他帮你改了简历，还模拟面试了一次。有熟人真好。", rel: { senior: 4 }},
+{ text: "找学长内推", effects: { connections: 5, happy: 2}, result: "你找学长内推，他帮你改了简历，还模拟面试了一次。有熟人真好。", rel: { xuezhang: 4 }},
 { text: "暑假回家躺", effects: { happy: 8, money: -200}, result: "你决定暑假回家躺，反正大二还早。空调西瓜WiFi，神仙日子。"},
 ],
 },
@@ -3278,7 +3278,7 @@ slots: { topic: ["推荐系统", "碳中和路径", "乡村振兴"], teacher: ["
 title: "毕设开题",
 text: "毕业设计开题，你的题目是「{topic}」，{teacher}坐在答辩席正中间，推了推眼镜。",
 choices: [
-{ text: "充分准备", effects: { iq: 5, credit: 3}, result: "你把文献综述做了 30 页，{teacher}只问了两个小问题就让你过了，还夸选题有新意。"},
+{ text: "充分准备", effects: { iq: 5, credits: 3}, result: "你把文献综述做了 30 页，{teacher}只问了两个小问题就让你过了，还夸选题有新意。"},
 { text: "临阵磨枪", effects: { iq: 2, happy: -4}, result: "你开题前一晚才赶完 PPT，被{teacher}问住了三次，回去大改。好在给了第二次机会。"},
 { text: "请教前辈", effects: { connections: 4, iq: 3}, result: "你提前找毕业的学长取了经，避开了所有坑。开题一次过，{teacher}很满意。"},
 ],
@@ -3722,6 +3722,131 @@ choices: [
 { text: "刷绩点转专业", effects: { iq: 5, happy: 2}, result: "你决定刷绩点冲转专业，从此上课坐第一排，作业第一个交。目标明确了，学习都有劲了。"},
 { text: "先辅修试试", effects: { iq: 3, happy: 3}, result: "你决定先辅修{major}试试水，万一不喜欢还能全身而退。进可攻退可守，这步棋走得稳。"},
 { text: "接受现实好好学", effects: { happy: 4, iq: 2}, result: "你想了想，决定接受现实：专业只是起点，学什么不重要，学得怎么样才重要。你开始认真对待每一门课。"},
+],
+},
+// ---- 第 17 轮：NPC 深度线 r17-npc-*（10 模板 × 40 变体；中层好感门槛 minRel 60，衔接无门槛内容与好感 80 的 v3-aff 线）----
+// ---- 阿强（室友：上铺兄弟、游戏搭子、借钱不还的常客）----
+{
+prefix: "r17-npc-aqiang-game-night", n: 40,
+year: 1, sem: "autumn", minRel: { npc: "aqiang", value: 60 },
+slots: { game: ["王者荣耀", "英雄联盟", "和平精英", "原神"], rank: ["钻石", "星耀", "铂金", "黄金"]},
+title: "阿强约你开黑",
+text: "熄灯前，阿强举着手机喊你开黑：今晚{game}冲{rank}，就差你一个。你看了眼没写完的作业，又看了眼他亮着的屏幕。",
+choices: [
+{ text: "上号开黑", effects: { happy: 7, iq: -2}, result: "你们一路连胜打到半夜，阿强说你是我见过最稳的队友，下次还找你。", rel: { aqiang: 6 }},
+{ text: "打两把就睡", effects: { happy: 4, health: 2}, result: "你们打了两把就收了，阿强说明天再战。你睡了个好觉，他也没熬太晚。", rel: { aqiang: 4 }},
+{ text: "拒绝，先写作业", effects: { iq: 3, happy: -2}, result: "你拒绝了，先把作业写完。阿强一个人单排去了，耳机里传来他被队友坑的哀嚎。", rel: { aqiang: -2 }},
+],
+},
+{
+prefix: "r17-npc-aqiang-borrow-money", n: 40,
+year: 2, sem: "spring", minRel: { npc: "aqiang", value: 60 },
+slots: { reason: ["买双球鞋", "请心仪的女生吃饭", "交社团费", "给手机换屏"]},
+title: "阿强找你借钱",
+text: "阿强挠着头找你借钱：兄弟，借我三百块，{reason}，下个月生活费一到就还你。你想起他上次借的还没还。",
+choices: [
+{ text: "借给他", effects: { money: -300, happy: 2}, result: "你借给了他，他拍着胸脯保证下个月一定还。你点点头，心里清楚这笔账八成是收不回了。", rel: { aqiang: 5 }},
+{ text: "借一半", effects: { money: -150, happy: 1}, result: "你借了他一半，他说够了够了。下个月他还了你一半，剩下的……再说吧。", rel: { aqiang: 3 }},
+{ text: "不借，提醒旧账", effects: { happy: -2}, result: "你提醒他上次借的还没还，他讪讪地笑了，说下次一定一起还。你知道，这笔账大概是收不回了。", rel: { aqiang: -4 }},
+],
+},
+{
+prefix: "r17-npc-aqiang-job-hunt", n: 40,
+year: 4, sem: "spring", minRel: { npc: "aqiang", value: 60 },
+slots: { company: ["互联网大厂", "国企", "创业公司"], round: ["群面", "终面", "笔试"]},
+title: "阿强求职受挫",
+text: "大四下，阿强连续挂了三家面试，{company}的{round}又没过。他坐在床边刷招聘软件，第一次没了往日的嘻嘻哈哈。",
+choices: [
+{ text: "陪他改简历", effects: { iq: 3, happy: 3, connections: 2}, result: "你陪他改了一晚上简历，把项目经历一条条捋清楚。他说有你这样的兄弟，找工作都不怕了。", rel: { aqiang: 8 }},
+{ text: "请他吃顿好的", effects: { money: -80, happy: 5}, result: "你请他吃了顿好的，他边吃边说，压力小了一大半。吃饱了才有力气继续投简历。", rel: { aqiang: 6 }},
+{ text: "让他自己缓缓", effects: { happy: -1}, result: "你让他自己缓缓，他点了点头。第二天他又满血复活了，说这点挫折算什么。", rel: { aqiang: 2 }},
+],
+},
+// ---- 小美（同班同学：前排女生、笔记做得特别好、笑起来很好看）----
+{
+prefix: "r17-npc-xiaomei-notes", n: 40,
+year: 1, sem: "spring", minRel: { npc: "xiaomei", value: 60 },
+slots: { course: ["高数", "英语", "专业课"], place: ["图书馆", "自习室", "教室"]},
+title: "小美的笔记",
+text: "期中临近，小美在{place}把她的{course}笔记递给你：字迹工整，重点都用红笔标出来了。你翻着笔记，重点标得清清楚楚。",
+choices: [
+{ text: "认真抄完还她", effects: { iq: 5, happy: 3}, result: "你认真抄完了笔记，还给她时道了谢。她笑起来很好看，说下次还借你。", rel: { xiaomei: 7 }},
+{ text: "请她喝奶茶答谢", effects: { money: -20, happy: 5, charm: 2}, result: "你请她喝了杯奶茶当答谢，她说一杯奶茶就把你收买了。两个人聊了一路。", rel: { xiaomei: 8 }},
+{ text: "只借不还", effects: { iq: 3, happy: -2}, result: "你借了就忘了还，她来要了两次才拿回去。下次再想借，她大概要犹豫了。", rel: { xiaomei: -5 }},
+],
+},
+{
+prefix: "r17-npc-xiaomei-club-show", n: 40,
+year: 2, sem: "autumn", minRel: { npc: "xiaomei", value: 60 },
+slots: { show: ["迎新晚会", "元旦晚会", "社团周年庆"], act: ["唱歌", "跳舞", "演小品"]},
+title: "小美的演出",
+text: "{show}上，小美要上台{act}，彩排时紧张得手心全是汗。她发消息问你：你会来看吗？",
+choices: [
+{ text: "去看还带花", effects: { money: -50, happy: 7, charm: 3}, result: "你去看了，还带了一束花。她在台上看到你，一下子就不紧张了，演得特别好。", rel: { xiaomei: 8 }},
+{ text: "去看给她加油", effects: { happy: 5}, result: "你去看了，在台下拼命鼓掌。她下台第一句话就是：看到你我就安心了。", rel: { xiaomei: 6 }},
+{ text: "有事去不了", effects: { happy: -2}, result: "你有事去不了，只回了句加油。她回了个表情包，说没关系。你总觉得有点遗憾。", rel: { xiaomei: -3 }},
+],
+},
+{
+prefix: "r17-npc-xiaomei-future-talk", n: 40,
+year: 3, sem: "spring", minRel: { npc: "xiaomei", value: 60 },
+slots: { place: ["操场", "奶茶店", "图书馆门口"]},
+title: "小美聊未来",
+text: "大三下，小美约你在{place}聊未来：考研还是直接工作，她纠结了好几个月，头发都掉了不少。你的意见对她很重要。",
+choices: [
+{ text: "帮她认真分析", effects: { iq: 3, happy: 4, connections: 2}, result: "你帮她把两条路的利弊列了个表，她听完长舒一口气，说终于想明白了。", rel: { xiaomei: 8 }},
+{ text: "陪她去听宣讲会", effects: { connections: 4, happy: 4}, result: "你陪她去听了两场宣讲会，回来路上聊了很多。她说有你一起想这些事，好像也没那么难了。", rel: { xiaomei: 7 }},
+{ text: "敷衍两句", effects: { happy: -2}, result: "你敷衍了两句，她看出来了，笑了笑没再说什么。回去的路上你们都没怎么说话。", rel: { xiaomei: -5 }},
+],
+},
+// ---- 学长（大三学长：学生会老油条，什么都知道，什么都能搞定）----
+{
+prefix: "r17-npc-xuezhang-intern-tip", n: 40,
+year: 2, sem: "spring", minRel: { npc: "xuezhang", value: 60 },
+slots: { company: ["互联网大厂", "国企", "外企"], skill: ["简历", "面试", "笔试"]},
+title: "学长的实习经",
+text: "学长刚结束在{company}的实习，约你吃饭，给你讲{skill}的坑：哪些公司画大饼，哪些岗位值得去。你听得直点头，记了满满一页。",
+choices: [
+{ text: "认真请教", effects: { iq: 5, connections: 3, happy: 3}, result: "你认真请教了一晚上，学长把内推的渠道都告诉了你。他说，少走弯路就是最大的捷径。", rel: { xuezhang: 7 }},
+{ text: "请他吃饭答谢", effects: { money: -60, happy: 5, connections: 3}, result: "你请他吃了顿饭，他又多讲了半小时的干货。这顿饭，值回票价。", rel: { xuezhang: 8 }},
+{ text: "听听就忘", effects: { happy: -1}, result: "你听听就忘了，学长看出来了，摇摇头说：等你自己撞了南墙就懂了。", rel: { xuezhang: -3 }},
+],
+},
+{
+prefix: "r17-npc-xuezhang-back-to-campus", n: 40,
+year: 3, sem: "autumn", minRel: { npc: "xuezhang", value: 60 },
+slots: { purpose: ["回来看导师", "来招实习生", "参加校友分享会"], place: ["教学楼", "食堂", "操场"]},
+title: "学长回校了",
+text: "毕业一年的学长突然回校了，说是{purpose}。你们在{place}偶遇，他穿着工装，比上学时瘦了一圈，但精神头很好。",
+choices: [
+{ text: "约他吃顿饭", effects: { money: -80, happy: 6, connections: 4}, result: "你约他吃了顿饭，他讲了这一年的职场故事，听得你又向往又害怕。他说：别怕，慢慢来。", rel: { xuezhang: 7 }},
+{ text: "请教工作经验", effects: { iq: 4, connections: 4}, result: "你请教了很多工作上的问题，他知无不言，还把你拉进了他们公司的内推群。", rel: { xuezhang: 8 }},
+{ text: "打个招呼就走", effects: { happy: 1}, result: "你打了个招呼就走了，他也没多留。毕业后各有各的生活，能见一面已经不容易。", rel: { xuezhang: 2 }},
+],
+},
+// ---- 导师（专业课老师：严厉但负责，欣赏认真的学生）----
+{
+prefix: "r17-npc-daoshi-office-hours", n: 40,
+year: 2, sem: "autumn", minRel: { npc: "daoshi", value: 60 },
+slots: { course: ["专业课", "高数", "实验课"], question: ["作业题", "实验数据", "论文选题"]},
+title: "导师的答疑时间",
+text: "每周三下午是导师的答疑时间，你带着{course}的{question}去办公室敲门。导师抬头看了你一眼：先说说你自己是怎么想的。",
+choices: [
+{ text: "认真说出思路", effects: { iq: 5, happy: 4}, result: "你认真说出了自己的思路，导师点了点头：思路是对的，就是这里算错了。他说，爱思考的学生他都记得。", rel: { daoshi: 8 }},
+{ text: "直接问答案", effects: { iq: 1, happy: -2}, result: "你直接问答案，导师皱了皱眉：答案给你了，下次你还不会。回去自己想，想明白了再来。", rel: { daoshi: -3 }},
+{ text: "顺便请教未来", effects: { iq: 3, connections: 3, happy: 3}, result: "你顺便请教了未来的规划，导师给了几句中肯的建议，比你在网上看一百篇帖子都管用。", rel: { daoshi: 6 }},
+],
+},
+{
+prefix: "r17-npc-daoshi-research", n: 40,
+year: 3, sem: "autumn", minRel: { npc: "daoshi", value: 60 },
+slots: { task: ["整理实验数据", "查文献", "跑仿真"], topic: ["新能源", "智慧农业", "城市交通"]},
+title: "进导师的课题组",
+text: "大三上，导师问你要不要进课题组打打下手，先从{task}做起，课题是关于{topic}的。你知道这是难得的机会，但也意味着周末要泡在实验室。",
+choices: [
+{ text: "答应下来好好干", effects: { iq: 6, connections: 3, happy: 3}, result: "你答应下来，每周都去实验室报到。导师看你踏实，慢慢开始让你碰核心数据。", rel: { daoshi: 8 }},
+{ text: "先试一个月", effects: { iq: 3, happy: 2}, result: "你说先试一个月，导师同意了。一个月下来，你发现做科研比想象中有意思得多。", rel: { daoshi: 5 }},
+{ text: "怕累拒绝了", effects: { happy: -1}, result: "你怕累拒绝了，导师也没说什么。后来听说进了组的同学都拿了国奖，你有点后悔。", rel: { daoshi: -3 }},
 ],
 },
 ];
@@ -4434,6 +4559,7 @@ text: fill(tpl.text, slots),
 choices: tpl.choices.map((c) => ({
 text: fill(c.text, slots),
 effects: Object.assign({}, c.effects),
+...(c.rel ? { rel: Object.assign({}, c.rel) } : {}),
 result: fill(c.result, slots),
 })),
 });
@@ -4453,6 +4579,7 @@ text: text,
 choices: tpl.choices.map((c) => ({
 text: fill(c.text, slots),
 effects: Object.assign({}, c.effects),
+...(c.rel ? { rel: Object.assign({}, c.rel) } : {}),
 result: fill(c.result, slots),
 })),
 });
