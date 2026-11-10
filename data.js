@@ -2562,7 +2562,7 @@ const MICRO_EVENTS = [
     { text: "换一家", effects: { happy: 2 }, result: "你换了一家，便宜两块，味道也不错，因祸得福。" },
   ] },
   { id: "m217", text: "超市有免费试吃，你吃了三轮，营业员认识你了。", choices: [
-    { text: "值", effects: { happy: 4 }, result: "值，试吃吃到饱，晚饭都省了。" },
+    { text: "值了", effects: { happy: 3 }, result: "试吃吃到饱，晚饭都省了，这波血赚。" },
     { text: "不好意思", effects: { happy: 2 }, result: "你不好意思，第四轮没去，见好就收。" },
   ] },
   { id: "m218", text: "室友发了奖学金，请全宿舍吃饭，你敞开吃。", choices: [
