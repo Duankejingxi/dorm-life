@@ -726,7 +726,7 @@ choices: [
       title: "断网了",
       text: "{time}宿舍断网了，游戏打到一半、剧看到高潮，全没了。",
       choices: [
-        { text: "开热点", effects: { money: -10, happy: 3 }, result: "你开了热点，流量哗哗地流，但游戏赢了。" },
+        { text: "开热点", effects: { money: -10, happy: 3 }, result: "你开了热点，流量哗哗地流，好歹把进度续上了。" },
         { text: "夜聊", effects: { connections: 4, happy: 4 }, result: "没网反而聊high了，聊到两点。" },
         { text: "早睡", effects: { health: 5, happy: -2 }, result: "你难得十一点就睡了，第二天精神爆棚。" },
       ],
@@ -4221,6 +4221,127 @@ choices: [
 { text: "拍张合影就走", effects: { happy: 5, connections: 3}, result: "你们拍了张合影，跑道、四年的青春都在框里。这张照片，你会留很久很久。"},
 ],
 },
+// ---- 第 20 轮：校园日常线 r20-daily-*（10 模板 × 40 变体；食堂/图书馆/操场/宿舍日常，秋 5 春 5）----
+{
+prefix: "r20-daily-canteen-queue", n: 40,
+year: 1, sem: "autumn",
+slots: { dish: ["红烧肉", "糖醋排骨", "麻辣烫"], wait: ["十分钟", "二十分钟"]},
+title: "食堂排队等招牌菜",
+text: "中午饭点，食堂招牌窗口排起了长队，今天的{dish}限量供应。你饿得前胸贴后背，前面还排了{wait}的队。",
+choices: [
+{ text: "排队等招牌菜", effects: { happy: 5}, result: "你排了{wait}的队，总算吃上了{dish}。第一口下去，排队受的罪全值了。"},
+{ text: "换个窗口随便吃", effects: { happy: 2}, result: "你换了个没人的窗口随便吃了点，虽然没吃到{dish}，但省下的时间够睡个午觉。"},
+{ text: "点外卖回宿舍", effects: { money: -15, happy: 3}, result: "你点了外卖回宿舍吃，边吃边刷剧。外卖到了，食堂的{dish}却在你脑子里挥之不去。"},
+],
+},
+{
+prefix: "r20-daily-canteen-new", n: 40,
+year: 1, sem: "spring",
+slots: { window: ["麻辣香锅", "黄焖鸡", "轻食沙拉"]},
+title: "食堂新开窗口",
+text: "食堂一楼新开了个{window}窗口，开业第一周打八折，门口的试吃队伍都排到楼梯口了。",
+choices: [
+{ text: "去尝尝新窗口", effects: { happy: 6, money: -18}, result: "你去尝了{window}，味道出乎意料地好。打折价吃到这个水准，你已经在盘算下次带室友一起来了。"},
+{ text: "先观望看看评价", effects: { happy: 2}, result: "你先观望了一阵，看群里晒的照片口水都下来了。第二天去吃，折扣没了，但味道确实值。"},
+{ text: "还是吃老三样", effects: { happy: 1}, result: "你还是吃了老三样，熟悉的味道让人安心。新窗口再好，也得等哪天有空再说。"},
+],
+},
+{
+prefix: "r20-daily-library-seat", n: 40,
+year: 2, sem: "autumn",
+slots: { floor: ["三楼", "四楼", "五楼"], mate: ["阿强", "小美"]},
+title: "图书馆抢座",
+text: "考试周前夕，图书馆{floor}的座位七点就抢光了。你和{mate}约好六点半在门口集合，拼手速抢个靠窗的连座。",
+choices: [
+{ text: "六点半去排队抢座", effects: { iq: 5, happy: 2}, result: "你们六点半就到了门口，抢到了{floor}靠窗的连座。一整天学下来，效率高得吓人。"},
+{ text: "晚点去碰运气", effects: { iq: 2}, result: "你们晚点才去，靠窗的座位早没了，只剩角落里的两个散座。凑合着学了一天，倒也安静。"},
+{ text: "去自习室凑合", effects: { iq: 3, happy: 1}, result: "你们改去了自习室，虽然没图书馆安静，但{mate}在旁边，互相监督着学了一整天。"},
+],
+},
+{
+prefix: "r20-daily-library-late", n: 40,
+year: 2, sem: "spring",
+slots: { book: ["高数", "专业课"]},
+title: "图书馆闭馆催人",
+text: "你抱着{book}在图书馆学到闭馆，管理员开始一层层赶人。你合上书才发现，手机里全是室友问你还回不回宿舍的消息。",
+choices: [
+{ text: "收拾东西回宿舍", effects: { iq: 4, health: 2}, result: "你收拾东西回了宿舍，{book}的重点总算理顺了。洗漱完倒头就睡，梦里都在背公式。"},
+{ text: "去通宵自习室续上", effects: { iq: 5, health: -2}, result: "你转战通宵自习室又学了两小时，{book}的难题终于啃下来了，就是第二天眼睛肿得像核桃。"},
+{ text: "和室友去吃夜宵", effects: { happy: 5, connections: 3, money: -20}, result: "你和室友去吃了夜宵，烤串配冰可乐，学了一天的脑子总算放松下来。"},
+],
+},
+{
+prefix: "r20-daily-playground-run", n: 40,
+year: 3, sem: "autumn",
+slots: { laps: ["三圈", "五圈"], buddy: ["阿强", "跑团的学弟"]},
+title: "操场夜跑",
+text: "晚饭后，{buddy}喊你去操场夜跑，说好了跑{laps}。秋天的晚风凉凉的，跑道上全是出来散步和跑步的人。",
+choices: [
+{ text: "跑满{laps}再回", effects: { health: 6, happy: 4}, result: "你跑满了{laps}，出了一身汗，晚风一吹神清气爽。{buddy}说你这体能，都能去跑马拉松了。"},
+{ text: "跑两圈就散步", effects: { health: 3, happy: 3}, result: "你跑了两圈就改成散步，边走边聊。{buddy}也不勉强，说运动嘛，开心最重要。"},
+{ text: "操场边看人跑步", effects: { happy: 2}, result: "你坐在操场边看别人跑步，晚风吹着也挺舒服。{buddy}跑完回来，笑你光说不练。"},
+],
+},
+{
+prefix: "r20-daily-playground-ball", n: 40,
+year: 3, sem: "spring",
+slots: { game: ["篮球", "羽毛球"], rival: ["隔壁班", "研究生队"]},
+title: "操场约球",
+text: "周末下午，操场上有人约{game}，对手是{rival}。你刚换好运动鞋，球友已经在场边热身了。",
+choices: [
+{ text: "上场打满全场", effects: { health: 6, happy: 6, connections: 4}, result: "你上场打满了全场，{game}打得酣畅淋漓。虽然比分输了，但和{rival}约好了下周再战。"},
+{ text: "打半场就歇着", effects: { health: 3, happy: 4}, result: "你打了半场就下来歇着，坐在场边看球也挺有意思，顺便认识了两个新球友。"},
+{ text: "场边当裁判", effects: { connections: 3, happy: 3}, result: "你在场边当了回裁判，哨子吹得有模有样。散场时大家一起去吃了顿饭，气氛好得不行。"},
+],
+},
+{
+prefix: "r20-daily-dorm-hotpot", n: 40,
+year: 4, sem: "autumn",
+slots: { base: ["番茄锅", "麻辣锅"], who: ["全宿舍", "阿强和小美"]},
+title: "宿舍小火锅",
+text: "秋天到了，{who}提议在宿舍支个小电锅吃火锅，{base}底料都买好了。宿管查得严，你们把锅藏在衣柜最深处。",
+choices: [
+{ text: "热热闹闹吃火锅", effects: { happy: 8, connections: 5}, result: "你们围着小电锅吃了顿{base}，热气腾腾的，宿舍里全是香味。吃完还得开窗散味，生怕被宿管闻到。"},
+{ text: "只吃素菜解馋", effects: { happy: 4, health: 3}, result: "你们只涮了素菜，清清淡淡也挺香。{who}说下次一定要吃顿荤的，把这顿补回来。"},
+{ text: "去校外火锅店", effects: { happy: 6, money: -40, connections: 3}, result: "你们干脆去了校外火锅店，{base}点得满满当当。结账时 AA 分摊，谁都没心疼。"},
+],
+},
+{
+prefix: "r20-daily-dorm-movie", n: 40,
+year: 4, sem: "spring",
+slots: { movie: ["喜剧", "科幻片"], snack: ["薯片", "炸鸡"]},
+title: "宿舍观影夜",
+text: "毕业前最后一场宿舍观影夜，投影仪架好了，今晚放{movie}，{snack}和饮料都摆了一桌子。",
+choices: [
+{ text: "看到半夜不散场", effects: { happy: 8, connections: 4}, result: "你们看到半夜，{movie}看到精彩处一起鼓掌。散场时谁都不想睡，又聊到了天亮。"},
+{ text: "看完就早点睡", effects: { happy: 4, health: 3}, result: "你们看完{movie}就早早睡了，{snack}还剩一半留着明天吃。毕业前的夜晚，平淡也挺好。"},
+{ text: "边看边聊四年", effects: { happy: 9, connections: 5}, result: "你们边看边聊起这四年，从军训聊到毕业，{movie}都没看完，倒是把眼泪先聊出来了。"},
+],
+},
+{
+prefix: "r20-daily-canteen-breakfast", n: 40,
+year: 2, sem: "spring",
+slots: { food: ["豆浆油条", "肉包", "小米粥"]},
+title: "食堂早餐",
+text: "早上七点，食堂早餐窗口刚开，热气腾腾的{food}香得人走不动道。你第一节课八点开始，吃还是不吃，这是个问题。",
+choices: [
+{ text: "坐下来慢慢吃", effects: { happy: 4, health: 3}, result: "你坐下来慢慢吃了顿{food}，热乎乎的，一上午都有精神。早起的鸟儿果然有虫吃。"},
+{ text: "打包边走边吃", effects: { happy: 2, health: 1}, result: "你打包了{food}边走边吃，赶到教室刚好踩点。边走边吃有点狼狈，但总比饿着强。"},
+{ text: "睡过头错过早餐", effects: { health: -2, happy: -1}, result: "你睡过头错过了早餐，第一节课肚子咕咕叫。下课第一件事就是冲去食堂补一顿。"},
+],
+},
+{
+prefix: "r20-daily-library-group", n: 40,
+year: 1, sem: "autumn",
+slots: { subject: ["高数", "英语"], size: ["三个人", "五个人"]},
+title: "图书馆学习小组",
+text: "期中考试临近，你和{size}组了个{subject}学习小组，约好每天晚上七点在图书馆碰头，互相讲题互相监督。",
+choices: [
+{ text: "每天准时参加", effects: { iq: 6, connections: 4}, result: "你们每天准时碰头，{subject}的难题一个个被攻克。期中考试一出，组里全员都过了。"},
+{ text: "偶尔去一次", effects: { iq: 3, connections: 2}, result: "你偶尔去一次，去了就有人给你讲题，效率比一个人学高多了。就是总觉得欠了组里人情。"},
+{ text: "小组解散各学各的", effects: { iq: 1, happy: 1}, result: "小组没坚持下来，各学各的去了。{subject}最后还是靠你一个人啃下来的，过程曲折了点。"},
+],
+},
 ];
 
 const MICRO = [
@@ -4248,7 +4369,7 @@ slots: { person: F.person.slice(0, 6)},
 text: "{person}在走廊煲电话粥，声音不大，但你就是睡不着。",
 choices: [
 { text: "忍", effects: { happy: -2}, result: "你数羊数到了一千只，越数越清醒，天都快亮了。"},
-{ text: "去阳台透气", effects: { health: 2}, result: "阳台风很大，吹了一会儿你彻底清醒了，回来倒头就睡。"},
+{ text: "去阳台透气", effects: { health: 2}, result: "阳台风很大，吹了一会儿你反而困了，回来倒头就睡。"},
 ],
 },
 {
@@ -4265,7 +4386,7 @@ prefix: "m-gen-rain2", n: 22,
 slots: { item: ["雨伞", "雨衣"]},
 text: "出门没看天气预报，半路下雨了，你没带{item}。",
 choices: [
-{ text: "买把伞", effects: { money: -15}, result: "你在校门口买了把伞，质量一般，但总算不用淋雨了。"},
+{ text: "买把伞", effects: { money: -15}, result: "你在校门口买了{item}，质量一般，但总算不用淋雨了。"},
 { text: "淋回去", effects: { health: -3, happy: 2}, result: "你淋成落汤鸡，但觉得很爽。"},
 ],
 },
@@ -4302,7 +4423,7 @@ choices: [
       text: "{person}在走廊打电话，声音不大，但你翻来覆去就是睡不着。",
       choices: [
         { text: "忍", effects: {'happy': -1}, result: "你数羊数到一千只，越数越清醒，天都快亮了。" },
-        { text: "阳台", effects: {'health': 1}, result: "你去阳台吹了会冷风，脑子清醒了，回来倒头就睡。" },
+        { text: "阳台", effects: {'health': 1}, result: "你去阳台吹了会冷风，困意反而上来了，回来倒头就睡。" },
       ],
     },
     {
@@ -4319,17 +4440,17 @@ choices: [
       slots: { time: ['凌晨', '深夜'] },
       text: "{time}饿了，宿舍翻遍了只有半包饼干，肚子还在咕咕叫。",
       choices: [
-        { text: "点外卖", effects: {'money': -18, 'happy': 4}, result: "你点了外卖，外卖小哥冒雨送来，热乎乎的，救命。" },
+        { text: "点外卖", effects: {'money': -18, 'happy': 4}, result: "你点了外卖，外卖小哥很快就送来了，热乎乎的，救命。" },
         { text: "喝水", effects: {'health': 1}, result: "你喝了杯水硬扛，肚子叫了一晚上，第二天早饭吃了两份。" },
       ],
     },
     {
       prefix: "m-bored", n: 44,
       slots: { act: ['刷剧', '打游戏', '水群'] },
-      text: "闲得无聊，你开始{act}打发时间，结果一玩就停不下来。",
+      text: "闲得无聊，你开始{act}打发时间，结果一沾就停不下来。",
       choices: [
         { text: "爽", effects: {'happy': 4, 'iq': -1}, result: "你{act}到半夜，停不下来，天都快亮了才睡。" },
-        { text: "学习", effects: {'iq': 3}, result: "你关掉视频改去学习，学了两小时，心里踏实多了。" },
+        { text: "学习", effects: {'iq': 3}, result: "你关掉它改去学习，学了两小时，心里踏实多了。" },
       ],
     },
     {
@@ -4373,7 +4494,7 @@ choices: [
       slots: { time: ['晚上', '凌晨'] },
       text: "{time}宿舍突然停电了，灯一黑，整层楼都发出了哀嚎。",
       choices: [
-        { text: "夜聊", effects: {'happy': 4}, result: "你们点灯夜聊，很开心。" },
+        { text: "夜聊", effects: {'happy': 4}, result: "你们摸黑夜聊，很开心。" },
         { text: "睡觉", effects: {'health': 3}, result: "你摸黑洗漱完就睡了，难得睡了个早觉。" },
       ],
     },
@@ -4382,7 +4503,7 @@ choices: [
       slots: { act: ['开黑', '刷剧'] },
       text: "WiFi崩了，你正在{act}，页面卡在那儿转圈圈。",
       choices: [
-        { text: "热点", effects: {'happy': 2}, result: "你开了手机热点，网速感人，队友已经在语音里喊你了。" },
+        { text: "热点", effects: {'happy': 2}, result: "你开了手机热点，网速感人，总算能继续{act}了。" },
         { text: "睡觉", effects: {'health': 3}, result: "你索性关机睡觉，明天再说。" },
       ],
     },
@@ -4392,7 +4513,7 @@ choices: [
       text: "{course}考试还有三天，你还没复习。",
       choices: [
         { text: "突击", effects: {'iq': 4, 'health': -2}, result: "你突击了三天，每天只睡五小时，居然真过了。" },
-        { text: "摆烂", effects: {'happy': 2, 'iq': -3}, result: "你摆烂了，成绩一出果然挂了，补考报名表已经在路上了。" },
+        { text: "摆烂", effects: {'happy': 2, 'iq': -3}, result: "你摆烂了，成绩一出果然挂了，补考报名表已经发下来了。" },
       ],
     },
     {
@@ -4436,7 +4557,7 @@ choices: [
       slots: { place: ['操场', '小树林'] },
       text: "天气好得不像话，阳光正好，你想去{place}走走。",
       choices: [
-        { text: "去", effects: {'happy': 4, 'health': 2}, result: "你去了，在小树林坐了一下午，心情好得像天气一样。" },
+        { text: "去", effects: {'happy': 4, 'health': 2}, result: "你去了，在{place}坐了一下午，心情好得像天气一样。" },
         { text: "躺", effects: {'happy': 2}, result: "你在宿舍躺了一下午，刷手机刷到手酸，好天气都浪费了。" },
       ],
     },
@@ -4493,10 +4614,10 @@ choices: [
       prefix: "m-weather-change", n: 44,
       slots: { change: ['降温', '升温'] },
       title: "",
-      text: "天气突然{change}了，你一点准备都没有，只能硬着头皮往回走。",
+      text: "天气突然{change}了，你一点准备都没有，穿的这身衣服一下子就不对劲了。",
       choices: [
-        { text: "添减衣服", effects: {'health': 2}, result: "你及时添减了衣服，没感冒。" },
-        { text: "硬扛", effects: {'health': -2}, result: "你硬扛着没加衣服，结果第二天就感冒了，鼻子塞得难受。" },
+        { text: "添减衣服", effects: {'health': 2}, result: "你及时添减了衣服，舒服多了，没出什么岔子。" },
+        { text: "硬扛", effects: {'health': -2}, result: "你硬扛着没换衣服，一整天都难受得不行，晚上才缓过来。" },
       ],
     },
     {
@@ -4615,8 +4736,8 @@ choices: [
       title: "",
       text: "你打{game}赢了，一路连胜，手感热得发烫。",
       choices: [
-        { text: "继续", effects: {'happy': 5}, result: "你趁热继续打，又赢了两把，手感热得发烫。" },
-        { text: "睡觉", effects: {'health': 2}, result: "你见好就收，关了电脑睡觉，明天还有课。" },
+        { text: "继续", effects: {'happy': 5}, result: "你趁热继续打，又赢了两把，段位往上窜了一截。" },
+        { text: "睡觉", effects: {'health': 2}, result: "你见好就收，洗洗睡了，明天还有课。" },
       ],
     },
     {
@@ -4636,7 +4757,7 @@ choices: [
       text: "{person}特意来看你了，拎着一堆吃的，宿舍一下子热闹了起来。",
       choices: [
         { text: "招待", effects: {'money': -80, 'connections': 3, 'happy': 4}, result: "你热情地招待了他，两个人聊了好久，送他走时还约好下次再来。" },
-        { text: "忙", effects: {'happy': -1}, result: "你实在太忙了，简单吃了顿饭就继续赶路，连味道都没细品。" },
+        { text: "忙", effects: {'happy': -1}, result: "你实在太忙了，简单吃了顿饭就回去赶作业了，连味道都没细品。" },
       ],
     },
     {
@@ -4695,7 +4816,7 @@ choices: [
       title: "",
       text: "出门就下起了雨，还好你带了{item}，一路走得稳稳当当。",
       choices: [
-        { text: "淡定", effects: {'happy': 2}, result: "你淡定地撑着{item}往前走，雨点打在上面，心里一点都不慌。" },
+        { text: "淡定", effects: {'happy': 2}, result: "你淡定地一路走过去，雨点打在身上，心里一点都不慌。" },
         { text: "借给同学", effects: {'connections': 2}, result: "你把{item}借给了同学，对方连声道谢。" },
       ],
     },
@@ -4705,7 +4826,7 @@ choices: [
       title: "",
       text: "出太阳了，难得的好天气，你去{act}，晒着太阳特别舒服。",
       choices: [
-        { text: "舒服", effects: {'happy': 4, 'health': 2}, result: "你晒着太阳，浑身暖洋洋的，舒服得不想动。" },
+        { text: "舒服", effects: {'happy': 4, 'health': 2}, result: "你{act}，太阳晒在身上暖洋洋的，舒服得不想动。" },
         { text: "宅", effects: {'happy': 2}, result: "你在宿舍宅了一下午，追了两集剧。" },
       ],
     },
@@ -4770,7 +4891,7 @@ choices: [
 { prefix: "v3-m-rain-no-umbrella", n: 45, slots: {}, text: "出门的时候天还好好的，走到半路突然下起了雨，你没带伞。", choices: [ { text: "淋雨跑", effects: { happy: 4, health: -2}, result: "你淋雨跑回去，湿透但爽快。"}, { text: "等雨停", effects: { happy: 2}, result: "你在屋檐下等雨停，看着雨丝发呆，顺便放空了一会儿。"}, ], },
 { prefix: "v3-m-found-money", n: 45, slots: {}, text: "你在路上捡到 50 块钱，崭新的，躺在路边，也不知道是谁掉的。", choices: [ { text: "交到失物处", effects: { happy: 5}, result: "你交到失物处，做了好事，心情好。"}, { text: "自己留着", effects: { money: 50, happy: -2}, result: "你把钱留着了，可心里总有点心虚，走路都加快了脚步。"}, ], },
 { prefix: "v3-m-queue-long", n: 45, slots: {}, text: "食堂排队超长，队伍都快排到门口了，你饿得前胸贴后背，只想赶紧吃上饭。", choices: [ { text: "排队等", effects: { happy: -2}, result: "你排了 20 分钟，吃到饭时都凉了。"}, { text: "去小卖部", effects: { money: -15, happy: 3}, result: "你去小卖部买了面包，先垫垫。"}, ], },
-{ prefix: "v3-m-forgot-homework", n: 45, slots: {}, text: "你突然想起来有份作业没写，明天就要交，赶紧翻出课本连夜赶工。", choices: [ { text: "通宵补", effects: { iq: 2, health: -4}, result: "你通宵补完了，第二天像丧尸。"}, { text: "抄同学的", effects: { happy: -2}, result: "你抄了同学的，被老师发现，尴尬。"}, ], },
+{ prefix: "v3-m-forgot-homework", n: 45, slots: {}, text: "你突然想起来有份作业没写，明天就要交，赶紧翻出课本连夜赶工。", choices: [ { text: "通宵补", effects: { iq: 2, health: -4}, result: "你通宵补完了，第二天像丧尸。"}, { text: "抄同学的", effects: { happy: -2}, result: "你抄了同学的作业交上去，结果被老师当场发现，尴尬得想找个地缝钻进去。"}, ], },
 { prefix: "v3-m-new-shoes", n: 45, slots: {}, text: "刚买的新鞋白得发亮，下楼就被人踩了一脚，鞋尖上留了个灰印子。", choices: [ { text: "擦干净", effects: { happy: -1}, result: "你擦干净了，心疼三秒。"}, { text: "算了", effects: { happy: 2}, result: "你算了，鞋就是用来穿的。"}, ], },
 { prefix: "v3-m-haircut-bad", n: 45, slots: {}, text: "理发师下手太重，新发型丑得你都不敢照镜子，只想戴帽子出门。", choices: [ { text: "戴帽子", effects: { happy: -2}, result: "你戴了一周帽子，等头发长长。"}, { text: "自嘲", effects: { happy: 3, connections: 2}, result: "你自嘲发型，大家被你逗笑。"}, ], },
 { prefix: "v3-m-phone-battery", n: 45, slots: {}, text: "手机只剩 1% 的电了，屏幕右上角的红格子一闪一闪，像在倒计时。", choices: [ { text: "省电模式", effects: { happy: -1}, result: "你开了省电模式，撑到回宿舍。"}, { text: "借充电宝", effects: { connections: 2}, result: "你找同学借了个充电宝，救急成功，手机总算活了过来。"}, ], },
@@ -4788,19 +4909,19 @@ choices: [
 { prefix: "v3-m-book-return", n: 45, slots: {}, text: "手机收到提醒，图书馆借的那本书明天就到期了，再不还就要罚钱。", choices: [ { text: "去还", effects: { happy: 2}, result: "你按时把书还了，没逾期，也没罚钱。"}, { text: "续借", effects: { happy: 3}, result: "你续借了这本书，打算慢慢看完再还。"}, ], },
 { prefix: "v3-m-dorm-argue", n: 45, slots: {}, text: "你和室友因为一件小事吵了起来，嗓门越来越大，宿舍气氛一下子僵住了。", choices: [ { text: "道歉", effects: { connections: 5, happy: 3}, result: "你主动道了歉，他也软了下来，两个人很快就和好了。"}, { text: "冷战", effects: { happy: -5}, result: "你们冷战三天，都难受。"}, ], },
 { prefix: "v3-m-new-semester", n: 45, slots: {}, text: "新学期开始了，你买了新本子新笔，还给自己列了个新学期的计划表。", choices: [ { text: "好好学习", effects: { iq: 4}, result: "你决定好好学习，新学期新气象。"}, { text: "先玩几天", effects: { happy: 5}, result: "你先玩了几天，开学综合症。"}, ], },
-{ prefix: "v3-m-favorite-food", n: 45, slots: {}, text: "食堂你最爱的那家窗口关门了，门口贴着张纸，写着装修升级，归期未定。", choices: [ { text: "难过", effects: { happy: -3}, result: "你难过了三天，最后还是认命了，开始在食堂另寻新欢。"}, { text: "问老板", effects: { connections: 2}, result: "你问老板，说装修，下月回来。"}, ], },
+{ prefix: "v3-m-favorite-food", n: 45, slots: {}, text: "食堂你最爱的那家窗口关门了，门口贴着张纸，写着装修升级，归期未定。", choices: [ { text: "难过", effects: { happy: -3}, result: "你难过了三天，最后还是认命了，开始在食堂另寻新欢。"}, { text: "问老板", effects: { connections: 2}, result: "你去问了老板，老板说只是装修升级，下个月就回来，你这才放了心。"}, ], },
 // ---- 学习（25）----
 { prefix: "v3-m-exam-week", n: 45, slots: {}, text: "考试周到了，图书馆一大早就没了座位，走廊里都坐满了抱着书的人。", choices: [ { text: "早起占座", effects: { iq: 5, health: -2}, result: "你六点就去图书馆占了座，学了一整天，效率出奇地高。"}, { text: "在宿舍学", effects: { iq: 3}, result: "你在宿舍学，效率低但舒服。"}, ], },
-{ prefix: "v3-m-cheat-caught", n: 45, slots: {}, text: "考试进行到一半，有人作弊被监考老师当场抓住，全考场一下子安静了。", choices: [ { text: "庆幸", effects: { happy: 2}, result: "你庆幸自己没作弊，不然被抓的就是你了。"}, { text: "同情", effects: { happy: -1}, result: "你有点同情他，但作弊本来就不对，被抓也是自找的。"}, ], },
+{ prefix: "v3-m-cheat-caught", n: 45, slots: {}, text: "考试进行到一半，有人作弊被监考老师当场抓住，全考场一下子安静了。", choices: [ { text: "庆幸", effects: { happy: 2}, result: "你庆幸自己老老实实答题，不然考场上那种心惊胆战的滋味可不好受。"}, { text: "同情", effects: { happy: -1}, result: "你有点同情他，但作弊本来就不对，被抓也是自找的。"}, ], },
 { prefix: "v3-m-paper-done", n: 45, year: 4, slots: {}, text: "熬了三个通宵，你终于写完了那篇论文，点下保存的那一刻，长长地舒了口气。", choices: [ { text: "检查", effects: { iq: 4}, result: "你从头到尾检查了三遍，确认没问题才点了提交。"}, { text: "直接交", effects: { happy: 3}, result: "你直接交了上去，赌一把运气，剩下的就听天由命了。"}, ], },
 { prefix: "v3-m-prof-praise", n: 45, slots: {}, text: "教授在课上点名表扬了你的作业，说你的思路比标准答案还有意思。", choices: [ { text: "开心", effects: { happy: 8}, result: "你开心了一整天，走路都带风，感觉自己就是全班最靓的仔。"}, { text: "淡定", effects: { happy: 4}, result: "你表面淡定地点点头，心里早就美滋滋地开花了。"}, ], },
-{ prefix: "v3-m-group-project", n: 45, slots: {}, text: "小组作业分工完了，有个组员从头到尾没冒泡，活儿全堆在了你们几个身上。", choices: [ { text: "自己干", effects: { iq: 3, happy: -3}, result: "你一个人把活儿都干完了，累得够呛，但分数还不错。"}, { text: "举报", effects: { connections: -3}, result: "你举报了，他挂科，你被孤立。"}, ], },
+{ prefix: "v3-m-group-project", n: 45, slots: {}, text: "小组作业分工完了，有个组员从头到尾没冒泡，活儿全堆在了你们几个身上。", choices: [ { text: "自己干", effects: { iq: 3, happy: -3}, result: "你一个人把活儿都干完了，累得够呛，但分数还不错。"}, { text: "举报", effects: { connections: -3}, result: "你举报了，老师扣了他的平时分，组里却有人说你打小报告，关系一下子僵了。"}, ], },
 { prefix: "v3-m-library-close", n: 45, slots: {}, text: "图书馆要闭馆了，广播已经响了两遍，可你手头的题还没做完。", choices: [ { text: "回宿舍学", effects: { iq: 2}, result: "你回宿舍继续学，台灯亮到半夜，效率居然还不错。"}, { text: "明天再说", effects: { happy: 3}, result: "你收拾东西回宿舍了，熬夜不如早起，明天再战。"}, ], },
 { prefix: "v3-m-english-word", n: 45, slots: {}, text: "你给自己定了目标，今天要背完 100 个单词，单词书已经翻到了折角的那页。", choices: [ { text: "继续", effects: { iq: 4}, result: "你继续埋头背单词，词汇量肉眼可见地涨了不少。"}, { text: "休息", effects: { happy: 3}, result: "你休息了一会儿，劳逸结合，脑子清醒了再继续背。"}, ], },
 { prefix: "v3-m-math-hard", n: 45, slots: {}, text: "高数题太难了，你对着一道题做了三小时，草稿纸都写满了两页。", choices: [ { text: "问同学", effects: { iq: 4, connections: 2}, result: "你问了同学，他讲了两遍你才豁然开朗，原来是思路错了。"}, { text: "放弃", effects: { happy: -2}, result: "你放弃了这道题，合上书说明天再说，先睡个好觉。"}, ], },
 { prefix: "v3-m-presentation", n: 45, slots: {}, text: "你要上台做 presentation 了，PPT 还在改，站在讲台上腿都有点发抖。", choices: [ { text: "好好准备", effects: { charm: 4, iq: 3}, result: "你准备充分，讲得很好。"}, { text: "即兴", effects: { happy: 2}, result: "你即兴发挥了一通，虽然磕磕绊绊，但总算把内容讲完了。"}, ], },
 { prefix: "v3-m-scholarship", n: 45, slots: {}, text: "奖学金评选，你差 0.1 分。", choices: [ { text: "争取", effects: { happy: -2}, result: "你去争取了，可惜还是没评上，多少有点遗憾。"}, { text: "算了", effects: { happy: 3}, result: "你想想还是算了，下次评奖学金再努力一把。"}, ], },
-{ prefix: "v3-m-online-class", n: 45, slots: {}, text: "网课开着，老师在屏幕里讲得起劲，你的手指已经悬在了挂机键上。", choices: [ { text: "认真听", effects: { iq: 3}, result: "你认真听了一整节课，笔记记了满满一页，确实学到了东西。"}, { text: "挂机", effects: { happy: 4}, result: "你挂机打游戏，被点名，尴尬。"}, ], },
+{ prefix: "v3-m-online-class", n: 45, slots: {}, text: "网课开着，老师在屏幕里讲得起劲，你的手指已经悬在了挂机键上。", choices: [ { text: "认真听", effects: { iq: 3}, result: "你认真听了一整节课，笔记记了满满一页，确实学到了东西。"}, { text: "挂机", effects: { happy: 4}, result: "你挂机去打游戏了，结果正好被老师点名，半天没人应，尴尬得恨不得钻进屏幕里。"}, ], },
 { prefix: "v3-m-textbook-expensive", n: 45, slots: {}, text: "教材太贵了，一本就要 80 块，你盯着标价牌，钱包先叹了口气。", choices: [ { text: "买", effects: { money: -80, iq: 2}, result: "你咬牙买了，八十块就这么没了，肉疼了一整天。"}, { text: "借", effects: { connections: 2}, result: "你借了同学的教材先用着，省下了一笔钱，心里踏实多了。"}, ], },
 { prefix: "v3-m-study-allnight", n: 45, slots: {}, text: "明天就考试了，你还有半本书没看，桌上的咖啡已经是第三杯。", choices: [ { text: "继续", effects: { iq: 4, health: -5}, result: "你通宵啃完了，考试还算顺利，就是第二天走路都在飘，像个丧尸。"}, { text: "睡觉", effects: { health: 4}, result: "你合上书睡觉了，第二天精神饱满，考场上居然超常发挥。"}, ], },
 { prefix: "v3-m-teacher-question", n: 45, slots: {}, text: "老师上课提问，目光在教室里扫了一圈，最后落在了你身上，点到了你的名字。", choices: [ { text: "回答", effects: { iq: 3, charm: 2}, result: "你回答对了，老师当众夸你思路清晰，全班都回头看你。"}, { text: "不会", effects: { happy: -2}, result: "你支支吾吾答不上来，站着尴尬得脚趾抠地，只想赶紧坐下。"}, ], },
@@ -4847,7 +4968,7 @@ choices: [
 { prefix: "v3-m-breakup", n: 45, slots: {}, text: "ta 发来一句「我们不合适」，你盯着屏幕看了很久，宿舍的灯忽然显得特别亮。", choices: [ { text: "大哭", effects: { happy: -8, health: 2}, result: "你蒙在被子里哭了一场，室友默默给你递了纸巾。哭完之后，心里居然轻了一点。"}, { text: "坚强", effects: { happy: -3}, result: "你回了个「好」，假装云淡风轻。可夜里翻来覆去，怎么也睡不着。"}, ], },
 { prefix: "v3-m-anniversary", n: 45, slots: {}, text: "今天是恋爱纪念日，你在想送什么礼物。", choices: [ { text: "庆祝", effects: { happy: 10, money: -200}, result: "你们一起吃了顿好的，还交换了小礼物，甜蜜得室友都看不下去了。"}, { text: "忘记", effects: { happy: -5}, result: "你忙忘了，ta 气得一晚上没理你，你哄了好久才哄好。"}, ], },
 { prefix: "v3-m-jealous", n: 45, slots: {}, text: "ta 和异性朋友聊得火热，你在一旁看着，心里酸溜溜的，醋坛子打翻了一地。", choices: [ { text: "说出来", effects: { happy: 2}, result: "你直说了，ta 愣了一下，然后笑着哄你：「傻瓜，那是我表哥。」"}, { text: "憋着", effects: { happy: -4}, result: "你什么都没说，一个人生闷气。ta 还以为你心情不好，越哄你越委屈。"}, ], },
-{ prefix: "v3-m-long-distance", n: 45, slots: {}, text: "异地恋的对象发来消息，说想你了，还发了张你们上次见面时的合影。", choices: [ { text: "视频", effects: { happy: 6}, result: "你们视频聊到半夜，聊着聊着她就睡着了，你看着屏幕笑了。"}, { text: "见面", effects: { happy: 10, money: -300}, result: "你请假去见了 ta，拥抱的那一刻，所有的想念都有了着落。"}, ], },
+{ prefix: "v3-m-long-distance", n: 45, slots: {}, text: "异地恋的对象发来消息，说想你了，还发了张你们上次见面时的合影。", choices: [ { text: "视频", effects: { happy: 6}, result: "你们视频聊到半夜，聊着聊着 ta 就睡着了，你看着屏幕笑了。"}, { text: "见面", effects: { happy: 10, money: -300}, result: "你请假去见了 ta，拥抱的那一刻，所有的想念都有了着落。"}, ], },
 { prefix: "v3-m-confession-wall", n: 45, slots: {}, text: "表白墙上出现了一条匿名表白，描述的细节分明就是你，评论区都在猜是谁写的。", choices: [ { text: "回应", effects: { happy: 6}, result: "你在评论区回应了，没想到对方真的来加你好友，两个人聊了起来。"}, { text: "无视", effects: { happy: 2}, result: "你装作没看见，划了过去，只是心里忍不住想：那个人会是谁呢？"}, ], },
 { prefix: "v3-m-valentine", n: 45, sem: "spring", slots: {}, text: "情人节到了，朋友圈都在秀恩爱。", choices: [ { text: "过节", effects: { happy: 10, money: -200}, result: "你们一起过了节，烛光晚餐加小礼物，浪漫得朋友圈都在点赞。"}, { text: "单身", effects: { happy: 3}, result: "你单身，和室友点了炸鸡看电影，单身狗的情人节也可以很香。"}, ], },
 { prefix: "v3-m-first-love", n: 45, slots: {}, text: "走在校园里，你满脑子都是初恋的身影，连路过的情侣都觉得像你们。", choices: [ { text: "珍惜", effects: { happy: 8}, result: "你格外珍惜这段感情，每分每秒都觉得甜。"}, { text: "作", effects: { happy: -3}, result: "你动不动就作，ta 被折腾累了，两个人开始冷战。"}, ], },
