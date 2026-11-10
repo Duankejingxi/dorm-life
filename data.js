@@ -1686,15 +1686,15 @@ const EVENTS = [
 
 // ---- v1.1：随机小事（每学期在大事件后出现 2 件，短平快，丰富日常）----
 const MICRO_EVENTS = [
-  { id: "m001", text: "食堂今天的鸡腿特别大，阿姨手一点没抖。", choices: [
+  { id: "m001", text: "食堂今天的鸡腿特别大，阿姨手一点没抖，窗口前排队的人都忍不住多看了两眼。", choices: [
     { text: "多吃点", effects: { happy: 3 }, result: "你又多吃了一块，心满意足地放下筷子，今天这顿吃得太值了。" },
-    { text: "打包带走", effects: { happy: 2, money: -5 }, result: "你打包了一份，晚上加餐。" },
+    { text: "打包带走", effects: { happy: 2, money: -5 }, result: "你打包了一份带回宿舍，晚上热一热加餐，鸡腿凉了也香。" },
   ] },
   { id: "m002", text: "食堂排队排了二十分钟，前面的人还在纠结吃什么。", choices: [
     { text: "换个窗口", effects: { happy: 2 }, result: "你换了个窗口，马上就吃上了。" },
     { text: "继续等", effects: { happy: -2 }, result: "你继续等，终于吃上了，但有点饿过劲了。" },
   ] },
-  { id: "m003", text: "外卖小哥打电话说到了，让你下楼取。", choices: [
+  { id: "m003", text: "你点的外卖到了，小哥打电话说在楼下等你，饭还热乎着，再不去就凉了。", choices: [
     { text: "马上下楼", effects: { happy: 3 }, result: "你一路小跑下楼，饭还热乎着，趁热吃最香。" },
     { text: "让他放门口", effects: { happy: 1 }, result: "你让他放门口，回去的时候饭有点凉了。" },
   ] },
@@ -1708,37 +1708,37 @@ const MICRO_EVENTS = [
   ] },
   { id: "m006", text: "今天食堂的饭有点咸，你喝了三瓶水。", choices: [
     { text: "将就吃", effects: { happy: -1 }, result: "你将就吃了，下次不点这家了。" },
-    { text: "换一家", effects: { money: -10, happy: 2 }, result: "你换了一家，味道好多了。" },
+    { text: "换一家", effects: { money: -10, happy: 2 }, result: "你换了一家食堂，味道好多了，下次就认准这家了。" },
   ] },
-  { id: "m007", text: "你点了一份超辣的菜，辣得直冒汗。", choices: [
+  { id: "m007", text: "你点了一份超辣的菜，辣得直冒汗，筷子刚夹一口就被辣得直吸气。", choices: [
     { text: "坚持吃完", effects: { happy: 4, health: -1 }, result: "你坚持吃完了，虽然辣，但特别过瘾。" },
     { text: "不吃了", effects: { happy: -1, money: -15 }, result: "你不吃了，浪费了一份，有点心疼。" },
   ] },
   { id: "m008", text: "超市打折，零食买一送一，你一口气囤了一大包，够吃半个月了。", choices: [
     { text: "囤一波", effects: { money: -30, happy: 5 }, result: "你囤了一波，宿舍的零食柜满了。" },
-    { text: "只买需要的", effects: { money: -10, happy: 2 }, result: "你只买了需要的，理智消费。" },
+    { text: "只买需要的", effects: { money: -10, happy: 2 }, result: "你只买了需要的，剩下的钱存了起来，理智消费也是一种快乐。" },
   ] },
   { id: "m009", text: "你发现宿舍楼下新开了家水果店。", choices: [
     { text: "去买点", effects: { money: -20, happy: 4, health: 2 }, result: "你买了点水果，新鲜又便宜，补充维生素。" },
-    { text: "看看", effects: { happy: 1 }, result: "你看了看，决定下次再买。" },
+    { text: "看看", effects: { happy: 1 }, result: "你看了看价目表，决定下次再买，先记下这家店的位置。" },
   ] },
   { id: "m010", text: "今天的早饭特别好吃，包子皮薄馅大。", choices: [
     { text: "多吃两个", effects: { happy: 3, health: 1 }, result: "你多吃了两个，一天都元气满满。" },
     { text: "打包给室友", effects: { happy: 3, charm: 3 }, result: "你打包给室友，他感动得不行。" },
   ] },
   { id: "m011", text: "室友在宿舍煮泡面，香味飘满了整个宿舍。", choices: [
-    { text: "蹭一口", effects: { happy: 4 }, result: "你蹭了一口，泡面真香。" },
+    { text: "蹭一口", effects: { happy: 4 }, result: "你蹭了一口，泡面真香，热乎乎的汤下肚，整个人都暖和了。" },
     { text: "自己也煮", effects: { money: -5, happy: 4 }, result: "你自己也煮了一碗，两个人一起吃，更香。" },
   ] },
   { id: "m012", text: "你发现了一家深夜食堂，开到凌晨两点。", choices: [
     { text: "去吃", effects: { money: -25, happy: 6 }, result: "你去吃了，深夜食堂的氛围特别好，食物也好吃。" },
-    { text: "改天去", effects: { happy: 1 }, result: "你决定改天去，先记下来。" },
+    { text: "改天去", effects: { happy: 1 }, result: "你决定改天再去，先把店名记在备忘录里，免得找不着了。" },
   ] },
-  { id: "m013", text: "食堂阿姨认出你了，多给了你一块肉。", choices: [
+  { id: "m013", text: "食堂阿姨认出你了，打饭的手一抖，多给了你一块肉，还冲你眨了眨眼。", choices: [
     { text: "谢谢阿姨", effects: { happy: 5, charm: 2 }, result: "你谢谢阿姨，她笑着说下次还给你多打点。" },
     { text: "受宠若惊", effects: { happy: 4 }, result: "你受宠若惊，觉得食堂阿姨真好。" },
   ] },
-  { id: "m014", text: "你点的外卖洒了，汤汁流了一袋子。", choices: [
+  { id: "m014", text: "你点的外卖洒了，汤汁流了一袋子，拎起来还在往下滴，骑手都看愣了。", choices: [
     { text: "将就吃", effects: { happy: -2 }, result: "你将就吃了，虽然卖相不好，但味道还行。" },
     { text: "申请退款", effects: { money: 15, happy: 2 }, result: "你申请退款了，平台赔了 15，聊胜于无。" },
   ] },
@@ -1746,7 +1746,7 @@ const MICRO_EVENTS = [
     { text: "好吃，再来一份", effects: { money: -12, happy: 5 }, result: "你觉得好吃，又买了一份，值了。" },
     { text: "一般般", effects: { happy: 1 }, result: "你觉得一般般，下次不买了。" },
   ] },
-  { id: "m016", text: "你发现了一家便宜又好吃的快餐店。", choices: [
+  { id: "m016", text: "你发现了一家便宜又好吃的快餐店，门口排着队，招牌上还写着今日特价。", choices: [
     { text: "常去", effects: { happy: 4, money: 0 }, result: "你常去，性价比之王，钱包和胃都满意。" },
     { text: "带朋友去", effects: { happy: 4, charm: 3 }, result: "你带朋友去了，大家都夸你会找地方。" },
   ] },
@@ -1760,18 +1760,18 @@ const MICRO_EVENTS = [
   ] },
   { id: "m019", text: "今天食堂的汤特别好喝，你喝了两碗。", choices: [
     { text: "再来一碗", effects: { happy: 3 }, result: "你又喝了一碗，热乎乎的汤下肚，浑身都暖和了，满足得不想动。" },
-    { text: "打包", effects: { happy: 2 }, result: "你打包了一份，晚上喝。" },
+    { text: "打包", effects: { happy: 2 }, result: "你打包了一份带回宿舍，晚上热一热接着喝，暖胃又暖心。" },
   ] },
   { id: "m020", text: "你发现宿舍楼下有卖烤红薯的，香味飘了老远。", choices: [
     { text: "买一个", effects: { money: -8, happy: 5 }, result: "你买了一个，热乎乎甜滋滋，幸福感直接拉满。" },
-    { text: "不买", effects: { happy: 0 }, result: "你没买，闻闻香味就满足了。" },
+    { text: "不买", effects: { happy: 1 }, result: "你没买，闻闻香味就满足了。" },
   ] },
   // 宿舍日常
   { id: "m021", text: "宿舍 WiFi 有点卡，视频一直转圈。", choices: [
     { text: "重启路由器", effects: { happy: 3 }, result: "你重启了路由器，网速恢复了。" },
     { text: "用流量", effects: { money: -10, happy: 2 }, result: "你用了流量，贵了点，但流畅了。" },
   ] },
-  { id: "m022", text: "室友在宿舍练歌，唱得还挺好听。", choices: [
+  { id: "m022", text: "室友在宿舍练歌，唱得还挺好听，隔壁宿舍都探头进来问这是在排练吗。", choices: [
     { text: "跟着唱", effects: { happy: 5, charm: 2 }, result: "你跟着唱了两句，两个人合唱了一首，挺有意思。" },
     { text: "戴耳机", effects: { happy: 1 }, result: "你戴上耳机，各唱各的，互不打扰。" },
   ] },
@@ -1785,22 +1785,22 @@ const MICRO_EVENTS = [
   ] },
   { id: "m025", text: "室友的快递到了，让你帮忙拿一下。", choices: [
     { text: "帮忙拿", effects: { happy: 2, charm: 3 }, result: "你帮忙拿了，他回来特别感谢你。" },
-    { text: "让他自己拿", effects: { happy: 0 }, result: "你让他自己拿，他也没说什么。" },
+    { text: "让他自己拿", effects: { connections: -1 }, result: "你让他自己拿，他也没说什么。" },
   ] },
-  { id: "m026", text: "宿舍的热水器坏了，洗不了热水澡。", choices: [
-    { text: "报修", effects: { happy: 2 }, result: "你报修了，第二天就修好了。" },
+  { id: "m026", text: "宿舍的热水器坏了，洗不了热水澡，拧开水龙头只有一股凉水。", choices: [
+    { text: "报修", effects: { happy: 2 }, result: "你报修了，师傅第二天就修好了，热水澡总算有着落了。" },
     { text: "去公共浴室", effects: { money: -5, happy: 2 }, result: "你去公共浴室洗了，贵了点，但洗上了。" },
   ] },
-  { id: "m027", text: "你发现宿舍里有只小蜘蛛，结了个网。", choices: [
-    { text: "放生", effects: { happy: 2 }, result: "你把它放生了，功德+1。" },
-    { text: "不管", effects: { happy: 0 }, result: "你没管，它自己待着，也挺好。" },
+  { id: "m027", text: "你发现宿舍里有只小蜘蛛，在墙角结了个网，八条腿爬来爬去忙个不停。", choices: [
+    { text: "放生", effects: { happy: 2 }, result: "你把它放生到了楼下的草丛里，功德+1，晚上睡觉都踏实了点。" },
+    { text: "不管", effects: { happy: 1 }, result: "你没管它，让它自己待着，反正也不碍事，权当宿舍多了个住户。" },
   ] },
-  { id: "m028", text: "室友在宿舍看球赛，激动得直拍桌子。", choices: [
+  { id: "m028", text: "室友在宿舍看球赛，激动得直拍桌子，进球那一刻整层楼都听见了他的欢呼。", choices: [
     { text: "一起看", effects: { happy: 6, charm: 2 }, result: "你们一起看了，支持的队赢了，全宿舍欢呼。" },
-    { text: "戴耳机", effects: { happy: 1 }, result: "你戴上耳机，各看各的。" },
+    { text: "戴耳机", effects: { happy: 1 }, result: "你戴上耳机各看各的，互不打扰，倒也落得清净。" },
   ] },
   { id: "m029", text: "宿舍的窗帘坏了，拉不上也合不拢，早上第一缕阳光就准时把你晃醒。", choices: [
-    { text: "修一下", effects: { happy: 2, iq: 1 }, result: "你修了一下，居然修好了。" },
+    { text: "修一下", effects: { happy: 2, iq: 1 }, result: "你修了一下，居然真修好了，窗帘拉得顺顺当当，早上再也不会被晃醒了。" },
     { text: "用夹子夹住", effects: { happy: 2 }, result: "你用夹子夹住了，勉强能用。" },
   ] },
   { id: "m030", text: "你发现宿舍的床特别舒服，今天睡了个懒觉。", choices: [
@@ -1809,15 +1809,15 @@ const MICRO_EVENTS = [
   ] },
   { id: "m031", text: "室友借了你的充电器，忘了还，你手机快没电了，只好厚着脸皮去要。", choices: [
     { text: "提醒他", effects: { happy: 1, charm: 1 }, result: "你提醒了他，他马上还了，还道了歉。" },
-    { text: "算了", effects: { happy: 0 }, result: "你算了，反正你还有备用的。" },
+    { text: "算了", effects: { happy: 1 }, result: "你算了，反正你还有备用的。" },
   ] },
   { id: "m032", text: "宿舍的门锁有点松，一推就开，晚上睡觉都有点不踏实，得找宿管换个锁。", choices: [
     { text: "报修", effects: { happy: 2 }, result: "你报修了，师傅来换了新锁，安全了。" },
     { text: "自己修", effects: { happy: 3, iq: 1 }, result: "你自己修了，拧紧了螺丝，居然好了。" },
   ] },
   { id: "m033", text: "你发现宿舍的墙上有个小洞，不知道是谁弄的。", choices: [
-    { text: "贴张海报遮住", effects: { happy: 2 }, result: "你贴了张海报遮住，完美。" },
-    { text: "不管", effects: { happy: 0 }, result: "你没管，反正也不影响住。" },
+    { text: "贴张海报遮住", effects: { happy: 2 }, result: "你贴了张海报遮住，严丝合缝，完美，谁也看不出墙上有洞。" },
+    { text: "不管", effects: { happy: -1 }, result: "你没管它，反正也不影响住，洞就一直在那儿待着。" },
   ] },
   { id: "m034", text: "室友在宿舍做俯卧撑，一口气做了 50 个。", choices: [
     { text: "跟着做", effects: { health: 4, happy: 3 }, result: "你跟着做了 20 个，胳膊有点酸，但挺有成就感。" },
@@ -1831,17 +1831,17 @@ const MICRO_EVENTS = [
     { text: "去看", effects: { happy: 6 }, result: "你去看了，小猫特别可爱，你拍了好多照片。" },
     { text: "喂点吃的", effects: { money: -5, happy: 7 }, result: "你喂了点吃的，母猫蹭了蹭你的手，暖暖的。" },
   ] },
-  { id: "m037", text: "室友在宿舍弹吉他，弹得还挺好听。", choices: [
+  { id: "m037", text: "晚上室友抱着吉他坐在床边弹了起来，琴声一响，整个宿舍都安静了，弹得还挺好听。", choices: [
     { text: "跟着唱", effects: { happy: 5, charm: 3 }, result: "你跟着唱了，宿舍成了小型演唱会。" },
     { text: "静静听", effects: { happy: 4 }, result: "你静静听了会儿，吉他声真治愈。" },
   ] },
-  { id: "m038", text: "宿舍的饮水机没水了，要去换水。", choices: [
+  { id: "m038", text: "宿舍的饮水机没水了，空桶咕咚咕咚响了两声，是时候去换水了。", choices: [
     { text: "去换", effects: { health: 2, happy: 1 }, result: "你去换了水，顺便活动了一下筋骨。" },
-    { text: "等别人换", effects: { happy: 0 }, result: "你等别人换，结果等了半天没人换，你渴得不行还是自己去了。" },
+    { text: "等别人换", effects: { happy: -1 }, result: "你等别人换，结果等了半天没人换，你渴得不行还是自己去了。" },
   ] },
-  { id: "m039", text: "你发现宿舍的镜子有点脏，擦了一下。", choices: [
+  { id: "m039", text: "你发现宿舍的镜子有点脏，蒙了一层灰，照人都模模糊糊的，顺手擦了一下。", choices: [
     { text: "擦干净", effects: { happy: 2 }, result: "你擦干净了，镜子亮得能照出人影。" },
-    { text: "不管", effects: { happy: 0 }, result: "你没管，反正也不常照镜子。" },
+    { text: "不管", effects: { happy: 1 }, result: "你没管，反正也不常照镜子。" },
   ] },
   { id: "m040", text: "室友在宿舍敷面膜，白乎乎的脸吓了你一跳。", choices: [
     { text: "笑他", effects: { happy: 5 }, result: "你笑了半天，他也笑了，两个人闹了一会儿。" },
@@ -1860,15 +1860,15 @@ const MICRO_EVENTS = [
     { text: "继续背", effects: { iq: 3 }, result: "你又背了 50 个，词汇量蹭蹭涨。" },
     { text: "奖励自己", effects: { happy: 3, money: -10 }, result: "你奖励了自己一杯奶茶，学习也要有仪式感。" },
   ] },
-  { id: "m044", text: "老师上课讲了个笑话，全班都笑了。", choices: [
-    { text: "跟着笑", effects: { happy: 4 }, result: "你跟着笑了，课堂气氛特别好。" },
+  { id: "m044", text: "老师上课讲了个笑话，说他当年读书时把墨水当可乐喝了一口，全班先是一愣，接着哄堂大笑，连前排打瞌睡的同学都笑醒了。", choices: [
+    { text: "跟着笑", effects: { happy: 4 }, result: "你跟着笑了，笑声里连老师自己都绷不住了，课堂气氛一下子热了起来。" },
     { text: "记下来", effects: { happy: 3, iq: 1 }, result: "你记下来了，回去讲给室友听，他们也笑了。" },
   ] },
   { id: "m045", text: "你发现了一个特别好用的学习 App。", choices: [
     { text: "用起来", effects: { iq: 4, happy: 2 }, result: "你用起来了，学习效率提高了不少。" },
     { text: "推荐给朋友", effects: { iq: 2, charm: 3 }, result: "你推荐给朋友了，大家都觉得好用。" },
   ] },
-  { id: "m046", text: "你今天做了一套真题，正确率特别高。", choices: [
+  { id: "m046", text: "你今天做了一套真题，正确率特别高，对答案时几乎没错几道题。", choices: [
     { text: "继续做", effects: { iq: 4 }, result: "你又做了一套，正确率更高了，信心爆棚。" },
     { text: "休息一下", effects: { happy: 3, iq: 1 }, result: "你休息了一下，劳逸结合，效果更好。" },
   ] },
@@ -1880,7 +1880,7 @@ const MICRO_EVENTS = [
     { text: "继续努力", effects: { iq: 3, happy: 4 }, result: "你继续努力，目标是下次还被表扬。" },
     { text: "低调", effects: { happy: 3, charm: 2 }, result: "你低调了，但心里美滋滋的。" },
   ] },
-  { id: "m049", text: "你发现了一个学习小组，每周一起自习。", choices: [
+  { id: "m049", text: "你发现了一个学习小组，每周固定一起自习，组里还有两个保研的学霸带队。", choices: [
     { text: "加入", effects: { iq: 4, charm: 3 }, result: "你加入了，学习效率高了不少，还认识了几个学霸。" },
     { text: "观望", effects: { happy: 1 }, result: "你观望了一下，决定下次再去。" },
   ] },
@@ -1893,7 +1893,7 @@ const MICRO_EVENTS = [
     { text: "去散步", effects: { health: 3, happy: 4 }, result: "你去散步了，晒了会儿太阳，心情特别好。" },
     { text: "去操场", effects: { health: 4, happy: 3 }, result: "你去操场跑了两圈，出了一身汗，舒服。" },
   ] },
-  { id: "m052", text: "突然下雨了，你没带伞，被淋成了落汤鸡。", choices: [
+  { id: "m052", text: "天说变就变，雨点噼里啪啦地砸下来，你没带伞，跑了没两步就被淋成了落汤鸡。", choices: [
     { text: "跑回去", effects: { health: -2, happy: 2 }, result: "你跑回去了，虽然淋湿了，但居然有点爽。" },
     { text: "躲雨", effects: { happy: 1 }, result: "你躲了一会儿雨，等雨小了才走。" },
   ] },
@@ -1913,9 +1913,9 @@ const MICRO_EVENTS = [
     { text: "叫室友来看", effects: { happy: 5, connections: 2 }, result: "你把室友都叫到阳台，一排人趴在栏杆上看晚霞，像在看一场免费的电影。" },
     { text: "拍段延时", effects: { happy: 4, charm: 2 }, result: "你架起手机拍了段延时，云烧完又暗下去，视频发到朋友圈被赞爆了。" },
   ] },
-  { id: "m057", text: "今天有彩虹，挂在天边特别好看。", choices: [
+  { id: "m057", text: "今天有彩虹，挂在天边特别好看，半个校园的人都在抬头拍照。", choices: [
     { text: "拍照", effects: { happy: 5 }, result: "你拍了照片，彩虹真难得，运气真好。" },
-    { text: "许愿", effects: { happy: 4 }, result: "你许了个愿，希望它能实现。" },
+    { text: "许愿", effects: { happy: 4 }, result: "你许了个愿，希望它能实现，彩虹都出来了，愿望说不定真能成真。" },
   ] },
   { id: "m058", sem: "autumn", text: "今天下雪了，校园一片白，雪花落在树枝上，连平时最闹腾的操场都安静了。", choices: [
     { text: "打雪仗", effects: { happy: 6, health: 2 }, result: "你们打雪仗了，玩到浑身是雪，笑得停不下来。" },
@@ -1929,25 +1929,25 @@ const MICRO_EVENTS = [
     { text: "去赏月", effects: { happy: 5 }, result: "你去赏月了，月亮真圆，心情也圆满了。" },
     { text: "拍照", effects: { happy: 4 }, result: "你拍了照片，月亮真美，可惜手机拍不出来。" },
   ] },
-  { id: "m061", text: "今天星星特别多，抬头就是银河。", choices: [
+  { id: "m061", text: "今天星星特别多，抬头就是银河，熄灯后你趴在阳台上看了好久。", choices: [
     { text: "看星星", effects: { happy: 5 }, result: "你看了会儿星星，城市里难得有这么多星星。" },
-    { text: "许愿", effects: { happy: 4 }, result: "你对着流星许了个愿，希望它能实现。" },
+    { text: "许愿", effects: { happy: 4 }, result: "你对着银河许了个愿，希望它能实现。" },
   ] },
   { id: "m062", sem: "autumn", text: "今天起风了，落叶满天飞，特别有诗意。", choices: [
     { text: "拍照", effects: { happy: 4 }, result: "你拍了照片，落叶纷飞的校园真美。" },
     { text: "踩落叶", effects: { happy: 4 }, result: "你踩着落叶走，咔嚓咔嚓的，特别解压。" },
   ] },
-  { id: "m063", text: "今天下冰雹了，噼里啪啦的，特别壮观。", choices: [
+  { id: "m063", text: "今天下冰雹了，噼里啪啦地砸在窗户上，冰粒子又大又密，特别壮观。", choices: [
     { text: "看冰雹", effects: { happy: 4 }, result: "你看了会儿冰雹，冰雹真大，还捡了几个。" },
     { text: "躲室内", effects: { happy: 1 }, result: "你躲在室内，听着冰雹声，也挺有意思。" },
   ] },
   { id: "m064", text: "今天出太阳了，晒被子正好，你把被子抱到阳台，晒得暖烘烘的。", choices: [
     { text: "晒被子", effects: { happy: 3, health: 2 }, result: "你晒了被子，晚上盖着太阳味的被子，睡得特别香。" },
-    { text: "晒衣服", effects: { happy: 2 }, result: "你晒了衣服，干得特别快。" },
+    { text: "晒衣服", effects: { happy: 2 }, result: "你晒了衣服，太阳一晒干得特别快，晚上收回来还有股阳光味。" },
   ] },
-  { id: "m065", text: "今天特别适合放风筝，风不大不小刚刚好。", choices: [
+  { id: "m065", text: "今天天气晴朗，风不大不小刚刚好，操场上已经有人把风筝放上了天。", choices: [
     { text: "去放风筝", effects: { happy: 6, health: 2 }, result: "你去放风筝了，风筝飞得老高，心情也飞起来了。" },
-    { text: "看别人放", effects: { happy: 3 }, result: "你看别人放风筝，也挺有意思。" },
+    { text: "看别人放", effects: { happy: 3 }, result: "你坐在草地上看别人放风筝，风筝在天上晃晃悠悠，看着也挺有意思。" },
   ] },
   // 手机/网络
   { id: "m066", text: "你手机收到一条诈骗短信，说你中奖了。", choices: [
@@ -1988,15 +1988,15 @@ const MICRO_EVENTS = [
   ] },
   { id: "m075", text: "你发现手机里有个 App 特别占内存，删了它。", choices: [
     { text: "删掉", effects: { happy: 2 }, result: "你删掉了，手机流畅多了，舒服。" },
-    { text: "留着", effects: { happy: 0 }, result: "你留着了，虽然占内存，但偶尔还会用。" },
+    { text: "留着", effects: { happy: 1 }, result: "你留着了，虽然占内存，但偶尔还会用。" },
   ] },
   { id: "m076", text: "你收到一条银行短信，工资到账了。", choices: [
     { text: "看看余额", effects: { happy: 4 }, result: "你看了看余额，数字涨了，心情也涨了。" },
     { text: "存起来", effects: { happy: 3 }, result: "你存起来了，看着余额，心里特别踏实。" },
   ] },
-  { id: "m077", text: "你发现了一个免费的 WiFi，网速特别快。", choices: [
+  { id: "m077", text: "你在教学楼角落里搜到一个没密码的免费 WiFi，连上试了试，网速快得离谱，视频一点就开。", choices: [
     { text: "连上", effects: { happy: 3 }, result: "你连上了，网速飞快，视频都不卡了。" },
-    { text: "不用", effects: { happy: 0 }, result: "你没用，觉得免费 WiFi 不安全。" },
+    { text: "不用", effects: { happy: 1 }, result: "你没用，觉得免费 WiFi 不安全。" },
   ] },
   { id: "m078", text: "你手机壁纸换了新的，特别好看。", choices: [
     { text: "秀给朋友看", effects: { happy: 3, charm: 2 }, result: "你秀给朋友看了，大家都夸好看，还问你要原图。" },
@@ -2032,15 +2032,15 @@ const MICRO_EVENTS = [
     { text: "请朋友吃饭", effects: { money: -200, happy: 8, charm: 4 }, result: "你请朋友吃了饭，大家都为你高兴。" },
   ] },
   { id: "m086", text: "你发现了一个免费领东西的活动，领了不少。", choices: [
-    { text: "领", effects: { happy: 4 }, result: "你领了不少，免费的东西最香。" },
-    { text: "分享给朋友", effects: { happy: 3, charm: 3 }, result: "你分享给朋友了，大家都领到了，开心。" },
+    { text: "领", effects: { happy: 4 }, result: "你领了不少小东西，免费的快乐最香，白捡的便宜不占白不占。" },
+    { text: "分享给朋友", effects: { happy: 3, charm: 3 }, result: "你分享给朋友了，大家都领到了免费的东西，一个个乐得合不拢嘴。" },
   ] },
   { id: "m087", text: "你今天买了个东西，特别便宜，捡了个大漏。", choices: [
     { text: "开心", effects: { happy: 5 }, result: "你开心了一整天，捡漏的感觉真好。" },
     { text: "告诉朋友", effects: { happy: 3, charm: 2 }, result: "你告诉朋友了，大家都夸你眼光好。" },
   ] },
   { id: "m088", text: "你发现了一个打折活动，喜欢的东西半价。", choices: [
-    { text: "买", effects: { money: -100, happy: 6 }, result: "你买了，半价入手，血赚。" },
+    { text: "买", effects: { money: -100, happy: 6 }, result: "你买了，半价入手，血赚，拎着袋子回宿舍的脚步都轻快了。" },
     { text: "不买", effects: { happy: 1 }, result: "你没买，觉得虽然便宜，但不是必需品。" },
   ] },
   { id: "m089", text: "你今天收到一笔兼职工资，到账了。", choices: [
@@ -2051,12 +2051,12 @@ const MICRO_EVENTS = [
     { text: "抢", effects: { money: 10, happy: 5 }, result: "你抢到了 10 块，运气不错。" },
     { text: "没抢到", effects: { happy: -1 }, result: "你没抢到，慢了一步，下次手速快点。" },
   ] },
-  { id: "m091", text: "你今天省了一笔钱，公交改成了骑行。", choices: [
+  { id: "m091", text: "为了省一笔钱，你把公交改成了骑行，顺便还能锻炼身体。", choices: [
     { text: "继续省", effects: { money: 10, happy: 2, health: 2 }, result: "你继续省了，既省钱又锻炼，一举两得。" },
-    { text: "偶尔省", effects: { happy: 1 }, result: "你偶尔省，舒服最重要。" },
+    { text: "偶尔省", effects: { happy: 1 }, result: "你偶尔骑行偶尔坐车，舒服最重要，省钱也不能委屈自己。" },
   ] },
   { id: "m092", text: "你发现了一个免费试吃的活动，吃了不少。", choices: [
-    { text: "吃", effects: { happy: 5 }, result: "你吃了不少，免费试吃最香。" },
+    { text: "吃", effects: { happy: 5 }, result: "你吃了不少，免费试吃最香，吃完还想再来一轮。" },
     { text: "带朋友去", effects: { happy: 4, charm: 3 }, result: "你带朋友去了，大家都吃得很开心。" },
   ] },
   { id: "m093", text: "你今天买了个东西，质量特别好，物超所值。", choices: [
@@ -2079,9 +2079,9 @@ const MICRO_EVENTS = [
     { text: "买", effects: { money: -300, happy: 8 }, result: "你买了，虽然贵，但喜欢的东西就该买。" },
     { text: "不买", effects: { happy: 1 }, result: "你没买，觉得虽然喜欢，但太贵了。" },
   ] },
-  { id: "m098", text: "你发现了一个免费的讲座，听了收获很大。", choices: [
-    { text: "去听", effects: { iq: 3, happy: 3 }, result: "你去听了，收获特别大，免费的才是最贵的。" },
-    { text: "看回放", effects: { iq: 2, happy: 2 }, result: "你看了回放，也学到了不少。" },
+  { id: "m098", text: "你发现了一个免费的讲座，主讲人是业内大牛，听了收获很大。", choices: [
+    { text: "去听", effects: { iq: 3, happy: 3 }, result: "你去听了，收获特别大，主讲人讲的全是干货，笔记记了满满两页。" },
+    { text: "看回放", effects: { iq: 2, happy: 2 }, result: "你看了回放，重点地方还暂停记了笔记，也学到了不少东西。" },
   ] },
   { id: "m099", text: "你今天收到一笔奖金，比赛拿了奖。", choices: [
     { text: "存起来", effects: { money: 300, happy: 6 }, result: "你存起来了，奖金是对你实力的肯定。" },
@@ -2089,14 +2089,14 @@ const MICRO_EVENTS = [
   ] },
   { id: "m100", text: "你发现了一个便宜的理发店，剪得还不错。", choices: [
     { text: "去剪", effects: { money: -15, happy: 4, charm: 2 }, result: "你去剪了，15 块剪得还不错，性价比之王。" },
-    { text: "不去", effects: { happy: 0 }, result: "你没去，在宿舍自己剪了个发型，还挺有型。" },
+    { text: "不去", effects: { happy: 2 }, result: "你没去，在宿舍自己剪了个发型，还挺有型。" },
   ] },
   // 社交
   { id: "m101", text: "你今天认识了一个新朋友，聊得特别投缘。", choices: [
     { text: "加好友", effects: { happy: 5, charm: 4 }, result: "你们加了好友，约了下次一起吃饭。" },
     { text: "保持联系", effects: { happy: 3, charm: 2 }, result: "你们保持联系，偶尔聊聊天，也挺好。" },
   ] },
-  { id: "m102", text: "你今天帮了同学一个忙，他特别感谢你。", choices: [
+  { id: "m102", text: "你今天帮了同学一个忙，他特别感谢你，拉着你说了半天谢谢。", choices: [
     { text: "不客气", effects: { happy: 4, charm: 4 }, result: "你说不客气，同学请你喝了杯奶茶。" },
     { text: "举手之劳", effects: { happy: 3, charm: 3 }, result: "你说举手之劳，同学记在心里了。" },
   ] },
@@ -2108,20 +2108,20 @@ const MICRO_EVENTS = [
     { text: "回过去", effects: { happy: 5, charm: 2 }, result: "你回过去了，两个人聊了半天。" },
     { text: "约出来", effects: { happy: 6, charm: 3, money: -50 }, result: "你们约出来吃了顿饭，感情更好了。" },
   ] },
-  { id: "m105", text: "你今天参加了一个聚会，认识了不少人。", choices: [
+  { id: "m105", text: "你今天参加了一个聚会，现场来了不少人，大家三三两两凑在一起聊天，你也认识了不少新朋友。", choices: [
     { text: "积极社交", effects: { happy: 6, charm: 5 }, result: "你积极社交了，认识了不少人，还加了几个好友。" },
     { text: "坐着看", effects: { happy: 3 }, result: "你坐着看了会儿，也挺有意思。" },
   ] },
   { id: "m106", text: "你今天和室友一起打了游戏，配合得特别默契。", choices: [
     { text: "继续打", effects: { happy: 6, charm: 2 }, result: "你们继续打了，连胜好几把，爽。" },
-    { text: "休息", effects: { happy: 3 }, result: "你们休息了，改天再战。" },
+    { text: "休息", effects: { happy: 3 }, result: "你们休息了，改天再战，配合这么默契，下次肯定还能赢。" },
   ] },
   { id: "m107", text: "你今天收到一个朋友的生日邀请，周末去玩。", choices: [
     { text: "去", effects: { happy: 6, charm: 3, money: -50 }, result: "你去了，生日派对特别热闹，玩得很开心。" },
     { text: "有事去不了", effects: { happy: -1 }, result: "你有事去不了，发了个红包表示心意。" },
   ] },
-  { id: "m108", text: "你今天和朋友一起去逛街，买了不少东西。", choices: [
-    { text: "买买买", effects: { money: -100, happy: 7 }, result: "你们买买买，收获满满，开心。" },
+  { id: "m108", text: "你今天和朋友一起去逛街，从商业街头逛到街尾，买了不少东西。", choices: [
+    { text: "买买买", effects: { money: -100, happy: 7 }, result: "你们买买买，收获满满，拎着大包小包回来，开心得不行。" },
     { text: "只逛不买", effects: { happy: 4 }, result: "你们只逛不买，过过眼瘾也挺好。" },
   ] },
   { id: "m109", text: "你今天和同学一起做了个小组作业，配合得很好。", choices: [
@@ -2201,13 +2201,13 @@ const MICRO_EVENTS = [
     { text: "每天吃", effects: { health: 3, happy: 2 }, result: "你每天吃苹果，一天一个苹果，医生远离我。" },
     { text: "偶尔吃", effects: { health: 1, happy: 1 }, result: "你偶尔吃，也挺好，水果要多吃。" },
   ] },
-  { id: "m128", text: "你今天做了个瑜伽，身体柔软了不少。", choices: [
+  { id: "m128", text: "你今天练了次瑜伽，身体柔软了不少，拉伸的时候整个人都放松了下来。", choices: [
     { text: "每天练", effects: { health: 4, happy: 3 }, result: "你每天练瑜伽，身体柔韧性好了，心情也好了。" },
     { text: "偶尔练", effects: { health: 2, happy: 2 }, result: "你偶尔练，也挺好，动起来就好。" },
   ] },
-  { id: "m129", text: "你今天走了楼梯，没坐电梯，锻炼了。", choices: [
+  { id: "m129", text: "你今天没坐电梯，一路爬楼梯回了宿舍，权当锻炼身体了。", choices: [
     { text: "每天走", effects: { health: 3, happy: 2 }, result: "你每天走楼梯，腿有劲了，身体也好了。" },
-    { text: "偶尔走", effects: { health: 1, happy: 1 }, result: "你偶尔走，也挺好，动起来就好。" },
+    { text: "偶尔走", effects: { health: 1, happy: 1 }, result: "你偶尔走楼梯，也挺好，动起来总比一直坐着强。" },
   ] },
   { id: "m130", text: "你今天晒了会儿太阳，补充维生素 D。", choices: [
     { text: "每天晒", effects: { health: 3, happy: 3 }, result: "你每天晒太阳，心情好了，身体也好了。" },
@@ -2222,7 +2222,7 @@ const MICRO_EVENTS = [
     { text: "分享", effects: { happy: 4, charm: 2 }, result: "你分享了，朋友们都夸你品味好。" },
     { text: "自己听", effects: { happy: 3 }, result: "你自己听了，好歌值得循环，越听越有味道。" },
   ] },
-  { id: "m133", text: "你今天玩了个新游戏，特别有意思。", choices: [
+  { id: "m133", text: "你今天玩了个新游戏，画风玩法都对胃口，一上手就停不下来了。", choices: [
     { text: "继续玩", effects: { happy: 6, iq: -1 }, result: "你继续玩了，越玩越上头，根本停不下来。" },
     { text: "适可而止", effects: { happy: 3 }, result: "你适可而止，玩了一会儿就去学习了。" },
   ] },
@@ -2238,7 +2238,7 @@ const MICRO_EVENTS = [
     { text: "分享给朋友", effects: { happy: 5, charm: 2 }, result: "你分享给朋友了，大家都笑了，快乐就是要分享。" },
     { text: "自己笑", effects: { happy: 4 }, result: "你自己笑了半天，综艺真搞笑，解压神器。" },
   ] },
-  { id: "m137", text: "你今天玩了个桌游，特别有意思。", choices: [
+  { id: "m137", text: "你今天玩了个桌游，特别有意思，室友们玩到上头，谁都不肯先散场。", choices: [
     { text: "再来一局", effects: { happy: 6, charm: 2 }, result: "你们再来一局，越玩越上头，根本停不下来。" },
     { text: "适可而止", effects: { happy: 3 }, result: "你们适可而止，玩了一会儿就去学习了。" },
   ] },
@@ -2250,7 +2250,7 @@ const MICRO_EVENTS = [
     { text: "推荐给朋友", effects: { happy: 5, charm: 2 }, result: "你推荐给朋友了，大家都笑了，脱口秀真解压。" },
     { text: "自己笑", effects: { happy: 4 }, result: "你自己笑了半天，脱口秀演员太有才了。" },
   ] },
-  { id: "m140", text: "你今天玩了个手游，上了个大段位。", choices: [
+  { id: "m140", text: "你今天打了几把手游，手感热得发烫，连胜上分，一口气冲上了个大段位。", choices: [
     { text: "继续冲", effects: { happy: 6, iq: -1 }, result: "你继续冲了，段位越打越高，爽。" },
     { text: "见好就收", effects: { happy: 4 }, result: "你见好就收，段位够了，改天再战。" },
   ] },
@@ -2279,7 +2279,7 @@ const MICRO_EVENTS = [
     { text: "拍照", effects: { happy: 5 }, result: "你拍了照片，猫真可爱，发了朋友圈收获一堆赞。" },
     { text: "喂它", effects: { money: -5, happy: 6 }, result: "你喂了它，它蹭了蹭你的手，暖暖的。" },
   ] },
-  { id: "m147", text: "你今天发现校园里开了很多花，特别美。", choices: [
+  { id: "m147", text: "你今天发现校园里开了很多花，粉的白的开了一大片，路过的人都忍不住放慢脚步。", choices: [
     { text: "拍照", effects: { happy: 5 }, result: "你拍了照片，花真美，心情也跟着好了。" },
     { text: "静静看", effects: { happy: 4 }, result: "你静静看了会儿，花开得真好，心情也好了。" },
   ] },
@@ -2334,7 +2334,7 @@ const MICRO_EVENTS = [
   ] },
   { id: "m160", text: "你今天收到一条天气预报说明天有雨，记得带伞。", choices: [
     { text: "带伞", effects: { happy: 2 }, result: "你带了伞，第二天果然下雨了，有备无患。" },
-    { text: "不带", effects: { happy: 0 }, result: "你没带，第二天被淋了，后悔莫及。" },
+    { text: "不带", effects: { happy: -2 }, result: "你没带，第二天被淋了，后悔莫及。" },
   ] },
   { id: "m161", text: "你今天发现了一家新开的奶茶店，买一送一。", choices: [
     { text: "去买", effects: { money: -15, happy: 6 }, result: "你去买了，买一送一，血赚，奶茶真好喝。" },
@@ -2344,7 +2344,7 @@ const MICRO_EVENTS = [
     { text: "看一会儿", effects: { happy: 4 }, result: "你看了一会儿，婚纱照真浪漫，祝福他们。" },
     { text: "拍照", effects: { happy: 4 }, result: "你拍了照片，婚纱照真好看，沾沾喜气。" },
   ] },
-  { id: "m163", text: "你今天收到一条学长的建议，特别有用。", choices: [
+  { id: "m163", text: "你今天收到一条学长的建议，特别有用，句句都说到了你正发愁的地方。", choices: [
     { text: "记下来", effects: { iq: 3, happy: 3 }, result: "你记下来了，学长的建议特别实用，少走不少弯路。" },
     { text: "照着做", effects: { iq: 4, happy: 3 }, result: "你照着做了，效果特别好，学长诚不我欺。" },
   ] },
@@ -2362,7 +2362,7 @@ const MICRO_EVENTS = [
   ] },
   { id: "m167", text: "你今天发现了一个特别好吃的早餐摊，排队的人特别多。", choices: [
     { text: "排队", effects: { money: -8, happy: 5 }, result: "你排队买了，早餐真好吃，排队也值了。" },
-    { text: "改天去", effects: { happy: 1 }, result: "你决定改天去，先记下来。" },
+    { text: "改天去", effects: { happy: 1 }, result: "你决定改天再去，先把摊位记下来，免得下次找不着地方。" },
   ] },
   { id: "m168", text: "你今天看到校园里有人在放风筝，飞得老高。", choices: [
     { text: "看一会儿", effects: { happy: 4 }, result: "你看了一会儿，风筝飞得真高，心情也飞起来了。" },
@@ -2372,7 +2372,7 @@ const MICRO_EVENTS = [
     { text: "回过去", effects: { happy: 5, charm: 2 }, result: "你回过去了，两个人聊了半天，约了见面。" },
     { text: "谢谢", effects: { happy: 3 }, result: "你回了句谢谢，心里暖暖的。" },
   ] },
-  { id: "m170", text: "你今天发现了一个特别好玩的游戏，玩了一下午。", choices: [
+  { id: "m170", text: "你今天发现了一个特别好玩的游戏，是室友安利的，一玩就是一下午。", choices: [
     { text: "继续玩", effects: { happy: 6, iq: -1 }, result: "你继续玩了，越玩越上头，根本停不下来。" },
     { text: "适可而止", effects: { happy: 3 }, result: "你适可而止，玩了一会儿就去学习了。" },
   ] },
@@ -2453,12 +2453,12 @@ const MICRO_EVENTS = [
     { text: "学两招", effects: { happy: 5, health: 2 }, result: "你学了两招，虽然动作不太标准，但挺有意思。" },
   ] },
   { id: "m190", text: "你今天收到一条妈妈的信息，让你注意身体。", choices: [
-    { text: "回过去", effects: { happy: 5 }, result: "你回过去了，妈妈的关心最暖心。" },
+    { text: "回过去", effects: { happy: 5 }, result: "你回了过去，妈妈的关心最暖心，聊了几句，心里也暖暖的。" },
     { text: "打电话", effects: { happy: 6, charm: 2 }, result: "你打了电话，聊了半天，妈妈特别高兴。" },
   ] },
-  { id: "m191", text: "你今天发现了一个特别好玩的挑战，完成了有奖励。", choices: [
-    { text: "参加", effects: { happy: 5, health: 2 }, result: "你参加了，完成了挑战，拿到了奖励，成就感满满。" },
-    { text: "看看", effects: { happy: 2 }, result: "你看了看，决定下次再参加。" },
+  { id: "m191", text: "楼下社团摆了个套圈挑战，十块钱十个圈，套中玩偶就能抱走，围了一圈人看热闹。", choices: [
+    { text: "花十块试试", effects: { happy: 5, money: -10 }, result: "你花十块买了十个圈，第七个稳稳套中了一只小熊，围观的人都起哄鼓掌。" },
+    { text: "看看就好", effects: { happy: 2 }, result: "你看了一会儿热闹，没下场。套圈这东西，看看别人套，比自己套还过瘾。" },
   ] },
   { id: "m192", text: "你今天看到校园里有人在跳街舞，特别帅。", choices: [
     { text: "看一会儿", effects: { happy: 5 }, result: "你看了一会儿，街舞真帅，节奏感满满。" },
@@ -2472,15 +2472,15 @@ const MICRO_EVENTS = [
     { text: "常去", effects: { happy: 5 }, result: "你常去，楼顶看星星最治愈，心情不好就去那。" },
     { text: "带朋友去", effects: { happy: 5, charm: 2 }, result: "你带朋友去了，两个人一起看星星，聊聊天，挺好。" },
   ] },
-  { id: "m195", text: "你今天看到一只流浪猫，瘦瘦的，有点可怜。", choices: [
+  { id: "m195", text: "你今天看到一只流浪猫，瘦瘦的，缩在墙角瑟瑟发抖，看着有点可怜。", choices: [
     { text: "喂它", effects: { money: -5, happy: 6 }, result: "你喂了它，它吃得狼吞虎咽，看得人心疼。" },
     { text: "带回宿舍", effects: { happy: 7, charm: 2 }, result: "你带回宿舍养了几天，后来被好心人领养了。" },
   ] },
   { id: "m196", text: "你今天收到一条学校的表扬，你的作品获奖了。", choices: [
     { text: "开心", effects: { happy: 7, charm: 3 }, result: "你开心了一整天，获奖是对你努力的肯定。" },
-    { text: "分享", effects: { happy: 6, charm: 4 }, result: "你分享了，大家都为你高兴。" },
+    { text: "分享", effects: { happy: 6, charm: 4 }, result: "你把好消息分享给了室友和爸妈，大家都为你高兴，还说要请你吃顿好的庆祝一下。" },
   ] },
-  { id: "m197", text: "你今天发现了一个特别好吃的甜品店，蛋糕特别好吃。", choices: [
+  { id: "m197", text: "你今天发现了一家甜品店，蛋糕看着就很好吃。", choices: [
     { text: "去吃", effects: { money: -25, happy: 7 }, result: "你去吃了，蛋糕真好吃，甜品最治愈。" },
     { text: "带朋友去", effects: { money: -50, happy: 8, charm: 3 }, result: "你带朋友去了，两个人一人一块，开心。" },
   ] },
@@ -2490,7 +2490,7 @@ const MICRO_EVENTS = [
   ] },
   { id: "m199", text: "你今天收到一条朋友的邀请，周末去爬山。", choices: [
     { text: "去", effects: { happy: 7, health: 4, money: -50 }, result: "你去了，爬山特别累，但山顶的风景真美，值了。" },
-    { text: "下次去", effects: { happy: 2 }, result: "你决定下次去，先记下来。" },
+    { text: "下次去", effects: { happy: 2 }, result: "你决定下次再去，先记下来，等有空了一定约上朋友一起爬。" },
   ] },
   { id: "m200", text: "你今天发现了一个特别安静的角落，适合一个人待会儿。", choices: [
     { text: "待会儿", effects: { happy: 4 }, result: "你待了一会儿，安静真好，心情也平静了。" },
@@ -2499,11 +2499,11 @@ const MICRO_EVENTS = [
   // v1.10 新增：60 个微事件（m201–m260）
   { id: "m201", text: "早八前买了包子，边走边吃，差点迟到，但包子真香。", choices: [
     { text: "下次早点", effects: { happy: 2 }, result: "你决定下次早点，但你知道，下次还这样。" },
-    { text: "挺好", effects: { happy: 3 }, result: "挺好，包子配早八，绝配。" },
+    { text: "挺好", effects: { happy: 3 }, result: "挺好，包子配早八，绝配，就是下次得跑快点，别真迟到了。" },
   ] },
   { id: "m202", text: "食堂出了新菜，黑暗料理，第一个吃的人成了勇士。", choices: [
     { text: "当勇士", effects: { happy: 4, health: -1 }, result: "你当了勇士，味道一言难尽，但你吃完了，勇士就是勇士。" },
-    { text: "看看", effects: { happy: 1 }, result: "你看看，决定让勇士先上，你殿后。" },
+    { text: "看看", effects: { happy: 1 }, result: "你看了看，决定让勇士先上，你殿后，等测评出来再说。" },
   ] },
   { id: "m203", text: "奶茶第二杯半价，你拉上了室友，两个人喝到撑。", choices: [
     { text: "值", effects: { money: -20, happy: 5 }, result: "值，第二杯半价，不喝不是人。" },
@@ -2578,7 +2578,7 @@ const MICRO_EVENTS = [
     { text: "心疼钱", effects: { happy: -1 }, result: "你心疼钱，15 块，心在滴血，但精神了。" },
   ] },
   { id: "m221", text: "早八点名，你刚好赶到，老师看了你一眼，没说什么。", choices: [
-    { text: "好险", effects: { happy: 3 }, result: "好险，差点就没了，早八人的日常就是极限。" },
+    { text: "好险", effects: { happy: 3 }, result: "好险，差点就迟到了，早八人的日常就是极限。" },
     { text: "下次早点", effects: { happy: 1 }, result: "你说下次早点，但你知道，下次还这样。" },
   ] },
   { id: "m222", text: "上课睡着了，被同桌推醒，口水流了一桌子。", choices: [
@@ -2586,7 +2586,7 @@ const MICRO_EVENTS = [
     { text: "继续睡", effects: { happy: 2, iq: -1 }, result: "你继续睡，反正也听不懂，不如睡觉。" },
   ] },
   { id: "m223", text: "老师拖堂十分钟，全班怨声载道，但没人敢走。", choices: [
-    { text: "忍", effects: { happy: -2 }, result: "你忍，拖堂是老师的特权，学生的宿命。" },
+    { text: "忍", effects: { happy: -2 }, result: "你忍着听完了，拖堂是老师的特权，学生的宿命，下课铃一响全班都松了口气。" },
     { text: "记下来", effects: { iq: 2, happy: 1 }, result: "你记下来，拖堂讲的都是重点，考试要考。" },
   ] },
   { id: "m224", text: "选修课老师不点名，你决定下次再去，这次先溜。", choices: [
@@ -2610,20 +2610,20 @@ const MICRO_EVENTS = [
     { text: "抄", effects: { happy: 1, iq: -1 }, result: "你抄了室友的，交了，心虚，但交了。" },
   ] },
   { id: "m229", text: "考试周，图书馆通宵，你也加入了，咖啡续命。", choices: [
-    { text: "卷", effects: { iq: 5, credits: 3, health: -4, happy: -2 }, result: "你卷，通宵三天，考完了，感觉身体被掏空，但过了。" },
-    { text: "睡", effects: { health: 3, happy: 2, iq: -1 }, result: "你睡，睡好了去考，考得还不错，睡眠是最好的复习。" },
+    { text: "卷", effects: { iq: 5, credits: 3, health: -4, happy: -2 }, result: "你咬牙通宵卷了三天，考完感觉身体被掏空，但好歹是过了。" },
+    { text: "睡", effects: { health: 3, happy: 2 }, result: "你睡了个好觉再去考，考得还不错，睡眠果然是最好的复习。" },
   ] },
   { id: "m230", text: "成绩出来了，比预想的好，你松了口气，没白卷。", choices: [
     { text: "开心", effects: { happy: 6 }, result: "你开心，成绩是最好的回报，继续保持。" },
     { text: "低调", effects: { happy: 4, charm: 2 }, result: "你低调，但嘴角压不住，室友都看出来了。" },
   ] },
-  { id: "m231", text: "有一门挂了，得补考，你郁闷，开始怀疑人生。", choices: [
+  { id: "m231", text: "成绩单一出，有一门课挂了，得补考。你盯着那个红彤彤的分数，郁闷得开始怀疑人生。", choices: [
     { text: "补考", effects: { iq: 3, happy: -3 }, result: "你准备补考，这次认真了，过了，虚惊一场。" },
     { text: "摆烂", effects: { happy: -1 }, result: "你摆烂，补考再说，船到桥头自然直。" },
   ] },
   { id: "m232", text: "奖学金公示，你在名单上，你开心得跳起来。", choices: [
     { text: "请客", effects: { money: -200, happy: 8 }, result: "你请客，全宿舍都为你高兴，奖学金就该这么花。" },
-    { text: "存着", effects: { money: 500, happy: 5 }, result: "你存着，奖学金是荣誉，也是钱，存着踏实。" },
+    { text: "存着", effects: { money: 500, happy: 5 }, result: "你把奖学金存了起来，荣誉是荣誉，钱是钱，存着踏实，以后应急也有底气。" },
   ] },
   { id: "m233", text: "四级考了 425，刚过线，多一分浪费，少一分重考，完美。", choices: [
     { text: "万幸", effects: { happy: 6 }, result: "你万幸，425 分，运气也是实力的一部分。" },
@@ -2661,7 +2661,7 @@ const MICRO_EVENTS = [
     { text: "睡", effects: { health: 3, happy: 2 }, result: "你睡了，耳塞是宿舍神器，发明的人该拿诺奖。" },
     { text: "录下来", effects: { happy: 4 }, result: "你录下来，第二天放给他听，他不信那是他的呼噜。" },
   ] },
-  { id: "m242", text: "宿舍停电了，你们点蜡烛聊天，聊到半夜。", choices: [
+  { id: "m242", text: "晚上宿舍突然停电了，黑灯瞎火的，你们点起蜡烛围坐在一起，从高中聊到未来，聊到半夜。", choices: [
     { text: "聊天", effects: { happy: 6 }, rel: { aqiang: 4 }, result: "你们聊天，从高中聊到未来，停电的夜晚格外真诚。" },
     { text: "睡觉", effects: { health: 3, happy: 2 }, result: "你睡觉，没电没网，早睡早起，难得。" },
   ] },
@@ -2670,7 +2670,7 @@ const MICRO_EVENTS = [
     { text: "被批", effects: { happy: -2 }, result: "你们被批了，说阳台有灰，你们说明天就擦。" },
   ] },
   { id: "m244", text: "宿舍聚餐，点了火锅，热气腾腾，热闹极了。", choices: [
-    { text: "吃", effects: { money: -50, happy: 7 }, rel: { aqiang: 4 }, result: "你们吃，火锅是宿舍的粘合剂，吃完感情更好了。" },
+    { text: "吃", effects: { money: -50, happy: 7 }, rel: { aqiang: 4 }, result: "你们吃得热火朝天，火锅是宿舍的粘合剂，吃完感情更好了。" },
     { text: "AA", effects: { money: -50, happy: 5 }, result: "你们 AA，谁也不欠谁，下次还聚。" },
   ] },
   { id: "m245", text: "室友吵架了，你劝了劝，两个人很快和好了。", choices: [
@@ -2685,23 +2685,23 @@ const MICRO_EVENTS = [
     { text: "回应", effects: { charm: 5, happy: 6 }, result: "你回应了，聊了起来，说不定有故事。" },
     { text: "装没看见", effects: { happy: 2 }, result: "你装没看见，但嘴角压不住，被表白总是开心的。" },
   ] },
-  { id: "m248", text: "朋友脱单了，请你吃饭，狗粮管饱。", choices: [
-    { text: "祝福", effects: { happy: 5 }, result: "你祝福，吃了顿好的，还吃了狗粮，值了。" },
+  { id: "m248", text: "朋友脱单了，非要请你吃饭庆祝，席间他对象一个劲给他夹菜，你坐在对面埋头扒饭，狗粮管饱，饭没吃完就先撑了。", choices: [
+    { text: "祝福", effects: { happy: 5 }, result: "你送上祝福，吃了顿好的，顺带还吃了顿狗粮，这顿饭值了。" },
     { text: "酸", effects: { happy: 2 }, result: "你酸，但还是祝福了，酸的是自己。" },
   ] },
   { id: "m249", text: "朋友失恋了，你陪他喝酒，听他骂前任。", choices: [
     { text: "陪", effects: { charm: 3, happy: -1 }, result: "你陪他，他喝多了，你把他送回去，兄弟就是这样。" },
     { text: "开导", effects: { charm: 4, happy: 2 }, result: "你开导他，他想开了，说'下一个更好'，你们都笑了。" },
   ] },
-  { id: "m250", text: "家里安排相亲，你敷衍了一下，对方也敷衍了一下。", choices: [
-    { text: "应付", effects: { happy: 1 }, result: "你应付，相亲就是走过场，大家都懂。" },
+  { id: "m250", text: "家里亲戚张罗着给你介绍对象，你敷衍了一下，对方也敷衍了一下。", choices: [
+    { text: "应付", effects: { happy: 1 }, result: "你应付了一下，介绍对象就是走过场，大家都懂。" },
     { text: "拒绝", effects: { happy: 3 }, result: "你拒绝，说还小，家里说'不小了'，你笑。" },
   ] },
   { id: "m251", text: "周末去周边旅游了，山水不错，放松了一下。", choices: [
     { text: "开心", effects: { money: -200, happy: 7, health: 2 }, result: "你开心，旅游是最好的充电，回来满血复活。" },
     { text: "穷游", effects: { money: -100, happy: 5 }, result: "你穷游，省钱也开心，学生党有学生党的玩法。" },
   ] },
-  { id: "m252", text: "看了部好电影，值回票价，出来还在回味。", choices: [
+  { id: "m252", text: "看了部好电影，值回票价，出来还在回味，脑子里全是最后那个镜头。", choices: [
     { text: "推荐", effects: { money: -40, happy: 5 }, result: "你推荐给朋友，好电影就该分享。" },
     { text: "二刷", effects: { money: -40, happy: 6 }, result: "你二刷，好电影值得二刷，细节更多了。" },
   ] },
@@ -2719,9 +2719,9 @@ const MICRO_EVENTS = [
   ] },
   { id: "m256", text: "社团活动，你认识了新朋友，聊得很投缘。", choices: [
     { text: "加微信", effects: { happy: 4, charm: 3 }, result: "你加了微信，多了个朋友，社团真好。" },
-    { text: "下次", effects: { happy: 2 }, result: "你说下次再聊，来日方长。" },
+    { text: "下次", effects: { happy: 2 }, result: "你说下次再聊，来日方长，反正都在一个社团，总有机会碰上。" },
   ] },
-  { id: "m257", text: "兼职发工资了，你看着到账短信，笑了。", choices: [
+  { id: "m257", text: "兼职的工资到账了，手机一震，你看着到账短信上的数字，忍不住笑了——自己挣的钱就是香。", choices: [
     { text: "开心", effects: { money: 500, happy: 6 }, result: "你开心，自己挣的钱，花得踏实。" },
     { text: "存着", effects: { money: 500, happy: 4 }, result: "你存着，钱要省着花，但开心是真的。" },
   ] },
