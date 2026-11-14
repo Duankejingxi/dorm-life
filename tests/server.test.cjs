@@ -22,6 +22,7 @@ test("健康检查和静态文件", async () => {
   assert.equal((await fetch(base + "/server/server.js")).status, 404, "不能下载后端源码");
   assert.equal((await fetch(base + "/../package.json")).status, 404);
   assert.equal((await fetch(base + "/js/engine.js")).status, 200);
+  assert.equal((await fetch(base + "/img/gym.jpg")).headers.get("content-type"), "image/jpeg");
   assert.equal((await fetch(base + "/%2e%2e/%2e%2e/etc/passwd")).status, 404);
 });
 

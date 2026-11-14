@@ -30,12 +30,16 @@
   /* ---------- 状态 ---------- */
   const STAT_KEYS = ["study", "body", "mood", "money", "exp", "prep"];
   const STAT_NAMES = { study: "学业", body: "体魄", mood: "心情", money: "存款", exp: "履历", prep: "备考" };
+  // 生活费按月给，一学期按 5 个月算；拮据的同学每学期还有国家助学金
+  const MONTHS = 5;
   const FAMILY = {
-    rich: { name: "宽裕", allowance: 4200, desc: "家里不缺钱，生活费给得大方。" },
-    mid: { name: "普通", allowance: 2800, desc: "普通家庭，生活费够用，偶尔紧巴。" },
-    poor: { name: "拮据", allowance: 1600, desc: "家里不容易，每一笔钱你都知道分量。" },
+    rich: { name: "宽裕", monthly: 2600, grant: 0, desc: "家里不缺钱，生活费给得大方。" },
+    mid: { name: "普通", monthly: 1800, grant: 0, desc: "普通家庭，生活费够用，偶尔紧巴。" },
+    poor: { name: "拮据", monthly: 1200, grant: 1650, desc: "家里不容易，每一笔钱你都知道分量。有国家助学金。" },
   };
-  const LIVING_COST = 2500;
+  for (const k in FAMILY) FAMILY[k].allowance = FAMILY[k].monthly * MONTHS;
+  const LIVING_MONTHLY = 1600;
+  const LIVING_COST = LIVING_MONTHLY * MONTHS;
   const ROOMIES = ["jiang", "su", "xu"];
 
   function newState(opts) {
@@ -49,7 +53,7 @@
       family: fam,
       sem: 0,
       beat: 0,
-      stats: { study: 45, body: 60, mood: 62, money: 600, exp: 0, prep: 0 },
+      stats: { study: 45, body: 60, mood: 62, money: 1500, exp: 0, prep: 0 },
       rel: { jiang: 25, su: 15, xu: 25, lin: 0, zhou: 5, cheng: 10 },
       flags: {},
       memories: [],
@@ -62,8 +66,8 @@
       rng: (o.seed != null ? o.seed : Math.floor(Math.random() * 2147483647)) | 0,
       startedAt: Date.now(),
     };
-    if (fam === "rich") { s.stats.mood += 4; s.stats.money += 800; }
-    if (fam === "poor") { s.stats.study += 5; s.stats.body += 4; s.stats.money -= 300; s.rel.su += 5; }
+    if (fam === "rich") { s.stats.mood += 4; s.stats.money += 3000; }
+    if (fam === "poor") { s.stats.study += 5; s.stats.body += 4; s.stats.money -= 500; s.rel.su += 5; }
     return s;
   }
 
@@ -156,7 +160,7 @@
       return run(test(step.if, s) ? step.then : step.else, s, io);
     }
     if (step.at) {
-      await io.scene({ at: step.at, time: step.time || "day", weather: step.weather || "clear", season: step.season || currentSeason(s) }, s);
+      await io.scene({ at: step.at, time: step.time || "day", weather: step.weather || "clear", season: step.season || currentSeason(s), photo: step.photo }, s);
       return;
     }
     if (step.ask) {
@@ -204,7 +208,7 @@
     if (!sc) throw new Error("缺少场景：" + id);
     if (!test(sc.when, s)) return;
     s.seen[id] = (s.seen[id] || 0) + 1;
-    if (sc.at) await io.scene({ at: sc.at, time: sc.time || "day", weather: sc.weather || "clear", season: sc.season || currentSeason(s) }, s);
+    if (sc.at) await io.scene({ at: sc.at, time: sc.time || "day", weather: sc.weather || "clear", season: sc.season || currentSeason(s), photo: sc.photo }, s);
     if (sc.title && io.heading) await io.heading(fmt(sc.title, s), s);
     await run(sc.steps, s, io);
   }
@@ -227,9 +231,9 @@
 
   async function chapter(s, io) {
     const sem = DL.SEMESTERS[s.sem];
-    const allowance = FAMILY[s.family].allowance;
-    applyFx(s, { money: allowance });
-    s.journal.push({ sem: s.sem, text: "生活费到账 ¥" + allowance + "。" });
+    const fam = FAMILY[s.family];
+    applyFx(s, { money: fam.allowance + fam.grant });
+    s.journal.push({ sem: s.sem, text: "这学期的生活费到账：每月 ¥" + fam.monthly + "，共 ¥" + fam.allowance + (fam.grant ? "；国家助学金 ¥" + fam.grant : "") + "。" });
     await io.chapter(sem, s);
   }
 
@@ -350,6 +354,6 @@
 
   Object.assign(DL, {
     rand, randInt, pickOne, clamp, newState, clone, fmt, applyFx, test, run, playScene, playRun,
-    gpaAvg, year, currentSeason, STAT_NAMES, FAMILY, LIVING_COST, mergeChanges,
+    gpaAvg, year, currentSeason, STAT_NAMES, FAMILY, LIVING_COST, LIVING_MONTHLY, MONTHS, mergeChanges,
   });
 })(typeof window !== "undefined" ? window : globalThis);

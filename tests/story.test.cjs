@@ -16,7 +16,7 @@ function load() {
   return ctx.DL;
 }
 
-const LOCS = ["station", "gate", "dorm", "dormout", "road", "library", "field", "gym", "canteen", "rooftop", "classroom", "lake", "hospital", "city", "stage", "sea", "mountain", "stairs"];
+const LOCS = ["station", "gate", "dormout", "road", "library", "field", "gym", "canteen", "rooftop", "classroom", "lake", "hospital", "city", "stage", "sea", "mountain", "stairs", "dorm"];
 
 function mockIO(DL, pick, out) {
   const check = (t, where) => {

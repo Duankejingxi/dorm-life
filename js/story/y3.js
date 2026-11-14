@@ -89,7 +89,7 @@
       { ask: "你想帮苏念。你能做什么？", options: [
         { t: "把存款转给{ta}", if: (s) => s.stats.money >= 1000, hint: (s) => "你有 ¥" + s.stats.money, then: [
           { do: (s) => {
-            const amount = Math.min(s.stats.money, 6000);
+            const amount = Math.min(s.stats.money, 10000);
             s.flags.suLoan = amount;
             DL.applyFx(s, { money: -amount, rel: { su: 12 } });
             return ["你把卡里的 ¥" + amount + " 全转了过去，备注写的是：「借的。毕业了还。不着急。」"];
@@ -276,11 +276,11 @@
       "许多坐在候车厅的地上，背着吉他，旁边一个行李箱，手里攥着一张还没买的电子票页面。",
       ["xu", "你来干嘛？来劝我的？"],
       { ask: "广播在报下一班车次。许多在等你开口。", options: [
-        { t: "「我跟你去。」", fx: { rel: { xu: 16 }, study: -10, mood: 8, money: -600, set: { wentFest: true } }, then: [
+        { t: "「我跟你去。」", fx: { rel: { xu: 16 }, study: -10, mood: 8, money: -1500, set: { wentFest: true } }, then: [
           ["xu", "……你疯了？你期末不考了？"],
           ["me", "补考呗。你第一次上音乐节，没人帮你搬音箱怎么行。"],
           "许多看着你，嘴张了半天，最后骂了一句脏话，然后笑得像个傻子。",
-          { at: "stage", time: "night", season: "summer" },
+          { at: "stage", time: "night", season: "summer", photo: "stage-festival" },
           "三天后，成都。小舞台，台下不到两百人。",
           "许多唱「{songName}」的时候，台下有个女孩跟着哼了起来。她说她在网上听过。",
           "下台的时候，许多一直在抖，抓着你的手说：「有人会唱。{me}，有人会唱我的歌。」",
@@ -303,7 +303,7 @@
             ["xu", "……你看。"],
             "他笑了一下，把手机扔进了包里。",
             { ask: "还有二十分钟。", options: [
-              { t: "把车票钱转给他", if: (s) => s.stats.money >= 500, hint: "−¥500", fx: { money: -500, rel: { xu: 10 }, set: { xuGo: true } }, then: [
+              { t: "把车票钱转给他", if: (s) => s.stats.money >= 800, hint: "−¥800", fx: { money: -800, rel: { xu: 10 }, set: { xuGo: true } }, then: [
                 ["xu", "……我会还你的。用我第一笔演出费。"],
                 "你看着他背着吉他走进检票口。他没有回头，只是举起手，比了一个「OK」。",
               ] },
@@ -360,7 +360,7 @@
           ] },
         ];
         if (p === "music") return [
-          { at: "stage", time: "night", season: "summer" },
+          { at: "stage", time: "night", season: "summer", photo: "stage-festival" },
           "六月，你和许多在城市另一头租了一个地下排练室，一个月八百。",
           "你们开始在 livehouse 演出。台下有时候三十个人，有时候三个人。",
           { ask: "有一晚，台下只有两个人，其中一个是酒保。", options: [
@@ -391,8 +391,8 @@
           "大一结束了。宿舍楼下的行李箱滚轮声响了一整天。",
           { ask: "这个暑假，你打算——", options: [
             { t: "🏠 回家", fx: { mood: 10, body: 6 }, then: [{ at: "station", time: "dusk", season: "summer" }, "妈妈在出站口等你，比你走的时候瘦了一点。她什么都没说，接过你的箱子，说：「回家，给你炖了排骨。」"] },
-            { t: "☕ 留校打工", fx: { money: 2200, body: -5, exp: 3 }, then: ["你在学校附近的餐厅端了两个月盘子。空荡荡的校园里，蝉叫得特别响。"] },
-            { t: "⛰️ 和 404 去爬山", if: (s) => s.stats.money >= 800, hint: "−¥800", fx: { money: -800, mood: 12, rel: { jiang: 6, su: 6, xu: 6 } }, then: [
+            { t: "☕ 留校打工", fx: { money: 4500, body: -5, exp: 3 }, then: ["你在学校附近的餐厅端了两个月盘子。空荡荡的校园里，蝉叫得特别响。"] },
+            { t: "⛰️ 和 404 去爬山", if: (s) => s.stats.money >= 1500, hint: "−¥1500", fx: { money: -1500, mood: 12, rel: { jiang: 6, su: 6, xu: 6 } }, then: [
               { at: "mountain", time: "dawn", season: "summer" },
               "你们凌晨三点出发，爬到山顶的时候，正好赶上日出。",
               "许多对着云海大喊：「{group}——」回声传了很远。",
@@ -404,7 +404,7 @@
         if (s.sem === 3) return [
           "大二结束了。程橙学姐的床位，已经住进了新生。",
           { ask: "这个暑假——", options: [
-            { t: "🌊 和 404 去看海", if: (s) => s.stats.money >= 1200, hint: "−¥1200", fx: { money: -1200, mood: 14, rel: { jiang: 8, su: 8, xu: 8 } }, then: [
+            { t: "🌊 和 404 去看海", if: (s) => s.stats.money >= 2500, hint: "−¥2500", fx: { money: -2500, mood: 14, rel: { jiang: 8, su: 8, xu: 8 } }, then: [
               { at: "sea", time: "dusk", season: "summer" },
               "坐了一夜的硬座，你们终于看到了海。",
               "苏念站在沙滩上，很久都没动。{ta}说，{ta}以前只在课本上见过。",
@@ -412,7 +412,7 @@
               "许多弹着吉他，你们围着篝火，唱「{songName}」唱到嗓子哑。",
               { mem: { id: "sea", title: "海", text: "苏念以前只在课本上见过海。" } },
             ] },
-            { t: "💼 找一份实习", fx: { exp: 8, money: 2600, body: -4 } , then: ["你在一家小公司实习了两个月，学会了做表格、开会，和假装听懂。"] },
+            { t: "💼 找一份实习", fx: { exp: 8, money: 5000, body: -4 } , then: ["你在一家小公司实习了两个月，学会了做表格、开会，和假装听懂。"] },
             { t: "🔬 留在周老师的实验室", if: "lab", fx: { study: 6, exp: 8, rel: { zhou: 8 } }, then: ["整个暑假，你和实验室的机器作伴。周老师有天路过，扔给你一盒绿豆糕：「家里寄的，吃不完。」"] },
             { t: "🏠 回家", fx: { mood: 10, body: 6 }, then: ["你在家睡了两个月懒觉。爸爸的白头发多了一些，你假装没看见。"] },
           ] },
@@ -423,8 +423,8 @@
           { ask: "这个暑假，决定很多事。", options: [
             { t: "✍️ 闭关备考", if: (s) => ["kaoyan", "gongwu", "abroad", "baoyan"].includes(s.flags.path), fx: { prep: 16, mood: -5, body: -3 }, then: ["那个夏天，你只见过图书馆的日出和闭馆的灯。"] },
             { t: "🎓 去参加夏令营", if: (s) => s.flags.path === "baoyan", fx: { prep: 18, exp: 4, rel: { zhou: 6 } }, then: ["你去了三所学校的夏令营。最后一场面试，老师问你：「你为什么想做研究？」你想起了苏念说的话。"] },
-            { t: "💼 冲一份好实习", fx: { exp: 14, money: 3000, body: -4 }, then: ["你拿到了一家大公司的暑期实习。转正答辩那天，你穿了人生中第一套西装。"] },
-            { t: "🎸 跟许多跑巡演", if: (s) => s.flags.path === "music" || s.flags.band, fx: { exp: 10, mood: 10, rel: { xu: 8 }, money: -500 }, then: ["你们开着一辆借来的面包车，跑了七座城市。最多的一场，台下有五百人。"] },
+            { t: "💼 冲一份好实习", fx: { exp: 14, money: 8000, body: -4 }, then: ["你拿到了一家大公司的暑期实习。转正答辩那天，你穿了人生中第一套西装。"] },
+            { t: "🎸 跟许多跑巡演", if: (s) => s.flags.path === "music" || s.flags.band, fx: { exp: 10, mood: 10, rel: { xu: 8 }, money: -1500 }, then: ["你们开着一辆借来的面包车，跑了七座城市。最多的一场，台下有五百人。"] },
             { t: "🏠 回家", fx: { mood: 12, body: 6 }, then: ["你回了一趟家。妈妈问你以后的打算，你说了很多，她都听不太懂，但一直在点头。"] },
           ] },
         ];

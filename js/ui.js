@@ -14,35 +14,38 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 忽略 */ } },
     del(k) { try { localStorage.removeItem(k); } catch (e) { /* 忽略 */ } },
   };
-  const settings = Object.assign({ speed: "mid", sound: true }, store.get("dl2.settings", {}));
+  const settings = Object.assign({ speed: "mid", sound: true, auto: false, size: "m" }, store.get("dl2.settings", {}));
   const saveSettings = () => store.set("dl2.settings", settings);
   const CPS = { slow: 22, mid: 42, fast: 90, instant: 0 };
 
   /* ---------- 舞台 ---------- */
   const Stage = {
-    cur: null, key: "", front: null, back: null, weather: null, win: null,
+    cur: null, key: "", front: null, back: null, weather: null, flip: false,
     init() {
       this.front = $("bgA"); this.back = $("bgB");
       this.weather = new DL.Art.Weather($("fx"));
       let rt = null;
-      addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (this.cur) { this.key = ""; this.show(this.cur, true); } }, 200); });
+      addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => this.weather.set(this.cur), 200); });
     },
-    show(sc, instant) {
-      const key = [sc.at, sc.time, sc.weather, sc.season].join("|");
-      if (key === this.key) return sleep(0);
-      this.key = key; this.cur = sc;
-      const dpr = Math.min(2, root.devicePixelRatio || 1);
+    async show(sc, instant) {
+      const r = DL.Art.resolve(sc);
+      const key = r.key + "|" + r.grade + "|" + sc.weather;
+      this.cur = sc;
+      if (key === this.key) return;
+      this.key = key;
+      await Promise.race([DL.Art.preload(r.url), sleep(2500)]);
       const target = instant ? this.front : this.back;
-      this.win = DL.Art.paint(target, sc, dpr);
-      this.weather.set(sc, this.win);
+      target.style.backgroundImage = "url('" + r.url + "')";
+      target.dataset.grade = r.grade;
+      this.flip = !this.flip;
+      target.classList.toggle("alt", this.flip);
+      this.weather.set(sc);
       if (DL.Audio) DL.Audio.scene(sc);
       if (!instant) {
         this.back.classList.add("on"); this.front.classList.remove("on");
         [this.front, this.back] = [this.back, this.front];
-        return sleep(650);
-      }
-      this.front.classList.add("on");
-      return sleep(0);
+        await sleep(700);
+      } else this.front.classList.add("on");
     },
   };
 
@@ -78,14 +81,27 @@
     else { const C = DL.CAST[who] || {}; n = C.name || who; c = C.color || "#ccc"; m = C.mono || n.slice(0, 1); }
     name.textContent = n; mono.textContent = m; sp.style.setProperty("--c", c); mono.style.setProperty("--c", c); name.style.color = c;
   }
+  const history = [];
+  function remember(item) { history.push(item); if (history.length > 240) history.shift(); }
+  function speakerName(who, s) {
+    if (!who) return "";
+    if (who === "me") return s.name;
+    if (who[0] === "?") return who.slice(1);
+    return (DL.CAST[who] || {}).name || who;
+  }
+  let autoTimer = null;
   async function say(who, text, s) {
     const d = $("dialog"), line = $("line");
     d.classList.remove("idle", "ready");
     setSpeaker(who, s);
     line.className = "line" + (who ? "" : " narr") + (who === "me" ? " inner" : "");
-    await typeText(line, who && !/^[「（(]/.test(text) && who !== "me" ? text : text);
+    remember({ who: speakerName(who, s), c: who && DL.CAST[who] ? DL.CAST[who].color : "", text });
+    await typeText(line, text);
     d.classList.add("ready");
-    await waitAdvance();
+    const wait = waitAdvance();
+    if (settings.auto) autoTimer = setTimeout(() => { if (advanceResolver && !$("app").querySelector(".overlay:not(.hidden)")) advance(); }, 1100 + Array.from(text).length * 70);
+    await wait;
+    clearTimeout(autoTimer);
     d.classList.remove("ready");
   }
 
@@ -103,6 +119,7 @@
         if (!box.classList.contains("on")) return;
         box.classList.remove("on"); btn.classList.add("picked"); box.classList.add("leaving");
         if (DL.Audio) DL.Audio.blip("choose");
+        remember({ choice: true, text: opts[i].t });
         keyHandler = null;
         await sleep(380);
         box.innerHTML = ""; backdrop.remove();
@@ -189,13 +206,17 @@
     { at: "road", time: "dusk", season: "autumn" }, { at: "station", time: "dusk", season: "spring" },
     { at: "road", time: "night", season: "autumn" }, { at: "dormout", time: "dusk", season: "summer" },
   ];
+  function moneyLine(s) {
+    const f = DL.FAMILY[s.family];
+    return `每月生活费 <b>¥${f.monthly.toLocaleString()}</b> · 本学期 ¥${f.allowance.toLocaleString()}` + (f.grant ? ` · 助学金 ¥${f.grant.toLocaleString()}` : "");
+  }
   async function chapter(sem, s) {
     const i = DL.SEMESTERS.indexOf(sem);
     await Stage.show(Object.assign({ weather: "clear" }, CH_SCENE[i] || CH_SCENE[0]));
     hud(s);
     $("dialog").classList.add("idle");
     const N = ["第一章", "第二章", "第三章", "第四章", "第五章", "第六章", "第七章", "终章"][i];
-    const o = overlay(`<div class="chapter"><p class="ch-n">${N}</p><p class="ch-label">${esc(sem.label)}</p><h2>${esc(sem.title)}</h2><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">生活费到账 ¥${DL.FAMILY[s.family].allowance.toLocaleString()}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
+    const o = overlay(`<div class="chapter"><p class="ch-n">${N}</p><p class="ch-label">${esc(sem.label)}</p><h2>${esc(sem.title)}</h2><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
     await overlayTap(o, 1400);
     await closeOverlay();
   }
@@ -274,7 +295,7 @@
     const t = el("div", "transcript paper");
     t.innerHTML = `<h3>成绩单</h3><p class="t-sub">${esc(d.sem.label)} · ${esc(s.name)}</p><div class="gpa">${d.gpa.toFixed(2)}</div><p class="gpa-l">本学期绩点</p>
       <div class="stamp">${stamp}</div>
-      <dl><dt>专业排名</dt><dd>${esc(d.rank)}</dd><dt>平均绩点</dt><dd>${d.avg.toFixed(2)}</dd><dt>挂科</dt><dd class="${d.failed ? "bad" : ""}">${d.failed ? d.failed + " 门（累计 " + d.totalFails + "）" : "无"}</dd><dt>生活开销</dt><dd>−¥${DL.LIVING_COST.toLocaleString()}</dd><dt>余额</dt><dd class="${d.money < 0 ? "bad" : ""}">¥${d.money.toLocaleString()}</dd></dl>
+      <dl><dt>专业排名</dt><dd>${esc(d.rank)}</dd><dt>平均绩点</dt><dd>${d.avg.toFixed(2)}</dd><dt>挂科</dt><dd class="${d.failed ? "bad" : ""}">${d.failed ? d.failed + " 门（累计 " + d.totalFails + "）" : "无"}</dd><dt>生活开销</dt><dd>−¥${DL.LIVING_COST.toLocaleString()}<small style="font-weight:400;color:#86868b"> · 每月 ${DL.LIVING_MONTHLY}</small></dd><dt>余额</dt><dd class="${d.money < 0 ? "bad" : ""}">¥${d.money.toLocaleString()}</dd></dl>
       <p class="tapline">轻触继续</p>`;
     const o = overlay(t, "dark");
     await overlayTap(o, 900);
@@ -284,7 +305,7 @@
   async function memory(mem, s) {
     if (DL.Audio) DL.Audio.blip("mem");
     const p = el("div", "", "");
-    p.innerHTML = `<p class="mem-badge">✦ 收进回忆 ✦</p><div class="polaroid"><div class="ph" style="background-image:url('${DL.Art.thumb(mem.scene, 340, 255)}')"></div><h4>${esc(mem.title)}</h4><p>${esc(mem.text)}</p></div>`;
+    p.innerHTML = `<p class="mem-badge">✦ 收进回忆 ✦</p><div class="polaroid"><div class="ph" style="background-image:url('${DL.Art.thumb(mem.scene)}')"></div><h4>${esc(mem.title)}</h4><p>${esc(mem.text)}</p></div>`;
     const o = overlay(p, "dark");
     await overlayTap(o, 1200);
     await closeOverlay();
@@ -311,7 +332,7 @@
           return `<div class="person"><i class="mono" style="--c:${C.color}">${C.mono}</i><div><h5>${C.name}${note}<small>${v}</small></h5><p>${esc(C.line)} — ${esc(C.bio)}</p><div class="hearts"><i style="width:${v}%;background:${C.color}"></i></div></div></div>`;
         }).join("");
       } else if (t === "mem") {
-        body.innerHTML = s.memories.length ? `<div class="mem-grid">${s.memories.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene, 240, 180)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("")}</div>` : `<p class="empty">还没有回忆。故事才刚开始。</p>`;
+        body.innerHTML = s.memories.length ? `<div class="mem-grid">${s.memories.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("")}</div>` : `<p class="empty">还没有回忆。故事才刚开始。</p>`;
       } else {
         const items = s.journal.slice().reverse();
         let lastSem = -1;
@@ -332,16 +353,17 @@
       const yb = $("yearbook");
       const C = DL.CAST;
       const fate = (f) => `<div class="yb-card"><div class="yc-top"><i class="mono" style="--c:${C[f.who].color}">${C[f.who].mono}</i><div><h4>${esc(f.title)}</h4><span class="yc-who">${esc(C[f.who].name)}</span></div></div><p>${esc(f.text)}</p></div>`;
-      const mems = s.memories.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene, 240, 180)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("");
-      yb.innerHTML = `<div class="yb">
-        <div class="yb-cover"><p class="k">毕业纪念册</p><h1>${esc(s.name)} 的四年</h1><p class="muted">7 号楼 · 404 · 「${esc(s.flags.group || "404")}」</p><div class="yb-title">${esc(e.title.name)}</div><p class="yb-desc">${esc(e.title.desc)}</p></div>
+      const mems = s.memories.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("");
+      const heroImg = DL.Art.url(e.path.ok ? "station-dawn" : "station-night");
+      yb.innerHTML = `<div class="yb-hero"><div class="yb-img" style="background-image:url('${heroImg}')"></div><div class="yb-cover"><p class="k">毕业纪念册</p><h1>${esc(s.name)} 的四年</h1><p class="muted">7 号楼 · 404 · 「${esc(s.flags.group || "404")}」</p></div></div><div class="yb">
+        <div class="yb-title"><small>你的称号</small><b>${esc(e.title.name)}</b><p>${esc(e.title.desc)}</p></div>
         <section class="yb-sec"><h3>十年后的你</h3><div class="yb-card"><div class="yc-top"><span class="yc-icon">${e.path.icon}</span><div><h4>${esc(e.path.name)}<span class="result ${e.path.ok ? "ok" : "no"}">${esc(e.path.result)}</span></h4></div></div><p>${esc(e.path.text)}</p></div></section>
         <section class="yb-sec"><h3>十年后的他们</h3>${e.fates.map(fate).join("")}${fate(e.lin)}</section>
-        <section class="yb-sec"><h3>十年后的 404</h3><div class="yb-reunion"><p class="count">${esc(e.reunion.title)}</p><p>${esc(e.reunion.text)}</p></div></section>
+        <section class="yb-sec"><h3>十年后的 404</h3><div class="yb-reunion" style="--rimg:url('${new URL(DL.Art.url(e.reunion.count >= 3 ? "dormout-night" : "dorm-dusk"), location.href).href}')"><p class="count">${esc(e.reunion.title)}</p><p>${esc(e.reunion.text)}</p></div></section>
         <section class="yb-sec"><h3>四年</h3><div class="yb-stats"><div class="yb-stat"><b>${e.gpa.toFixed(2)}</b><span>平均绩点</span></div><div class="yb-stat"><b>${s.memories.length}</b><span>段回忆</span></div><div class="yb-stat"><b>${Math.round((s.rel.jiang + s.rel.su + s.rel.xu) / 3)}</b><span>404 羁绊</span></div></div></section>
         ${mems ? `<section class="yb-sec"><h3>相册</h3><div class="mem-grid">${mems}</div></section>` : ""}
         <section class="yb-sec yb-global" id="ybGlobal"><h3>这一届</h3><p class="muted">正在联系教务处……</p></section>
-        <div class="yb-actions"><button class="btn primary" id="ybPoster">生成毕业海报</button><button class="btn ghost" id="ybAgain">再活一次</button><button class="btn text" id="ybHome">回到标题</button></div>
+        <div class="yb-actions"><button class="btn primary" id="ybPoster">生成毕业海报</button><button class="btn ghost" id="ybAgain">再活一次</button><button class="btn text" id="ybHome">回到首页</button></div>
         <p class="yb-end">— 全剧终 · 谢谢你推开 404 的门 —</p></div>`;
       yb.classList.remove("hidden");
       yb.scrollTop = 0;
@@ -365,43 +387,57 @@
     if (line) g.fillText(line, x, y);
     return y + lh;
   }
-  function makePoster(e, s) {
+  async function makePoster(e, s) {
     const W = 750, H = 1334, c = document.createElement("canvas");
     c.width = W; c.height = H;
     const g = c.getContext("2d");
-    const art = document.createElement("canvas");
-    Object.defineProperty(art, "clientWidth", { value: W }); Object.defineProperty(art, "clientHeight", { value: 640 });
-    DL.Art.paint(art, { at: "dormout", time: "night", weather: "clear", season: "summer" }, 1);
-    g.fillStyle = "#0d0e18"; g.fillRect(0, 0, W, H);
-    g.drawImage(art, 0, 0, W, 640);
-    const gr = g.createLinearGradient(0, 380, 0, 660); gr.addColorStop(0, "rgba(13,14,24,0)"); gr.addColorStop(1, "#0d0e18"); g.fillStyle = gr; g.fillRect(0, 380, W, 280);
-    const serif = '"Noto Serif SC", "Songti SC", serif';
-    g.textAlign = "center"; g.fillStyle = "#eab54d"; g.font = `22px ${serif}`; g.fillText("宿 舍 人 生 · 毕 业 纪 念", W / 2, 560);
-    g.fillStyle = "#f4eee2"; g.font = `900 64px ${serif}`; g.fillText(s.name + " 的四年", W / 2, 640);
-    g.font = `600 34px ${serif}`; g.fillStyle = "#f6d58a"; g.fillText("「" + e.title.name + "」", W / 2, 706);
-    g.font = `24px ${serif}`; g.fillStyle = "rgba(244,238,226,.7)"; g.fillText(e.title.desc, W / 2, 752);
+    g.fillStyle = "#000"; g.fillRect(0, 0, W, H);
+    const im = await DL.Art.preload(DL.Art.url("dormout-night"));
+    if (im && im.naturalWidth) {
+      const ih = 700, sc = Math.max(W / im.naturalWidth, ih / im.naturalHeight);
+      const dw = im.naturalWidth * sc, dh = im.naturalHeight * sc;
+      g.drawImage(im, (W - dw) / 2, (ih - dh) / 2, dw, dh);
+    }
+    const gr = g.createLinearGradient(0, 300, 0, 720); gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, "#000"); g.fillStyle = gr; g.fillRect(0, 300, W, 420);
+    const sans = '-apple-system, "PingFang SC", "Noto Sans SC", sans-serif', serif = '"Noto Serif SC", "Songti SC", serif';
     g.textAlign = "left";
-    let y = 830;
+    g.fillStyle = "#f6c978"; g.font = `600 22px ${sans}`; g.fillText("宿舍人生 · 毕业纪念", 64, 560);
+    g.fillStyle = "#f5f5f7"; g.font = `700 68px ${sans}`; g.fillText(s.name + " 的四年", 64, 644);
+    const tg = g.createLinearGradient(64, 0, 500, 0); tg.addColorStop(0, "#fbe2ae"); tg.addColorStop(1, "#ee9a5c");
+    g.fillStyle = tg; g.font = `700 40px ${sans}`; g.fillText(e.title.name, 64, 712);
+    g.fillStyle = "rgba(245,245,247,.6)"; g.font = `24px ${serif}`; g.fillText(e.title.desc, 64, 756);
+    let y = 846;
     const row = (label, title, text, color) => {
-      g.fillStyle = color; g.beginPath(); g.arc(78, y - 9, 8, 0, 6.283); g.fill();
-      g.fillStyle = "rgba(244,238,226,.55)"; g.font = `22px ${serif}`; g.fillText(label, 100, y);
-      g.fillStyle = "#f4eee2"; g.font = `600 28px ${serif}`; g.fillText(title, 100 + g.measureText(label).width + 16 + 0, y);
-      g.font = `22px ${serif}`; g.fillStyle = "rgba(244,238,226,.72)";
-      y = wrapText(g, text, 100, y + 38, W - 170, 34, 2) + 22;
+      g.fillStyle = color; g.font = `600 20px ${sans}`; g.fillText(label, 64, y);
+      g.fillStyle = "#f5f5f7"; g.font = `700 28px ${sans}`; g.fillText(title, 64, y + 38);
+      g.font = `21px ${serif}`; g.fillStyle = "rgba(245,245,247,.62)";
+      y = wrapText(g, text, 64, y + 74, W - 128, 32, 2) + 24;
     };
-    row("我 ·", e.path.name, e.path.text, "#eab54d");
-    e.fates.forEach((f) => row(DL.CAST[f.who].name + " ·", f.title, f.text, DL.CAST[f.who].color));
-    g.textAlign = "center"; g.fillStyle = "rgba(244,238,226,.45)"; g.font = `22px ${serif}`;
-    g.fillText("7 号楼 · 404 · 「" + (s.flags.group || "404") + "」", W / 2, H - 70);
-    g.fillText("十年后见。", W / 2, H - 34);
-    return c.toDataURL("image/png");
+    row("我", e.path.name, e.path.text, "#f6c978");
+    e.fates.slice(0, 2).forEach((f) => row(DL.CAST[f.who].name, f.title, f.text, DL.CAST[f.who].color));
+    g.fillStyle = "rgba(245,245,247,.4)"; g.font = `20px ${sans}`;
+    g.fillText("7 号楼 · 404 · 「" + (s.flags.group || "404") + "」", 64, H - 60);
+    g.textAlign = "right"; g.fillText("十年后见。", W - 64, H - 60);
+    return c.toDataURL("image/jpeg", 0.9);
   }
-  function posterPreview(e, s) {
-    const url = makePoster(e, s);
+  async function posterPreview(e, s) {
+    const url = await makePoster(e, s);
     const w = el("div", "poster-wrap", `<img alt="毕业海报" src="${url}"><p>长按图片，保存到相册</p><div class="row"><button class="btn ghost">关闭</button></div>`);
     const o = overlay(w, "dark");
     w.querySelector("button").onclick = () => closeOverlay();
     o.onclick = (ev) => { if (ev.target === o) closeOverlay(); };
+  }
+
+  /* ---------- 剧情回看 ---------- */
+  function backlog() {
+    const sheet = el("div", "sheet");
+    sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>剧情回看</h3><p>最近的 ${history.length} 句</p></div><div class="sheet-body backlog"></div><div class="sheet-foot"><button class="btn ghost">返回</button></div>`;
+    const body = sheet.querySelector(".sheet-body");
+    body.innerHTML = history.map((h) => h.choice ? `<p class="ch">› 你选择了：${esc(h.text)}</p>` : `<p>${h.who ? `<b style="color:${h.c || "#f5f5f7"}">${esc(h.who)}</b>` : ""}${esc(h.text)}</p>`).join("") || '<p class="empty">还没有内容。</p>';
+    sheet.querySelector(".sheet-foot .btn").onclick = () => closeOverlay();
+    const o = overlay(sheet, "sheet-mode");
+    o.onclick = (ev) => { if (ev.target === o) closeOverlay(); };
+    requestAnimationFrame(() => (body.scrollTop = body.scrollHeight));
   }
 
   /* ---------- 键盘 ---------- */
@@ -413,6 +449,6 @@
     }
   }
 
-  DL.UI = { Stage, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { Stage, backlog, history, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);

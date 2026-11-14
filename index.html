@@ -3,52 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0d1c">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="宿舍人生">
+<title>宿舍人生</title>
+<meta name="description" content="一部关于大学四年的互动小说。404 宿舍，四张床，三个陌生人。你的每一个选择，都会改变他们的十年。">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<title>宿舍人生 · 我们的四年</title>
-<meta name="description" content="一部关于大学四年的互动小说。404 宿舍，四张床，三个陌生人。你的选择，会改变他们的十年。">
+<link rel="preload" as="image" href="img/dormout-night.jpg">
+<!-- 字体异步加载：在打不开 Google Fonts 的网络下，不会卡住页面，直接用系统字体 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/game.css">
 </head>
 <body>
-<div id="app" class="app" data-screen="title">
 
-  <!-- 舞台：背景插画 + 天气粒子 -->
+<!-- ============================ 官网 ============================ -->
+<header class="gnav" id="gnav">
+  <div class="gnav-in">
+    <a class="gnav-logo" href="#top" aria-label="宿舍人生">宿舍人生</a>
+    <nav class="gnav-links" aria-label="页面导航">
+      <a href="#story">四年</a>
+      <a href="#people">人物</a>
+      <a href="#choice">选择</a>
+      <a href="#ending">结局</a>
+    </nav>
+    <button class="gnav-cta" data-play="new">开始</button>
+  </div>
+</header>
+
+<main id="site">
+
+  <section class="hero" id="top">
+    <div class="hero-media"><div class="hero-img" style="background-image:url('img/dormout-night.jpg')"></div></div>
+    <div class="hero-shade"></div>
+    <div class="hero-copy">
+      <p class="eyebrow reveal">一部关于大学四年的互动小说</p>
+      <h1 class="reveal d1">四张床，<br>三个陌生人。</h1>
+      <p class="hero-sub reveal d2">和一个很长很长的夏天。</p>
+      <div class="hero-cta reveal d3">
+        <button class="pill primary" data-play="new">推开 404 的门</button>
+        <button class="pill ghost hidden" data-play="continue" id="heroContinue">继续</button>
+        <a class="link-more" href="#story">了解更多</a>
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"><span></span></div>
+  </section>
+
+  <section class="manifesto">
+    <p class="glow-text" id="glowText">九月，火车晃了一整夜。你拖着箱子穿过一整条金色的银杏，推开 7 号楼 404 的门。往后的四年，你会在医院的走廊守夜，在楼梯间听见有人哭，在火车站追回一个要走的人。你会被很多人记住。</p>
+  </section>
+
+  <section class="seasons" id="story">
+    <div class="seasons-sticky">
+      <div class="seasons-media">
+        <div class="s-img on" style="background-image:url('img/gate-autumn.jpg')"></div>
+        <div class="s-img" style="background-image:url('img/road-snow.jpg')"></div>
+        <div class="s-img" style="background-image:url('img/road-spring.jpg')"></div>
+        <div class="s-img" style="background-image:url('img/station-dusk.jpg')"></div>
+      </div>
+      <div class="seasons-shade"></div>
+      <div class="seasons-copy">
+        <div class="s-card on"><p class="s-k">大一 · 秋</p><h2>银杏黄了。</h2><p>你推开 404 的门。下铺的人在往墙上贴扣篮海报，最后一个室友来的时候，背着一个洗得发白的编织袋。</p></div>
+        <div class="s-card"><p class="s-k">大二 · 冬</p><h2>下雪了。<br>出来吗？</h2><p>那年冬天，有人在体育馆倒下，有人在雪里等你。你第一次学会守夜，也第一次想对一个人说点什么。</p></div>
+        <div class="s-card"><p class="s-k">大三 · 春</p><h2>每个人都开始<br>往不同的方向看。</h2><p>考研、工作、出国、去唱歌。凌晨的楼梯间里，有人说「我本来就不是读书的命」。你可以让这个人留下来。</p></div>
+        <div class="s-card"><p class="s-k">大四 · 夏</p><h2>到了说一声。</h2><p>火车开动的时候，群里跳出三条消息。你打了很久，最后只发了三个字。</p></div>
+      </div>
+      <ol class="s-dots" aria-hidden="true"><li class="on"></li><li></li><li></li><li></li></ol>
+    </div>
+  </section>
+
+  <section class="people" id="people">
+    <div class="sec-head">
+      <h2 class="reveal">他们会住进你的四年。</h2>
+      <p class="reveal d1">每个人都有一段只属于自己的故事。你在不在场，会让结局完全不同。</p>
+    </div>
+    <div class="rail" id="rail" tabindex="0" aria-label="人物">
+      <article class="pcard" style="--c:#f08a4b"><div class="pc-img" style="background-image:url('img/gym.jpg')"></div><div class="pc-copy"><p class="pc-role">下铺 · 篮球特长生</p><h3>江野</h3><p class="pc-quote">「等我打上首发，你一定要来看我比赛。坐第一排。」</p><p class="pc-arc">大二那场比赛，他起跳，落地。之后的十七个月，取决于有没有人在早上六点叫醒他。</p></div></article>
+      <article class="pcard" style="--c:#5fb3a1"><div class="pc-img" style="background-image:url('img/library-dawn.jpg')"></div><div class="pc-copy"><p class="pc-role">靠门上铺 · 村里第一个大学生</p><h3>苏念</h3><p class="pc-quote">「我是我们村第一个考上大学的。」</p><p class="pc-arc">话很少，起得最早，记得每个人的生日。大三那年，一通电话让苏念想去电子厂。</p></div></article>
+      <article class="pcard" style="--c:#a58be0"><div class="pc-img" style="background-image:url('img/feat-guitar.jpg')"></div><div class="pc-copy"><p class="pc-role">靠窗下铺 · 吉他和段子</p><h3>许多</h3><p class="pc-quote">「我在火车站。还剩四十分钟。」</p><p class="pc-arc">家里让学金融，自己只想写歌。那首歌的名字，会是你起的。</p></div></article>
+      <article class="pcard" style="--c:#6fa8e8"><div class="pc-img" style="background-image:url('img/feat-camera.jpg')"></div><div class="pc-copy"><p class="pc-role">隔壁学院 · 总背着一台旧相机</p><h3>林溪</h3><p class="pc-quote">「拍下来，至少能证明那天真的存在过。」</p><p class="pc-arc">雨夜的图书馆门口，你可以撑伞送林溪回去，也可以戴上耳机冲进雨里。</p></div></article>
+      <article class="pcard" style="--c:#f2c14e"><div class="pc-img" style="background-image:url('img/station-dawn.jpg')"></div><div class="pc-copy"><p class="pc-role">大三学姐 · 社长</p><h3>程橙</h3><p class="pc-quote">「没有人是准备好了才出发的。」</p><p class="pc-arc">她会在你大二那年毕业。走出校门的时候，学士帽掉了，她没再扶正。</p></div></article>
+      <article class="pcard" style="--c:#9fb4c7"><div class="pc-img" style="background-image:url('img/classroom-dusk.jpg')"></div><div class="pc-copy"><p class="pc-role">专业课教授</p><h3>周老师</h3><p class="pc-quote">「「一点」就是不会。」</p><p class="pc-arc">上课从不点名，挂人从不手软。他在报告上批「尚可」的时候，你会记很久。</p></div></article>
+    </div>
+    <div class="rail-nav"><button class="rn" id="railPrev" aria-label="上一个">‹</button><button class="rn" id="railNext" aria-label="下一个">›</button></div>
+  </section>
+
+  <section class="choice" id="choice">
+    <div class="choice-grid">
+      <div class="choice-copy">
+        <p class="eyebrow reveal">试一试</p>
+        <h2 class="reveal d1">每一个选择，<br>都会被记住。</h2>
+        <p class="reveal d2">没有对错，没有攻略里的最优解。一把伞往哪边歪，一个电话打不打，一张车票买不买。四年后，它们会变成一本纪念册里的一行字。</p>
+        <p class="muted reveal d3">一局大约一个小时，五十次选择，一万五千字。随时离开，下次从同一个地方继续。</p>
+      </div>
+      <div class="phone reveal d1" aria-label="游戏画面示意">
+        <div class="phone-screen">
+          <div class="ph-bg" style="background-image:url('img/library-night.jpg')"></div>
+          <div class="ph-rain"></div>
+          <div class="ph-top"><span>大一 · 秋</span><span class="ph-pills"><i>学业</i><i>体魄</i><i>心情</i></span></div>
+          <div class="ph-dialog" id="demoDialog">
+            <p class="ph-name">林溪</p>
+            <p class="ph-line" id="demoLine">……你也在等雨停吗？路灯照着雨，现在这个光很好看，但相机不能淋。</p>
+            <div class="ph-choices" id="demoChoices">
+              <button data-r="伞不大。走到半路，你发现自己的半边肩膀全湿了，而林溪的相机一滴水都没沾。「你是故意的吧。」">「一起走吧，我送你。」</button>
+              <button data-r="你没回头。第三天，那把伞出现在宿管阿姨那里，伞柄上贴着一张便利贴：「谢谢。药在袋子里。」">把伞塞给林溪，冲进雨里</button>
+              <button data-r="你撑开伞走进雨里。身后那个人还在低头擦镜头。那天的雨下了一整夜。你不知道，你错过了什么。">戴上耳机，冲回宿舍</button>
+            </div>
+            <button class="ph-again hidden" id="demoAgain">再选一次</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="numbers">
+    <div class="num-grid">
+      <div class="num reveal"><b data-count="15000" data-fmt="wan">1.5万</b><span>字，每一局</span></div>
+      <div class="num reveal d1"><b data-count="50">50</b><span>次选择</span></div>
+      <div class="num reveal d2"><b data-count="19">19</b><span>种毕业去向</span></div>
+      <div class="num reveal"><b data-count="40">40</b><span>个校园碎片</span></div>
+      <div class="num reveal d1"><b data-count="8">8</b><span>个学期</span></div>
+      <div class="num reveal d2"><b data-count="10">10</b><span>年后，再见</span></div>
+    </div>
+  </section>
+
+  <section class="ending" id="ending">
+    <div class="ending-bg" style="background-image:url('img/feat-grad.jpg')"></div>
+    <div class="ending-shade"></div>
+    <div class="ending-in">
+      <div class="sec-head">
+        <p class="eyebrow reveal">结局</p>
+        <h2 class="reveal d1">毕业那天，<br>你会拿到一本纪念册。</h2>
+        <p class="reveal d2">不是一个结局，是很多个：你去了哪里，他们后来怎样，十年后那扇门前，还能站几个人。</p>
+      </div>
+      <div class="yb-fan">
+        <div class="ybc reveal" style="--c:#f08a4b"><i class="mono" style="--c:#f08a4b">江</i><h4>冠军教练</h4><p>他带的球队拿了全市冠军。每次比赛前，他都会讲同一个故事：「我十九岁那年，摔断了腿……」</p></div>
+        <div class="ybc reveal d1" style="--c:#5fb3a1"><i class="mono" style="--c:#5fb3a1">苏</i><h4>苏博士</h4><p>苏念的博士论文致谢里写着：「感谢 404。没有你们，我在流水线上。」</p></div>
+        <div class="ybc reveal d2" style="--c:#a58be0"><i class="mono" style="--c:#a58be0">许</i><h4>穿西装的人</h4><p>他的吉他挂在办公室墙上。偶尔，他会在深夜发一段弹唱，配文只有三个字：「给 404」。</p></div>
+      </div>
+      <p class="muted center reveal">以上只是其中几种。你的会不一样。</p>
+    </div>
+  </section>
+
+  <section class="bento">
+    <div class="sec-head"><h2 class="reveal">很小，<br>但很用心。</h2></div>
+    <div class="bento-grid">
+      <div class="tile t-photo reveal" style="background-image:url('img/road-autumn.jpg')"><div class="tile-copy"><h3>真实的四季</h3><p>五十多张实拍照片，统一调色。银杏、初雪、雨夜，和凌晨的站台。</p></div></div>
+      <div class="tile t-music reveal d1"><div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h3>会响的夜晚</h3><p>八音盒配乐，实时生成。白天明亮，夜里低沉，下雨时有雨声。</p></div>
+      <div class="tile t-phone reveal"><div class="mini-phone" aria-hidden="true"></div><h3>就在手机上</h3><p>竖屏、单手。添加到主屏幕，断网也能玩。</p></div>
+      <div class="tile t-save reveal d1"><b class="big">∞</b><h3>随时继续</h3><p>每个场景自动存档。合上手机，明天从同一句话开始。</p></div>
+      <div class="tile t-wall reveal d2" style="background-image:url('img/station-night.jpg')"><div class="tile-copy"><h3>这一届</h3><p>看看和你一起毕业的人，都去了哪里。再给下一个住进 404 的人留一句话。</p></div></div>
+    </div>
+  </section>
+
+  <section class="cta" id="start">
+    <div class="cta-bg" style="background-image:url('img/station-dusk.jpg')"></div>
+    <div class="cta-shade"></div>
+    <div class="cta-in">
+      <h2 class="reveal">十年后见。</h2>
+      <div class="hero-cta reveal d1">
+        <button class="pill primary" data-play="new">推开 404 的门</button>
+        <button class="pill ghost hidden" data-play="continue" id="ctaContinue">继续</button>
+        <button class="pill ghost" data-play="album">回忆相册</button>
+      </div>
+      <p class="muted reveal d2" id="siteMeta"></p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-in">
+      <p>宿舍人生 · 一部关于大学四年的互动小说。故事、人物均为虚构。</p>
+      <p>场景照片来自 <a href="https://storage.googleapis.com/openimages/web/index.html" target="_blank" rel="noopener">Open Images</a>，作者以 <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener">CC BY 2.0</a> 授权，统一调色。<button class="linkbtn" id="creditsBtn">查看全部署名</button></p>
+      <div class="credits hidden" id="credits"></div>
+      <p class="muted">代码以 MIT 协议开源。</p>
+    </div>
+  </footer>
+</main>
+
+<!-- ============================ 游戏 ============================ -->
+<div id="app" class="app" data-screen="closed" aria-hidden="true">
   <div class="stage" id="stage" aria-hidden="true">
-    <canvas class="bg on" id="bgA"></canvas>
-    <canvas class="bg" id="bgB"></canvas>
+    <div class="bg on" id="bgA"></div>
+    <div class="bg" id="bgB"></div>
     <canvas class="fx" id="fx"></canvas>
     <div class="vignette"></div>
     <div class="grain"></div>
   </div>
 
-  <!-- 标题 -->
-  <section class="screen title-screen" id="titleScreen">
-    <div class="title-wrap">
-      <p class="eyebrow">DORM LIFE · 一部关于四年的互动小说</p>
-      <h1 class="logo">宿舍<span>人生</span></h1>
-      <p class="tagline">四张床，三个陌生人，<br>和一个很长很长的夏天。</p>
-      <div class="title-actions">
-        <button class="btn primary" id="btnNew">推开 404 的门</button>
-        <button class="btn ghost hidden" id="btnContinue">继续</button>
-        <button class="btn ghost" id="btnAlbum">回忆相册</button>
-      </div>
-      <p class="title-meta" id="titleMeta"></p>
-    </div>
-    <p class="title-foot">点击、空格或回车推进剧情 · 建议戴耳机</p>
-  </section>
-
-  <!-- 入学登记 -->
   <section class="screen setup-screen hidden" id="setupScreen">
-    <form class="form-card paper" id="setupForm" autocomplete="off">
+    <form class="form-card" id="setupForm" autocomplete="off">
       <header class="form-head">
         <p class="form-kicker">新生入学登记表</p>
         <h2>欢迎来到这所大学</h2>
@@ -60,21 +208,21 @@
       </label>
       <fieldset class="field">
         <legend class="field-label">宿舍</legend>
-        <div class="seg" data-name="dorm">
+        <div class="seg">
           <label><input type="radio" name="dorm" value="m" checked><span>男生宿舍</span></label>
           <label><input type="radio" name="dorm" value="f"><span>女生宿舍</span></label>
         </div>
       </fieldset>
       <fieldset class="field">
-        <legend class="field-label">也许会心动的那个人 <small>（只影响称呼）</small></legend>
-        <div class="seg" data-name="crush">
+        <legend class="field-label">也许会心动的那个人 <small>只影响称呼</small></legend>
+        <div class="seg">
           <label><input type="radio" name="crush" value="f" checked><span>她</span></label>
           <label><input type="radio" name="crush" value="m"><span>他</span></label>
         </div>
       </fieldset>
       <fieldset class="field">
         <legend class="field-label">家境</legend>
-        <div class="seg seg-3" data-name="family">
+        <div class="seg seg-3">
           <label><input type="radio" name="family" value="rich"><span>宽裕</span></label>
           <label><input type="radio" name="family" value="mid" checked><span>普通</span></label>
           <label><input type="radio" name="family" value="poor"><span>拮据</span></label>
@@ -83,42 +231,36 @@
       </fieldset>
       <div class="form-actions">
         <button type="button" class="btn text" id="btnSetupBack">返回</button>
-        <button type="submit" class="btn primary dark">报到</button>
+        <button type="submit" class="btn primary">报到</button>
       </div>
     </form>
   </section>
 
-  <!-- 游戏 -->
   <section class="screen game-screen hidden" id="gameScreen">
     <header class="hud" id="hud">
-      <div class="hud-left">
-        <p class="hud-sem" id="hudSem">大一 · 秋</p>
-        <div class="hud-stats" id="hudStats"></div>
-      </div>
+      <p class="hud-sem" id="hudSem">大一 · 秋</p>
       <div class="hud-right">
+        <button class="icon-btn" id="btnLog" title="剧情回看（L）" aria-label="剧情回看"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg></button>
+        <button class="icon-btn" id="btnAuto" title="自动播放（A）" aria-label="自动播放"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z"/></svg></button>
         <button class="icon-btn" id="btnJournal" title="手账（J）" aria-label="手账"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></button>
-        <button class="icon-btn" id="btnSound" title="声音（M）" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10z"/><path class="wave" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></button>
-        <button class="icon-btn" id="btnMenu" title="菜单（Esc）" aria-label="菜单"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <button class="icon-btn" id="btnMenu" title="菜单（Esc）" aria-label="菜单"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>
       </div>
+      <div class="hud-stats" id="hudStats"></div>
     </header>
 
     <div class="toasts" id="toasts" aria-live="polite"></div>
     <div class="heading" id="heading"></div>
-
     <div class="choices" id="choices"></div>
 
-    <div class="dialog" id="dialog">
-      <div class="speaker" id="speaker"><i class="mono" id="speakerMono"></i><span id="speakerName"></span></div>
+    <div class="dialog idle" id="dialog">
+      <div class="speaker none" id="speaker"><i class="mono" id="speakerMono"></i><span id="speakerName"></span></div>
       <p class="line" id="line" aria-live="polite"></p>
       <span class="next" id="nextHint" aria-hidden="true"></span>
     </div>
     <div class="tap" id="tap"></div>
   </section>
 
-  <!-- 覆盖层 -->
   <div class="overlay hidden" id="overlay"></div>
-
-  <!-- 结局纪念册 -->
   <section class="screen yearbook hidden" id="yearbook"></section>
 </div>
 
@@ -135,5 +277,6 @@
 <script src="js/api.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
+<script src="js/site.js"></script>
 </body>
 </html>

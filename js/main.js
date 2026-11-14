@@ -1,4 +1,4 @@
-/* 宿舍人生 · 主流程 */
+/* 宿舍人生 · 游戏流程：官网就是标题页，游戏以全屏层打开 */
 (function (root) {
   "use strict";
   const DL = root.DL;
@@ -7,29 +7,49 @@
   const ABORT = { abort: true };
   let runToken = 0;
   let current = null;
+  let opened = false;
 
-  /* ---------- 屏幕切换 ---------- */
+  /* ---------- 打开 / 关闭 ---------- */
+  function openApp() {
+    if (opened) return;
+    opened = true;
+    document.documentElement.classList.add("in-game");
+    const app = $("app");
+    app.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => app.classList.add("open"));
+    if (UI.settings.sound) DL.Audio.start();
+  }
+  function closeApp() {
+    runToken++;
+    current = null;
+    opened = false;
+    UI.clearKeys();
+    UI.closeOverlay();
+    DL.Audio.stop();
+    const app = $("app");
+    app.classList.remove("open");
+    app.setAttribute("aria-hidden", "true");
+    app.dataset.screen = "closed";
+    document.documentElement.classList.remove("in-game");
+    setTimeout(() => {
+      if (opened) return;
+      $("yearbook").classList.add("hidden");
+      document.querySelectorAll(".choices-backdrop").forEach((x) => x.remove());
+      $("choices").innerHTML = "";
+      for (const id of ["setupScreen", "gameScreen"]) $(id).classList.add("hidden");
+    }, 650);
+    if (location.hash === "#play") history.replaceState(null, "", location.pathname + location.search);
+    window.dispatchEvent(new Event("dorm:closed"));
+  }
+
   function screen(name) {
-    for (const id of ["titleScreen", "setupScreen", "gameScreen"]) $(id).classList.add("hidden");
+    for (const id of ["setupScreen", "gameScreen"]) $(id).classList.add("hidden");
     $("app").dataset.screen = name;
-    if (name === "title") $("titleScreen").classList.remove("hidden");
-    if (name === "setup") { $("titleScreen").classList.add("hidden"); $("setupScreen").classList.remove("hidden"); }
+    if (name === "setup") $("setupScreen").classList.remove("hidden");
     if (name === "game") $("gameScreen").classList.remove("hidden");
   }
 
-  function titleScene() {
-    const m = new Date().getMonth() + 1;
-    const season = m >= 3 && m <= 5 ? "spring" : m >= 6 && m <= 8 ? "summer" : m >= 9 && m <= 11 ? "autumn" : "winter";
-    UI.Stage.show({ at: "dormout", time: "night", weather: season === "winter" ? "snow" : "clear", season }, true);
-  }
-
-  function refreshTitle() {
-    const save = UI.store.get(SAVE, null);
-    $("btnContinue").classList.toggle("hidden", !(save && !save.done && save.v === 2));
-    if (save && !save.done && save.v === 2) $("btnContinue").textContent = "继续 · " + (DL.SEMESTERS[save.sem] || DL.SEMESTERS[0]).label;
-    const a = UI.store.get(ARCHIVE, null);
-    $("titleMeta").textContent = a && a.runs ? `已经毕业 ${a.runs} 次 · 收集了 ${Object.keys(a.memories || {}).length} 段回忆` : "";
-  }
+  function hasSave() { const s = UI.store.get(SAVE, null); return !!(s && !s.done && s.v === 2); }
 
   /* ---------- 存档册（跨周目） ---------- */
   function archive(e, s) {
@@ -60,7 +80,7 @@
         await UI.Stage.show({ at: "dormout", time: "night", weather: "clear", season: "summer" });
         await UI.epilogue(e, s, {
           again: () => { UI.store.del(SAVE); toSetup(); },
-          home: () => { UI.store.del(SAVE); goTitle(); },
+          home: () => { UI.store.del(SAVE); closeApp(); },
           global: (box) => renderGlobal(box, e, s),
         });
       }),
@@ -68,40 +88,30 @@
   }
 
   async function play(state) {
+    openApp();
     const token = ++runToken;
     current = state;
     UI.resetHud();
+    UI.history.length = 0;
     screen("game");
     $("dialog").classList.add("idle");
     $("choices").innerHTML = "";
     UI.hud(state);
-    if (UI.settings.sound) DL.Audio.start();
-    syncSound();
+    syncButtons();
     try {
       await DL.playRun(state, makeIO(token));
     } catch (err) {
-      if (err !== ABORT) { console.error(err); UI.store.del(SAVE); alert("出了点问题：" + err.message); goTitle(); }
+      if (err !== ABORT) { console.error(err); UI.store.del(SAVE); closeApp(); }
     }
   }
 
-  function goTitle() {
+  function toSetup() {
+    openApp();
     runToken++;
     current = null;
-    UI.clearKeys();
-    UI.closeOverlay();
-    $("yearbook").classList.add("hidden");
-    document.querySelectorAll(".choices-backdrop").forEach((x) => x.remove());
-    $("choices").innerHTML = "";
-    screen("title");
-    titleScene();
-    refreshTitle();
-  }
-
-  function toSetup() {
-    runToken++;
     $("yearbook").classList.add("hidden");
     UI.closeOverlay();
-    titleScene();
+    UI.Stage.show({ at: "station", time: "dawn", weather: "clear", season: "autumn" }, true);
     screen("setup");
     const last = UI.store.get("dl2.lastName", "");
     if (last) $("inName").value = last;
@@ -110,7 +120,7 @@
   function updateFamilyHint() {
     const v = (document.querySelector('input[name="family"]:checked') || {}).value || "mid";
     const f = DL.FAMILY[v];
-    $("familyHint").textContent = f.desc + " 每学期生活费 ¥" + f.allowance.toLocaleString() + "，开销约 ¥" + DL.LIVING_COST.toLocaleString() + "。";
+    $("familyHint").textContent = f.desc + " 每月生活费 ¥" + f.monthly.toLocaleString() + "，学校里一个月的开销大约 ¥" + DL.LIVING_MONTHLY.toLocaleString() + "。";
   }
 
   /* ---------- 全服统计 + 留言墙 ---------- */
@@ -125,7 +135,7 @@
     const res = await DL.API.submitRun(summary);
     if (!res) {
       const a = UI.store.get(ARCHIVE, { runs: 1, paths: {} });
-      box.innerHTML = `<h3>这一届</h3><p>这是你第 <b>${a.runs}</b> 次从 404 毕业。</p><p class="muted">现在是离线模式。用 <code>npm start</code> 启动自带的后端，这里会显示所有玩家的毕业去向，还有一面留给下一届的留言墙。</p>`;
+      box.innerHTML = `<h3>这一届</h3><p>这是你第 <b>${a.runs}</b> 次从 404 毕业。</p><p class="muted">这个版本没有连上服务器。用 <code>npm start</code> 启动自带的后端，这里会显示所有玩家的毕业去向，还有一面留给下一届的留言墙。</p>`;
       return;
     }
     const groups = {};
@@ -161,33 +171,48 @@
     };
   }
 
-  /* ---------- 菜单 / 相册 / 声音 ---------- */
-  function syncSound() { $("btnSound").classList.toggle("muted", !UI.settings.sound); }
+  /* ---------- 菜单 / 相册 / 设置 ---------- */
+  function syncButtons() {
+    $("btnAuto").classList.toggle("on", !!UI.settings.auto);
+    $("app").classList.toggle("auto", !!UI.settings.auto);
+    $("app").dataset.size = UI.settings.size || "m";
+  }
   function toggleSound() {
     UI.settings.sound = !UI.settings.sound; UI.saveSettings();
     if (UI.settings.sound) DL.Audio.start(); else DL.Audio.stop();
-    syncSound();
   }
+  function toggleAuto() {
+    UI.settings.auto = !UI.settings.auto; UI.saveSettings(); syncButtons();
+    if (UI.settings.auto && document.querySelector("#dialog.ready")) UI.advance();
+  }
+  const seg = (name, items, cur) => `<div class="seg ${items.length === 3 ? "seg-3" : ""}">${items.map(([v, n]) => `<label><input type="radio" name="${name}" value="${v}" ${cur === v ? "checked" : ""}><span>${n}</span></label>`).join("")}</div>`;
   function menu() {
     const sheet = UI.el("div", "sheet");
-    const sp = UI.settings.speed;
-    sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>暂停</h3><p>进度会在每个场景开始时自动保存。</p></div>
+    const st = UI.settings;
+    sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>暂停</h3><p>每个场景开始时都会自动存档。</p></div>
       <div class="sheet-body">
-        <div class="setting"><span>文字速度</span><div class="seg seg-3" style="width:220px">${[["slow", "慢"], ["mid", "中"], ["fast", "快"]].map(([v, n]) => `<label><input type="radio" name="spd" value="${v}" ${sp === v ? "checked" : ""}><span>${n}</span></label>`).join("")}</div></div>
-        <div class="setting"><span>声音</span><div class="seg" style="width:150px"><label><input type="radio" name="snd" value="1" ${UI.settings.sound ? "checked" : ""}><span>开</span></label><label><input type="radio" name="snd" value="0" ${!UI.settings.sound ? "checked" : ""}><span>关</span></label></div></div>
-        <div class="menu-list" style="margin-top:14px"><button class="btn ghost" data-a="resume">继续</button><button class="btn ghost" data-a="title">保存并回到标题</button><button class="btn text" data-a="restart">重新开始</button></div>
+        <div class="setting"><span>文字速度</span>${seg("spd", [["slow", "慢"], ["mid", "中"], ["fast", "快"]], st.speed)}</div>
+        <div class="setting"><span>字号</span>${seg("size", [["s", "小"], ["m", "中"], ["l", "大"]], st.size || "m")}</div>
+        <div class="setting"><span>声音</span>${seg("snd", [["1", "开"], ["0", "关"]], st.sound ? "1" : "0")}</div>
+        <div class="setting"><span>自动播放</span>${seg("auto", [["1", "开"], ["0", "关"]], st.auto ? "1" : "0")}</div>
+        <div class="menu-list" style="margin-top:16px"><button class="btn primary" data-a="resume">继续</button><button class="btn ghost" data-a="home">保存并回到首页</button><button class="btn text" data-a="restart">重新开始</button></div>
       </div>`;
-    sheet.querySelectorAll('input[name="spd"]').forEach((i) => (i.onchange = () => { UI.settings.speed = i.value; UI.saveSettings(); }));
-    sheet.querySelectorAll('input[name="snd"]').forEach((i) => (i.onchange = () => { if ((i.value === "1") !== UI.settings.sound) toggleSound(); }));
+    sheet.querySelectorAll('input[name="spd"]').forEach((i) => (i.onchange = () => { st.speed = i.value; UI.saveSettings(); }));
+    sheet.querySelectorAll('input[name="size"]').forEach((i) => (i.onchange = () => { st.size = i.value; UI.saveSettings(); syncButtons(); }));
+    sheet.querySelectorAll('input[name="snd"]').forEach((i) => (i.onchange = () => { if ((i.value === "1") !== st.sound) toggleSound(); }));
+    sheet.querySelectorAll('input[name="auto"]').forEach((i) => (i.onchange = () => { if ((i.value === "1") !== !!st.auto) { st.auto = i.value === "1"; UI.saveSettings(); syncButtons(); } }));
     sheet.querySelector('[data-a="resume"]').onclick = () => UI.closeOverlay();
-    sheet.querySelector('[data-a="title"]').onclick = () => goTitle();
+    sheet.querySelector('[data-a="home"]').onclick = () => closeApp();
     const rb = sheet.querySelector('[data-a="restart"]');
-    rb.onclick = () => { if (rb.dataset.armed) { UI.store.del(SAVE); toSetup(); } else { rb.dataset.armed = '1'; rb.textContent = '再点一次：放弃这一局，重新开始'; rb.style.opacity = 1; rb.style.color = '#ff9c92'; } };
+    rb.onclick = () => { if (rb.dataset.armed) { UI.store.del(SAVE); toSetup(); } else { rb.dataset.armed = "1"; rb.textContent = "再点一次：放弃这一局，重新开始"; rb.style.color = "#ff9c92"; } };
     const o = UI.overlay(sheet, "sheet-mode");
     o.onclick = (e) => { if (e.target === o) UI.closeOverlay(); };
   }
 
   function album() {
+    openApp();
+    screen("album");
+    UI.Stage.show({ at: "dorm", time: "dusk", weather: "clear", season: "autumn" }, true);
     const a = UI.store.get(ARCHIVE, { runs: 0, paths: {}, titles: {}, memories: {} });
     const sheet = UI.el("div", "sheet");
     const allPaths = Object.keys(DL.PATH_EPILOGUE);
@@ -198,28 +223,35 @@
     const body = sheet.querySelector(".sheet-body");
     const show = (t) => {
       sheet.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
-      if (t === "m") body.innerHTML = mems.length ? `<div class="mem-grid">${mems.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene, 240, 180)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("")}</div>` : '<p class="empty">还是空的。去过一遍四年吧。</p>';
+      if (t === "m") body.innerHTML = mems.length ? `<div class="mem-grid">${mems.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("")}</div>` : '<p class="empty">还是空的。去过一遍四年吧。</p>';
       else body.innerHTML = allPaths.map((id) => { const p = DL.PATH_EPILOGUE[id], got = a.paths[id]; return `<div class="person"><span class="yc-icon" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:22px;${got ? "" : "filter:grayscale(1);opacity:.35"}">${p.icon}</span><div><h5>${got ? esc(p.name) : "？？？"}<small>${got ? "× " + got : "未解锁"}</small></h5><p>${got ? esc(DL.fmt(p.text, { name: "你", flags: {}, dorm: "m", crush: "f" })).slice(0, 46) + "…" : "换一种活法，也许会遇见。"}</p></div></div>`; }).join("") +
         (Object.keys(a.titles).length ? `<p class="muted" style="margin-top:16px">得到过的称号：${Object.keys(a.titles).map(esc).join("、")}</p>` : "");
     };
     sheet.querySelectorAll(".tab").forEach((b) => (b.onclick = () => show(b.dataset.t)));
-    sheet.querySelector(".sheet-foot .btn").onclick = () => UI.closeOverlay();
+    sheet.querySelector(".sheet-foot .btn").onclick = () => closeApp();
     const o = UI.overlay(sheet, "sheet-mode");
-    o.onclick = (e) => { if (e.target === o) UI.closeOverlay(); };
+    o.onclick = (e) => { if (e.target === o) closeApp(); };
     show("m");
   }
+
+  /* ---------- 对外 ---------- */
+  DL.Game = {
+    open(mode) {
+      if (mode === "continue") { const s = UI.store.get(SAVE, null); if (s) return play(s); }
+      if (mode === "album") return album();
+      return toSetup();
+    },
+    close: closeApp,
+    hasSave,
+    saveLabel() { const s = UI.store.get(SAVE, null); return s ? (DL.SEMESTERS[s.sem] || DL.SEMESTERS[0]).label : ""; },
+    metaLine() { const a = UI.store.get(ARCHIVE, null); return a && a.runs ? `你已经毕业 ${a.runs} 次，收集了 ${Object.keys(a.memories || {}).length} 段回忆。` : ""; },
+  };
 
   /* ---------- 启动 ---------- */
   function boot() {
     UI.Stage.init();
-    titleScene();
-    refreshTitle();
     DL.API.detect();
-
-    $("btnNew").onclick = () => { if (UI.settings.sound) DL.Audio.start(); toSetup(); };
-    $("btnContinue").onclick = () => { const s = UI.store.get(SAVE, null); if (s) play(s); };
-    $("btnAlbum").onclick = album;
-    $("btnSetupBack").onclick = goTitle;
+    $("btnSetupBack").onclick = closeApp;
     document.querySelectorAll('input[name="family"]').forEach((i) => (i.onchange = updateFamilyHint));
     $("setupForm").onsubmit = (e) => {
       e.preventDefault();
@@ -229,27 +261,36 @@
       UI.store.del(SAVE);
       play(DL.newState({ name, dorm: fd.get("dorm"), crush: fd.get("crush"), family: fd.get("family") }));
     };
-
     $("tap").addEventListener("click", UI.advance);
     $("dialog").addEventListener("click", UI.advance);
     $("btnJournal").onclick = (e) => { e.stopPropagation(); if (current) UI.journal(current); };
-    $("btnSound").onclick = (e) => { e.stopPropagation(); toggleSound(); };
+    $("btnLog").onclick = (e) => { e.stopPropagation(); UI.backlog(); };
+    $("btnAuto").onclick = (e) => { e.stopPropagation(); toggleAuto(); };
     $("btnMenu").onclick = (e) => { e.stopPropagation(); menu(); };
     document.addEventListener("keydown", (e) => {
-      if (!$("gameScreen").classList.contains("hidden") && $("overlay").classList.contains("hidden")) {
+      if (!opened) return;
+      const inGame = !$("gameScreen").classList.contains("hidden");
+      const noOverlay = $("overlay").classList.contains("hidden");
+      if (inGame && noOverlay && !e.target.matches("input")) {
         if (e.key === "Escape") { menu(); return; }
-        if (e.key === "j" || e.key === "J") { if (current) UI.journal(current); return; }
-        if (e.key === "m" || e.key === "M") { toggleSound(); return; }
-      } else if (e.key === "Escape" && !$("overlay").classList.contains("hidden") && $("overlay").querySelector(".sheet")) { UI.closeOverlay(); return; }
+        const k = e.key.toLowerCase();
+        if (k === "j") { if (current) UI.journal(current); return; }
+        if (k === "l") { UI.backlog(); return; }
+        if (k === "a") { toggleAuto(); return; }
+        if (k === "m") { toggleSound(); return; }
+      } else if (e.key === "Escape" && !noOverlay && $("overlay").querySelector(".sheet")) {
+        if ($("app").dataset.screen === "album") closeApp(); else UI.closeOverlay();
+        return;
+      }
       UI.onKey(e);
     });
-    document.addEventListener("visibilitychange", () => { if (document.hidden) DL.Audio.stop(); else if (UI.settings.sound && $("app").dataset.screen === "game") DL.Audio.start(); });
-
+    document.addEventListener("visibilitychange", () => { if (document.hidden) DL.Audio.stop(); else if (UI.settings.sound && opened) DL.Audio.start(); });
+    syncButtons();
     if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !/[?&]nosw/.test(location.search)) {
       navigator.serviceWorker.register("sw.js").catch(() => {});
     }
-    root.__dorm = { DL, play, goTitle, get state() { return current; } };
+    root.__dorm = { DL, play, close: closeApp, get state() { return current; } };
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+  boot();
 })(typeof window !== "undefined" ? window : globalThis);

@@ -68,7 +68,7 @@
           ] },
         ];
         if (p === "music") return [
-          { at: "stage", time: "night" },
+          { at: "stage", time: "night", photo: "stage-festival" },
           "十月，「{group}」乐队收到了一家独立厂牌的邮件。",
           "「我们听了你们的现场录音。有没有兴趣聊聊签约？」",
           ["xu", "{me}……{me}你掐我一下。"],

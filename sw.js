@@ -1,6 +1,6 @@
 /* 宿舍人生 · 离线缓存：游戏文件缓存优先，接口永远走网络 */
-const VERSION = "dl-v3.0.0";
-const FILES = ["./", "index.html", "css/style.css", "manifest.webmanifest", "icons/icon-192.png", "icons/apple-touch-icon.png",
+const VERSION = "dl-v3.1.0";
+const FILES = ["./", "index.html", "css/site.css", "css/game.css", "js/site.js", "img/dormout-night.jpg", "img/station-dawn.jpg", "manifest.webmanifest", "icons/icon-192.png", "icons/apple-touch-icon.png",
   "js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js",
   "js/art.js", "js/audio.js", "js/api.js", "js/ui.js", "js/main.js"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES)).then(() => self.skipWaiting())); });

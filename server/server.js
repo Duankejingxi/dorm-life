@@ -67,7 +67,7 @@ function clean(str, max) {
 }
 
 /* ---------- HTTP ---------- */
-const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".txt": "text/plain; charset=utf-8" };
+const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".webmanifest": "application/manifest+json", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".txt": "text/plain; charset=utf-8" };
 const SECURITY = { "X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin", "X-Frame-Options": "SAMEORIGIN" };
 
 function send(res, code, body, type) {
@@ -133,12 +133,12 @@ function serveStatic(req, res, url) {
   const file = path.resolve(ROOT, "." + rel);
   const relPath = path.relative(ROOT, file).split(path.sep).join("/");
   // 只对外提供游戏本身的文件（白名单），后端源码、测试、配置一律 404
-  const PUBLIC = /^(index\.html|sw\.js|manifest\.webmanifest|(css|js|icons)\/[\w\-/.]+)$/;
+  const PUBLIC = /^(index\.html|sw\.js|manifest\.webmanifest|(css|js|icons|img)\/[\w\-/.]+)$/;
   if (!file.startsWith(ROOT + path.sep) || !PUBLIC.test(relPath)) return send(res, 404, "Not Found", "text/plain; charset=utf-8");
   fs.stat(file, (err, st) => {
     if (err || !st.isFile()) return send(res, 404, "Not Found", "text/plain; charset=utf-8");
     const ext = path.extname(file);
-    res.writeHead(200, Object.assign({ "Content-Type": MIME[ext] || "application/octet-stream", "Content-Length": st.size, "Cache-Control": ext === ".html" || file.endsWith("sw.js") ? "no-cache" : "public, max-age=3600" }, SECURITY));
+    res.writeHead(200, Object.assign({ "Content-Type": MIME[ext] || "application/octet-stream", "Content-Length": st.size, "Cache-Control": ext === ".html" || file.endsWith("sw.js") ? "no-cache" : ext === ".jpg" ? "public, max-age=604800" : "public, max-age=3600" }, SECURITY));
     if (req.method === "HEAD") return res.end();
     fs.createReadStream(file).pipe(res);
   });
