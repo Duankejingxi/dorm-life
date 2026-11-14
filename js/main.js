@@ -181,7 +181,8 @@
     sheet.querySelectorAll('input[name="snd"]').forEach((i) => (i.onchange = () => { if ((i.value === "1") !== UI.settings.sound) toggleSound(); }));
     sheet.querySelector('[data-a="resume"]').onclick = () => UI.closeOverlay();
     sheet.querySelector('[data-a="title"]').onclick = () => goTitle();
-    sheet.querySelector('[data-a="restart"]').onclick = () => { if (confirm("放弃这一局，重新开始？")) { UI.store.del(SAVE); toSetup(); } };
+    const rb = sheet.querySelector('[data-a="restart"]');
+    rb.onclick = () => { if (rb.dataset.armed) { UI.store.del(SAVE); toSetup(); } else { rb.dataset.armed = '1'; rb.textContent = '再点一次：放弃这一局，重新开始'; rb.style.opacity = 1; rb.style.color = '#ff9c92'; } };
     const o = UI.overlay(sheet, "sheet-mode");
     o.onclick = (e) => { if (e.target === o) UI.closeOverlay(); };
   }

@@ -398,7 +398,7 @@
   }
   function posterPreview(e, s) {
     const url = makePoster(e, s);
-    const w = el("div", "poster-wrap", `<img alt="毕业海报" src="${url}"><p>长按图片保存，或点下载</p><div class="row"><a class="btn primary" download="宿舍人生-${esc(s.name)}.png" href="${url}">下载</a><button class="btn ghost">关闭</button></div>`);
+    const w = el("div", "poster-wrap", `<img alt="毕业海报" src="${url}"><p>长按图片，保存到相册</p><div class="row"><button class="btn ghost">关闭</button></div>`);
     const o = overlay(w, "dark");
     w.querySelector("button").onclick = () => closeOverlay();
     o.onclick = (ev) => { if (ev.target === o) closeOverlay(); };
