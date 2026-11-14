@@ -1,0 +1,17 @@
+{
+  "name": "宿舍人生 · 我们的四年",
+  "short_name": "宿舍人生",
+  "description": "一部关于大学四年的互动小说。404 宿舍，四张床，三个陌生人。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d1c",
+  "theme_color": "#0b0d1c",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
