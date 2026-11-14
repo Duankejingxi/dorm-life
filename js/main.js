@@ -89,6 +89,7 @@
 
   async function play(state) {
     openApp();
+    UI.settings.skip = false;
     const token = ++runToken;
     current = state;
     UI.resetHud();
@@ -174,6 +175,7 @@
   /* ---------- 菜单 / 相册 / 设置 ---------- */
   function syncButtons() {
     $("btnAuto").classList.toggle("on", !!UI.settings.auto);
+    $("btnSkip").classList.toggle("on", !!UI.settings.skip);
     $("app").classList.toggle("auto", !!UI.settings.auto);
     $("app").dataset.size = UI.settings.size || "m";
   }
@@ -266,6 +268,8 @@
     $("btnJournal").onclick = (e) => { e.stopPropagation(); if (current) UI.journal(current); };
     $("btnLog").onclick = (e) => { e.stopPropagation(); UI.backlog(); };
     $("btnAuto").onclick = (e) => { e.stopPropagation(); toggleAuto(); };
+    $("btnSkip").onclick = (e) => { e.stopPropagation(); UI.setSkip(!UI.settings.skip); };
+    document.addEventListener("dorm:skip", syncButtons);
     $("btnMenu").onclick = (e) => { e.stopPropagation(); menu(); };
     document.addEventListener("keydown", (e) => {
       if (!opened) return;
@@ -277,6 +281,7 @@
         if (k === "j") { if (current) UI.journal(current); return; }
         if (k === "l") { UI.backlog(); return; }
         if (k === "a") { toggleAuto(); return; }
+        if (k === "s") { UI.setSkip(!UI.settings.skip); return; }
         if (k === "m") { toggleSound(); return; }
       } else if (e.key === "Escape" && !noOverlay && $("overlay").querySelector(".sheet")) {
         if ($("app").dataset.screen === "album") closeApp(); else UI.closeOverlay();

@@ -85,8 +85,15 @@ const fs = require("node:fs");
     await shot("yearbook-end");
     const res = await page.evaluate(() => fetch("api/stats").then((r) => r.json()));
     assert.equal(res.runs, 1, "后端应记录一局");
+    // 第二局：开启“快进已读”，不点击也应自动跳过读过的开场，停在第一个选择
+    await page.click("#ybAgain");
+    await page.waitForTimeout(800);
+    await page.click("#setupForm button[type=submit]");
+    await page.evaluate(() => DL.UI.setSkip(true));
+    await page.waitForSelector("#choices.on .choice", { timeout: 9000 });
+    assert.ok(await page.evaluate(() => DL.UI.settings.skip), "已读部分不应中断快进");
     assert.deepEqual(errors, [], "页面报错：\n" + errors.join("\n"));
-    console.log("e2e 通过：", steps, "步打完一局");
+    console.log("e2e 通过：", steps, "步打完一局；快进已读正常");
   } finally {
     await browser.close();
     server.close();

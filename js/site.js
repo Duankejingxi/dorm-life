@@ -8,6 +8,14 @@
   /* 导航：滚过开场后变成磨砂条 */
   const nav = $("#gnav");
 
+  /* 首屏以下的照片：滚到附近再加载，手机首次打开快很多 */
+  const lazy = $$("[data-bg]");
+  const setBg = (el) => { el.style.backgroundImage = "url('" + el.dataset.bg + "')"; delete el.dataset.bg; };
+  if ("IntersectionObserver" in window) {
+    const lio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { setBg(e.target); lio.unobserve(e.target); } }), { rootMargin: "900px 0px" });
+    lazy.forEach((el) => lio.observe(el));
+  } else lazy.forEach(setBg);
+
   /* 出现动画 */
   const io = "IntersectionObserver" in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.18, rootMargin: "0px 0px -6% 0px" }) : null;
   $$(".reveal").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));

@@ -10,6 +10,11 @@
 <meta name="apple-mobile-web-app-title" content="宿舍人生">
 <title>宿舍人生</title>
 <meta name="description" content="一部关于大学四年的互动小说。404 宿舍，四张床，三个陌生人。你的每一个选择，都会改变他们的十年。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="宿舍人生 · 我们的四年">
+<meta property="og:description" content="四张床，三个陌生人，和一个很长很长的夏天。一部关于大学四年的互动小说。">
+<meta property="og:image" content="img/dormout-night.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -61,10 +66,10 @@
   <section class="seasons" id="story">
     <div class="seasons-sticky">
       <div class="seasons-media">
-        <div class="s-img on" style="background-image:url('img/gate-autumn.jpg')"></div>
-        <div class="s-img" style="background-image:url('img/road-snow.jpg')"></div>
-        <div class="s-img" style="background-image:url('img/road-spring.jpg')"></div>
-        <div class="s-img" style="background-image:url('img/station-dusk.jpg')"></div>
+        <div class="s-img on" data-bg="img/gate-autumn.jpg"></div>
+        <div class="s-img" data-bg="img/road-snow.jpg"></div>
+        <div class="s-img" data-bg="img/road-spring.jpg"></div>
+        <div class="s-img" data-bg="img/station-dusk.jpg"></div>
       </div>
       <div class="seasons-shade"></div>
       <div class="seasons-copy">
@@ -83,12 +88,12 @@
       <p class="reveal d1">每个人都有一段只属于自己的故事。你在不在场，会让结局完全不同。</p>
     </div>
     <div class="rail" id="rail" tabindex="0" aria-label="人物">
-      <article class="pcard" style="--c:#f08a4b"><div class="pc-img" style="background-image:url('img/gym.jpg')"></div><div class="pc-copy"><p class="pc-role">下铺 · 篮球特长生</p><h3>江野</h3><p class="pc-quote">「等我打上首发，你一定要来看我比赛。坐第一排。」</p><p class="pc-arc">大二那场比赛，他起跳，落地。之后的十七个月，取决于有没有人在早上六点叫醒他。</p></div></article>
-      <article class="pcard" style="--c:#5fb3a1"><div class="pc-img" style="background-image:url('img/library-dawn.jpg')"></div><div class="pc-copy"><p class="pc-role">靠门上铺 · 村里第一个大学生</p><h3>苏念</h3><p class="pc-quote">「我是我们村第一个考上大学的。」</p><p class="pc-arc">话很少，起得最早，记得每个人的生日。大三那年，一通电话让苏念想去电子厂。</p></div></article>
-      <article class="pcard" style="--c:#a58be0"><div class="pc-img" style="background-image:url('img/feat-guitar.jpg')"></div><div class="pc-copy"><p class="pc-role">靠窗下铺 · 吉他和段子</p><h3>许多</h3><p class="pc-quote">「我在火车站。还剩四十分钟。」</p><p class="pc-arc">家里让学金融，自己只想写歌。那首歌的名字，会是你起的。</p></div></article>
-      <article class="pcard" style="--c:#6fa8e8"><div class="pc-img" style="background-image:url('img/feat-camera.jpg')"></div><div class="pc-copy"><p class="pc-role">隔壁学院 · 总背着一台旧相机</p><h3>林溪</h3><p class="pc-quote">「拍下来，至少能证明那天真的存在过。」</p><p class="pc-arc">雨夜的图书馆门口，你可以撑伞送林溪回去，也可以戴上耳机冲进雨里。</p></div></article>
-      <article class="pcard" style="--c:#f2c14e"><div class="pc-img" style="background-image:url('img/station-dawn.jpg')"></div><div class="pc-copy"><p class="pc-role">大三学姐 · 社长</p><h3>程橙</h3><p class="pc-quote">「没有人是准备好了才出发的。」</p><p class="pc-arc">她会在你大二那年毕业。走出校门的时候，学士帽掉了，她没再扶正。</p></div></article>
-      <article class="pcard" style="--c:#9fb4c7"><div class="pc-img" style="background-image:url('img/classroom-dusk.jpg')"></div><div class="pc-copy"><p class="pc-role">专业课教授</p><h3>周老师</h3><p class="pc-quote">「「一点」就是不会。」</p><p class="pc-arc">上课从不点名，挂人从不手软。他在报告上批「尚可」的时候，你会记很久。</p></div></article>
+      <article class="pcard" style="--c:#f08a4b"><div class="pc-img" data-bg="img/gym.jpg"></div><div class="pc-copy"><p class="pc-role">下铺 · 篮球特长生</p><h3>江野</h3><p class="pc-quote">「等我打上首发，你一定要来看我比赛。坐第一排。」</p><p class="pc-arc">大二那场比赛，他起跳，落地。之后的十七个月，取决于有没有人在早上六点叫醒他。</p></div></article>
+      <article class="pcard" style="--c:#5fb3a1"><div class="pc-img" data-bg="img/library-dawn.jpg"></div><div class="pc-copy"><p class="pc-role">靠门上铺 · 村里第一个大学生</p><h3>苏念</h3><p class="pc-quote">「我是我们村第一个考上大学的。」</p><p class="pc-arc">话很少，起得最早，记得每个人的生日。大三那年，一通电话让苏念想去电子厂。</p></div></article>
+      <article class="pcard" style="--c:#a58be0"><div class="pc-img" data-bg="img/feat-guitar.jpg"></div><div class="pc-copy"><p class="pc-role">靠窗下铺 · 吉他和段子</p><h3>许多</h3><p class="pc-quote">「我在火车站。还剩四十分钟。」</p><p class="pc-arc">家里让学金融，自己只想写歌。那首歌的名字，会是你起的。</p></div></article>
+      <article class="pcard" style="--c:#6fa8e8"><div class="pc-img" data-bg="img/feat-camera.jpg"></div><div class="pc-copy"><p class="pc-role">隔壁学院 · 总背着一台旧相机</p><h3>林溪</h3><p class="pc-quote">「拍下来，至少能证明那天真的存在过。」</p><p class="pc-arc">雨夜的图书馆门口，你可以撑伞送林溪回去，也可以戴上耳机冲进雨里。</p></div></article>
+      <article class="pcard" style="--c:#f2c14e"><div class="pc-img" data-bg="img/station-dawn.jpg"></div><div class="pc-copy"><p class="pc-role">大三学姐 · 社长</p><h3>程橙</h3><p class="pc-quote">「没有人是准备好了才出发的。」</p><p class="pc-arc">她会在你大二那年毕业。走出校门的时候，学士帽掉了，她没再扶正。</p></div></article>
+      <article class="pcard" style="--c:#9fb4c7"><div class="pc-img" data-bg="img/classroom-dusk.jpg"></div><div class="pc-copy"><p class="pc-role">专业课教授</p><h3>周老师</h3><p class="pc-quote">「「一点」就是不会。」</p><p class="pc-arc">上课从不点名，挂人从不手软。他在报告上批「尚可」的时候，你会记很久。</p></div></article>
     </div>
     <div class="rail-nav"><button class="rn" id="railPrev" aria-label="上一个">‹</button><button class="rn" id="railNext" aria-label="下一个">›</button></div>
   </section>
@@ -103,7 +108,7 @@
       </div>
       <div class="phone reveal d1" aria-label="游戏画面示意">
         <div class="phone-screen">
-          <div class="ph-bg" style="background-image:url('img/library-night.jpg')"></div>
+          <div class="ph-bg" data-bg="img/library-night.jpg"></div>
           <div class="ph-rain"></div>
           <div class="ph-top"><span>大一 · 秋</span><span class="ph-pills"><i>学业</i><i>体魄</i><i>心情</i></span></div>
           <div class="ph-dialog" id="demoDialog">
@@ -133,7 +138,7 @@
   </section>
 
   <section class="ending" id="ending">
-    <div class="ending-bg" style="background-image:url('img/feat-grad.jpg')"></div>
+    <div class="ending-bg" data-bg="img/feat-grad.jpg"></div>
     <div class="ending-shade"></div>
     <div class="ending-in">
       <div class="sec-head">
@@ -153,16 +158,16 @@
   <section class="bento">
     <div class="sec-head"><h2 class="reveal">很小，<br>但很用心。</h2></div>
     <div class="bento-grid">
-      <div class="tile t-photo reveal" style="background-image:url('img/road-autumn.jpg')"><div class="tile-copy"><h3>真实的四季</h3><p>五十多张实拍照片，统一调色。银杏、初雪、雨夜，和凌晨的站台。</p></div></div>
+      <div class="tile t-photo reveal" data-bg="img/road-autumn.jpg"><div class="tile-copy"><h3>真实的四季</h3><p>五十多张实拍照片，统一调色。银杏、初雪、雨夜，和凌晨的站台。</p></div></div>
       <div class="tile t-music reveal d1"><div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h3>会响的夜晚</h3><p>八音盒配乐，实时生成。白天明亮，夜里低沉，下雨时有雨声。</p></div>
       <div class="tile t-phone reveal"><div class="mini-phone" aria-hidden="true"></div><h3>就在手机上</h3><p>竖屏、单手。添加到主屏幕，断网也能玩。</p></div>
       <div class="tile t-save reveal d1"><b class="big">∞</b><h3>随时继续</h3><p>每个场景自动存档。合上手机，明天从同一句话开始。</p></div>
-      <div class="tile t-wall reveal d2" style="background-image:url('img/station-night.jpg')"><div class="tile-copy"><h3>这一届</h3><p>看看和你一起毕业的人，都去了哪里。再给下一个住进 404 的人留一句话。</p></div></div>
+      <div class="tile t-wall reveal d2" data-bg="img/station-night.jpg"><div class="tile-copy"><h3>这一届</h3><p>看看和你一起毕业的人，都去了哪里。再给下一个住进 404 的人留一句话。</p></div></div>
     </div>
   </section>
 
   <section class="cta" id="start">
-    <div class="cta-bg" style="background-image:url('img/station-dusk.jpg')"></div>
+    <div class="cta-bg" data-bg="img/station-dusk.jpg"></div>
     <div class="cta-shade"></div>
     <div class="cta-in">
       <h2 class="reveal">十年后见。</h2>
@@ -241,6 +246,7 @@
       <p class="hud-sem" id="hudSem">大一 · 秋</p>
       <div class="hud-right">
         <button class="icon-btn" id="btnLog" title="剧情回看（L）" aria-label="剧情回看"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg></button>
+        <button class="icon-btn" id="btnSkip" title="快进已读（S）" aria-label="快进已读文字"><svg viewBox="0 0 24 24"><path d="M4 6.5v11l7.5-5.5zM12.5 6.5v11l7.5-5.5z"/></svg></button>
         <button class="icon-btn" id="btnAuto" title="自动播放（A）" aria-label="自动播放"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z"/></svg></button>
         <button class="icon-btn" id="btnJournal" title="手账（J）" aria-label="手账"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></button>
         <button class="icon-btn" id="btnMenu" title="菜单（Esc）" aria-label="菜单"><svg viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></svg></button>

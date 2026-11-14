@@ -90,12 +90,35 @@
     return (DL.CAST[who] || {}).name || who;
   }
   let autoTimer = null;
+  /* 已读记录：跨周目保存，用于“快进已读” */
+  const READ_KEY = "dl2.read";
+  const readSet = new Set(store.get(READ_KEY, []));
+  let readTimer = null;
+  function hashLine(t) { let h = 5381; for (const ch of t) h = (Math.imul(h, 33) ^ ch.codePointAt(0)) >>> 0; return h.toString(36); }
+  function markRead(h) {
+    if (readSet.has(h)) return;
+    readSet.add(h);
+    clearTimeout(readTimer);
+    readTimer = setTimeout(() => store.set(READ_KEY, Array.from(readSet).slice(-12000)), 800);
+  }
+  function setSkip(on) {
+    settings.skip = !!on;
+    document.dispatchEvent(new CustomEvent("dorm:skip", { detail: settings.skip }));
+    if (on && advanceResolver) advance();
+  }
   async function say(who, text, s) {
     const d = $("dialog"), line = $("line");
     d.classList.remove("idle", "ready");
     setSpeaker(who, s);
     line.className = "line" + (who ? "" : " narr") + (who === "me" ? " inner" : "");
     remember({ who: speakerName(who, s), c: who && DL.CAST[who] ? DL.CAST[who].color : "", text });
+    const h = hashLine((who || "") + "|" + text);
+    const wasRead = readSet.has(h);
+    markRead(h);
+    if (settings.skip) {
+      if (wasRead) { line.textContent = text; await sleep(55); return; }
+      setSkip(false);
+    }
     await typeText(line, text);
     d.classList.add("ready");
     const wait = waitAdvance();
@@ -193,9 +216,10 @@
   }
   function overlayTap(o, delay) {
     return new Promise((resolve) => {
-      let ok = false; setTimeout(() => (ok = true), delay || 600);
-      const go = () => { if (!ok) return; o.removeEventListener("click", go); keyHandler = null; resolve(); };
+      let ok = false, done = false; setTimeout(() => (ok = true), delay || 600);
+      const go = () => { if (!ok || done) return; done = true; o.removeEventListener("click", go); keyHandler = null; resolve(); };
       o.addEventListener("click", go);
+      if (settings.skip) setTimeout(() => { if (settings.skip) { ok = true; go(); } }, 500);
       keyHandler = (e) => { if (e.key === " " || e.key === "Enter") go(); };
     });
   }
@@ -242,7 +266,7 @@
       $("dialog").classList.add("idle");
       const picks = [];
       const sheet = el("div", "sheet");
-      sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>这个学期，时间花在哪？</h3><p>选 ${n} 件事，同一件最多两次。</p></div><div class="slots"></div><div class="sheet-body"><div class="focus-grid"></div></div><div class="sheet-foot"><button class="btn primary" disabled>就这样过</button></div>`;
+      sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>这个学期，时间花在哪？</h3><p>选 ${n} 件事，同一件最多两次。</p><p class="plan-now">学业 <b>${s.stats.study}</b> · 体魄 <b>${s.stats.body}</b> · 心情 <b>${s.stats.mood}</b> · 存款 <b>¥${s.stats.money.toLocaleString()}</b></p></div><div class="slots"></div><div class="sheet-body"><div class="focus-grid"></div></div><div class="sheet-foot"><button class="btn primary" disabled>就这样过</button></div>`;
       const grid = sheet.querySelector(".focus-grid"), slots = sheet.querySelector(".slots"), go = sheet.querySelector(".sheet-foot .btn");
       const render = () => {
         slots.innerHTML = "";
@@ -449,6 +473,6 @@
     }
   }
 
-  DL.UI = { Stage, backlog, history, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { Stage, backlog, history, setSkip, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);
