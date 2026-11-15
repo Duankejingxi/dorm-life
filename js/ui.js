@@ -23,6 +23,15 @@
     cur: null, key: "", front: null, back: null, weather: null, flip: false,
     init() {
       this.front = $("bgA"); this.back = $("bgB");
+      // 桌面端：鼠标带动极轻的视差
+      const st = $("stage");
+      if (matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+        addEventListener("pointermove", (e) => {
+          tx = (e.clientX / innerWidth - 0.5) * -14; ty = (e.clientY / innerHeight - 0.5) * -10;
+          if (!raf) raf = requestAnimationFrame(function step() { cx += (tx - cx) * 0.06; cy += (ty - cy) * 0.06; st.style.setProperty("--px", cx.toFixed(2) + "px"); st.style.setProperty("--py", cy.toFixed(2) + "px"); raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.1 ? requestAnimationFrame(step) : 0; });
+        });
+      }
       this.weather = new DL.Art.Weather($("fx"));
       let rt = null;
       addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => this.weather.set(this.cur), 200); });
@@ -37,6 +46,9 @@
       const target = instant ? this.front : this.back;
       target.style.backgroundImage = "url('" + r.url + "')";
       target.dataset.grade = r.grade;
+      const app = $("app");
+      app.dataset.time = sc.time || "day";
+      app.dataset.weather = sc.weather || "clear";
       this.flip = !this.flip;
       target.classList.toggle("alt", this.flip);
       this.weather.set(sc);
@@ -64,9 +76,13 @@
       node.textContent = "";
       let i = 0;
       const chars = Array.from(text);
+      // 每个字是一个 span，带一个很短的模糊 → 清晰的浮现动画
+      const frag = document.createDocumentFragment();
+      const spans = chars.map((c) => { const sp = document.createElement("span"); sp.className = "ch"; sp.textContent = c; frag.appendChild(sp); return sp; });
+      node.appendChild(frag);
       typing = { node, text, done: resolve, timer: setInterval(() => {
+        if (spans[i]) spans[i].classList.add("in");
         i += 1;
-        node.textContent = chars.slice(0, i).join("");
         if (i >= chars.length) { clearInterval(typing.timer); typing = null; resolve(); }
       }, 1000 / cps) };
     });
@@ -138,6 +154,7 @@
       box.classList.add("on"); box.classList.remove("leaving");
       if (prompt) box.appendChild(el("p", "choice-prompt", esc(prompt)));
       const backdrop = el("div", "choices-backdrop"); $("gameScreen").appendChild(backdrop); requestAnimationFrame(() => (backdrop.style.opacity = 1));
+      focusStage(true);
       const pick = async (i, btn) => {
         if (!box.classList.contains("on")) return;
         box.classList.remove("on"); btn.classList.add("picked"); box.classList.add("leaving");
@@ -145,7 +162,7 @@
         remember({ choice: true, text: opts[i].t });
         keyHandler = null;
         await sleep(380);
-        box.innerHTML = ""; backdrop.remove();
+        box.innerHTML = ""; backdrop.remove(); focusStage(false);
         resolve(i);
       };
       opts.forEach((o, i) => {
@@ -234,7 +251,9 @@
   }
 
   /* ---------- 覆盖层 ---------- */
+  function focusStage(on) { const st = $("stage"); if (st) st.classList.toggle("focus", !!on); }
   function overlay(html, cls) {
+    focusStage(true);
     const o = $("overlay");
     o.className = "overlay " + (cls || "");
     o.innerHTML = "";
@@ -244,7 +263,7 @@
   async function closeOverlay() {
     const o = $("overlay");
     if (o.classList.contains("hidden")) return;
-    o.classList.add("out"); await sleep(280); o.className = "overlay hidden"; o.innerHTML = "";
+    o.classList.add("out"); focusStage(false); await sleep(280); o.className = "overlay hidden"; o.innerHTML = "";
   }
   function overlayTap(o, delay) {
     return new Promise((resolve) => {
@@ -272,7 +291,7 @@
     hud(s);
     $("dialog").classList.add("idle");
     const N = ["第一章", "第二章", "第三章", "第四章", "第五章", "第六章", "第七章", "终章"][i];
-    const o = overlay(`<div class="chapter"><p class="ch-n">${N}</p><p class="ch-label">${esc(sem.label)}</p><h2>${esc(sem.title)}</h2><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
+    const o = overlay(`<div class="letterbox top"></div><div class="letterbox bot"></div><div class="chapter"><p class="ch-n">${N}</p><p class="ch-label">${esc(sem.label)}</p><h2>${esc(sem.title)}</h2><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
     await overlayTap(o, 1400);
     await closeOverlay();
   }

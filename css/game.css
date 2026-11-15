@@ -457,3 +457,64 @@
 .tal-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .tal-chip { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 10px; background: rgba(255,255,255,.07); }
 .tal-chip.gold { color: #fbe2ae; } .tal-chip.purple { color: #cdbcff; } .tal-chip.blue { color: #a9ccff; }
+
+/* ======================= 精致化：光影、材质、动效 ======================= */
+/* 舞台：视差 + 景深 */
+.stage { transform: translate3d(var(--px, 0), var(--py, 0), 0) scale(1.02); transition: filter .9s cubic-bezier(.16, 1, .3, 1); }
+.stage.focus { filter: blur(7px) brightness(.62) saturate(.9); }
+.stage.focus .bg.on { animation-play-state: paused; }
+/* 转场：新画面从轻微失焦、略大的状态推入 */
+.bg { transition: opacity 1.6s cubic-bezier(.16, 1, .3, 1), transform 2.2s cubic-bezier(.16, 1, .3, 1), filter 1.6s ease; filter: blur(12px); }
+.bg.on { filter: none; }
+.bg.on[data-grade="night"] { filter: brightness(.48) saturate(.7) contrast(1.05); }
+.bg.on[data-grade="dusk"] { filter: brightness(.78) saturate(.92); }
+.bg.on[data-grade="dawn"] { filter: brightness(.9) saturate(.85); }
+.bg.on[data-grade="day"] { filter: brightness(1.12) saturate(.9); }
+
+/* 光效层：按时间变色的柔光漏光，缓慢漂移 */
+.lightfx { position: absolute; inset: -20%; pointer-events: none; mix-blend-mode: screen; opacity: .55; transition: opacity 2s ease;
+  background: radial-gradient(40% 35% at 78% 18%, var(--lf1, rgba(255, 196, 120, .28)), transparent 70%), radial-gradient(50% 40% at 12% 85%, var(--lf2, rgba(120, 150, 255, .12)), transparent 70%);
+  animation: leak 26s ease-in-out infinite alternate; }
+@keyframes leak { from { transform: translate3d(-3%, 2%, 0) rotate(-2deg); } to { transform: translate3d(3%, -2%, 0) rotate(2deg); } }
+.app[data-time="dawn"] .lightfx { --lf1: rgba(255, 186, 170, .32); --lf2: rgba(160, 170, 255, .16); }
+.app[data-time="day"] .lightfx { --lf1: rgba(255, 236, 190, .26); --lf2: rgba(180, 220, 255, .1); opacity: .45; }
+.app[data-time="dusk"] .lightfx { --lf1: rgba(255, 150, 80, .38); --lf2: rgba(200, 90, 160, .18); opacity: .7; }
+.app[data-time="night"] .lightfx { --lf1: rgba(255, 200, 130, .16); --lf2: rgba(90, 120, 255, .16); opacity: .6; }
+.app[data-weather="rain"] .lightfx { --lf1: rgba(170, 200, 255, .14); --lf2: rgba(120, 140, 200, .12); }
+
+/* 文字：逐字由模糊到清晰 */
+.line .ch { opacity: 0; filter: blur(5px); display: inline; transition: opacity .38s ease, filter .38s ease; }
+.line .ch.in { opacity: 1; filter: none; }
+.line { text-shadow: 0 1px 2px rgba(0,0,0,.5), 0 0 24px rgba(0,0,0,.35); }
+
+/* 玻璃材质：高光描边 */
+.pill, .icon-btn, .toast { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 .5px rgba(255, 255, 255, .1); }
+.choice { background: linear-gradient(180deg, rgba(58, 58, 66, .62), rgba(30, 30, 36, .62)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 0 0 .5px rgba(255, 255, 255, .12), 0 10px 30px -12px rgba(0, 0, 0, .6); }
+@media (hover: hover) { .choice:hover { transform: translateY(-1px); background: linear-gradient(180deg, rgba(74, 74, 84, .72), rgba(40, 40, 48, .72)); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), inset 0 0 0 1px rgba(246, 201, 120, .55), 0 16px 40px -14px rgba(0,0,0,.7); } }
+.choice.picked { background: linear-gradient(180deg, #fbe2ae, #f2c06a); }
+.sheet, .form-card, .mg-panel { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 -30px 80px rgba(0,0,0,.6); }
+.mono { box-shadow: 0 0 0 2px rgba(0,0,0,.25), 0 0 18px -2px var(--c, #ccc); }
+.speaker { text-shadow: 0 0 18px rgba(0,0,0,.6); }
+
+/* 章节：电影遮幅 + 渐变标题 */
+.letterbox { position: absolute; left: 0; right: 0; height: 11vh; background: #000; z-index: 1; animation: lbIn 1.2s cubic-bezier(.16, 1, .3, 1) both; }
+.letterbox.top { top: 0; transform-origin: top; } .letterbox.bot { bottom: 0; transform-origin: bottom; }
+@keyframes lbIn { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.overlay.dark:has(.chapter) { background: radial-gradient(90% 60% at 50% 50%, rgba(0,0,0,.35), rgba(0,0,0,.82)); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.chapter { position: relative; z-index: 2; }
+.chapter h2 { background: linear-gradient(180deg, #fff 30%, rgba(255,255,255,.62)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 30px rgba(0,0,0,.5)); }
+.chapter .ch-n { background: linear-gradient(100deg, #fbe2ae, #f6c978 40%, #ee9a5c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* 回忆：拍立得加柔光 */
+.polaroid { box-shadow: 0 40px 90px rgba(0, 0, 0, .7), 0 0 0 .5px rgba(0,0,0,.2), inset 0 0 40px rgba(255, 240, 210, .25); }
+.polaroid .ph { box-shadow: inset 0 0 30px rgba(0,0,0,.35); }
+
+/* 成绩单：纸面高光 */
+.transcript { background: linear-gradient(160deg, #fbf8f2 0%, #f1ebe0 100%); }
+.transcript::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.55) 50%, transparent 60%); background-size: 250% 100%; animation: sheen 2.4s .5s ease both; }
+@keyframes sheen { from { background-position: 120% 0; } to { background-position: -40% 0; } }
+
+/* 天赋卡：传说卡流光 */
+.tcard[data-r="gold"].flip .front::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 35%, rgba(255, 240, 200, .5) 50%, transparent 65%); background-size: 250% 100%; animation: sheen 2.6s 1s ease-in-out infinite; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) { .stage { transform: none; } .lightfx { animation: none; } .line .ch { filter: none; transition: none; } }

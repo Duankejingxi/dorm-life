@@ -42,7 +42,7 @@
     const m = key.match(/-(dawn|day|dusk|night)$/);
     return m ? m[1] : "day";
   }
-  const url = (key) => "img/" + key + ".jpg";
+  const url = (key) => "img/" + key + ".webp";
 
   // 返回 { key, url, grade }：grade 决定叠加的时间调色
   function resolve(sc) {

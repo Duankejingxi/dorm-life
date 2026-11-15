@@ -46,6 +46,7 @@
     sDots.forEach((x, k) => x.classList.toggle("on", k === i));
   }
 
+  const hero = $(".hero"), cta = $(".cta");
   let ticking = false;
   function onScroll() {
     if (ticking) return;
@@ -54,6 +55,17 @@
       ticking = false;
       const y = scrollY, vh = innerHeight;
       nav.classList.toggle("solid", y > vh * 0.6);
+      // 开场：随滚动放大、变暗，标题上浮淡出
+      if (hero && y < vh * 1.2) {
+        const p = Math.min(1, y / vh);
+        hero.style.setProperty("--hp", p.toFixed(3));
+      }
+      // 收尾大图：进入视口时从放大缓慢回落
+      if (cta) {
+        const r = cta.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, 1 - r.top / vh));
+        cta.style.setProperty("--cp", p.toFixed(3));
+      }
       if (glow) {
         const r = glow.getBoundingClientRect();
         const p = Math.min(1, Math.max(0, (vh * 0.82 - r.top) / (r.height + vh * 0.35)));
