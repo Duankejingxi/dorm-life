@@ -384,6 +384,17 @@
 .rush-t.bad { background: #ff6b5e; color: #fff; animation: shake .3s; }
 @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
+/* 抢答 */
+.quiz { width: 100%; max-width: 420px; text-align: center; }
+.qz-n { margin: 0 0 8px; font-size: 12px; letter-spacing: .2em; color: var(--ink-3); }
+.quiz h4 { margin: 0 0 22px; font-family: var(--serif); font-size: 21px; line-height: 1.5; font-weight: 600; }
+.qz-o { display: block; width: 100%; min-height: 54px; margin-bottom: 10px; padding: 12px 16px; border-radius: 16px; background: rgba(255,255,255,.08); font-size: 17px; font-weight: 500; transition: background .15s, transform .1s; }
+.qz-o:active { transform: scale(.98); }
+.qz-o.ok { background: #3fbf7f; color: #062615; }
+.qz-o.bad { background: #ff6b5e; color: #fff; }
+.qz-t { height: 4px; margin-top: 14px; border-radius: 2px; background: rgba(255,255,255,.1); overflow: hidden; }
+.qz-t i { display: block; height: 100%; background: var(--lamp); }
+
 /* 配对 */
 .cram { width: 100%; max-width: 440px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
 .cram-c { position: relative; height: clamp(74px, 13vh, 104px); border-radius: 16px; perspective: 600px; touch-action: manipulation; }

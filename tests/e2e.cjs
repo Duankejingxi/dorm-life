@@ -84,6 +84,8 @@ const fs = require("node:fs");
         else if (kind === "umbrella") { await page.mouse.click(b.x + b.width * (0.3 + Math.random() * 0.4), b.y + b.height / 2); }
         else if (kind === "rush") { const g = await page.$$(".rush-t.green"); if (g[0]) await g[0].click(); }
         else if (kind === "rhythm") { await page.mouse.click(b.x + b.width / 2, b.y + b.height * 0.8); }
+        else if (kind === "run") { await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); }
+        else if (kind === "quiz") { const o = await page.$(".qz-o:not([disabled])"); if (o) await o.click().catch(() => {}); }
         else if (kind === "cram") { const cs = await page.$$(".cram-c:not(.done):not(.up)"); if (cs[0]) await cs[0].click(); }
         await page.waitForTimeout(120);
         continue;

@@ -18,6 +18,8 @@
     clutch: { icon: "🎯", name: "最后一投", how: "只有一个球。力度条进入金色区域时出手。", shots: 1 },
     rhythm: { icon: "🎸", name: "演出", how: "音符落到线上时，点对应的那一列。跟上许多的节奏。", dur: 22 },
     cram: { icon: "📖", name: "考前冲刺", how: "翻牌，把知识点和它的解释配成一对。越快越好，冲刺能提高期末绩点。", dur: 30 },
+    run: { icon: "🏃", name: "1500 米", how: "连点屏幕加速，把配速保持在绿色区间。太快会耗光体力，最后一圈要冲刺。" },
+    quiz: { icon: "💡", name: "抢答", how: "六道题，每道 6 秒。答得越快，分越高。", n: 6, per: 6 },
   };
   const RATING = (s) => (s >= 0.9 ? "完美" : s >= 0.7 ? "漂亮" : s >= 0.45 ? "还行" : "翻车了");
 
@@ -427,6 +429,115 @@
     await sleep(400);
     const timeBonus = matched >= 6 ? clamp((info.dur - t) / info.dur, 0, 1) * 0.3 : 0;
     return clamp(matched / 6 * 0.8 + timeBonus - misses * 0.01, 0, 1);
+  };
+
+
+  /* ---------- 1500 米：连点保持配速，别跑崩 ---------- */
+  GAMES.run = async (info) => {
+    const cv = q("canvas"), { g, W, H } = fitCanvas(cv);
+    let pace = 0.35, stamina = 1, dist = 0, t = 0, inZone = 0;
+    const taps = [];
+    const rivals = [0.97, 1.0, 1.04].map((v) => ({ v, d: 0 }));
+    const GOAL = 1;
+    const tap = (e) => { if (e) e.preventDefault(); taps.push(performance.now()); };
+    const key = (e) => { if (e.key === " " || e.key === "Enter") tap(e); };
+    cv.addEventListener("pointerdown", tap); addEventListener("keydown", key);
+    const finish = await loop((dt) => {
+      t += dt;
+      const last = dist > 0.82;
+      const lo = last ? 0.62 : 0.45, hi = last ? 0.9 : 0.68;
+      // 配速 = 最近 1.2 秒的点击频率（每秒 5 下 = 满）
+      const now = performance.now();
+      while (taps.length && now - taps[0] > 1200) taps.shift();
+      pace += (Math.min(1, taps.length / 1.2 / 5) - pace) * Math.min(1, dt * 5);
+      if (pace > hi) stamina = Math.max(0, stamina - (pace - hi) * dt * 2);
+      else stamina = Math.min(1, stamina + dt * 0.12);
+      const eff = pace * (0.35 + stamina * 0.65);
+      if (pace >= lo && pace <= hi) inZone += dt;
+      dist += eff * dt / 11;
+      rivals.forEach((r) => (r.d += (0.56 * r.v) * dt / 11));
+      // 画
+      g.clearRect(0, 0, W, H);
+      const cx = W / 2, cy = H * 0.42, rx = W * 0.38, ry = H * 0.24;
+      g.lineWidth = 26; g.strokeStyle = "rgba(196, 92, 70, .55)"; g.beginPath(); g.ellipse(cx, cy, rx, ry, 0, 0, 6.283); g.stroke();
+      g.lineWidth = 1.5; g.strokeStyle = "rgba(255,255,255,.4)"; g.beginPath(); g.ellipse(cx, cy, rx - 13, ry - 13, 0, 0, 6.283); g.stroke(); g.beginPath(); g.ellipse(cx, cy, rx + 13, ry + 13, 0, 0, 6.283); g.stroke();
+      g.fillStyle = "#fff"; g.fillRect(cx - 2, cy + ry - 16, 4, 32);
+      const pos = (d) => { const a = Math.PI / 2 - d * 3.75 * 6.283; return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]; };
+      rivals.forEach((r) => { const [x, y] = pos(r.d); g.fillStyle = "rgba(255,255,255,.55)"; g.beginPath(); g.arc(x, y, 7, 0, 6.283); g.fill(); });
+      const [mx, my] = pos(dist); g.fillStyle = "#f6c978"; g.beginPath(); g.arc(mx, my, 10, 0, 6.283); g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke();
+      // 配速条
+      const bx = W * 0.1, by = H * 0.78, bw = W * 0.8, bh = 16;
+      g.fillStyle = "rgba(255,255,255,.1)"; g.fillRect(bx, by, bw, bh);
+      g.fillStyle = "rgba(63,191,127,.45)"; g.fillRect(bx + bw * lo, by, bw * (hi - lo), bh);
+      g.fillStyle = pace > hi ? "#ff8b7e" : "#fff"; g.fillRect(bx + bw * pace - 2, by - 5, 4, bh + 10);
+      g.fillStyle = "rgba(255,255,255,.1)"; g.fillRect(bx, by + 30, bw, 6);
+      g.fillStyle = stamina > 0.35 ? "#9ee6b4" : "#ff8b7e"; g.fillRect(bx, by + 30, bw * stamina, 6);
+      g.font = "13px -apple-system,sans-serif"; g.textAlign = "left"; g.fillStyle = "rgba(255,255,255,.6)";
+      g.fillText("配速", bx, by - 10); g.fillText("体力", bx, by + 52);
+      g.textAlign = "center"; g.fillStyle = last ? "#f6c978" : "rgba(255,255,255,.55)";
+      g.fillText(last ? "最后一圈！冲！" : "连点屏幕，保持在绿色区间", W / 2, H * 0.96);
+      const place = 1 + rivals.filter((r) => r.d > dist).length;
+      hud(Math.round(Math.min(dist, 1) * 1500) + " 米 · 第 " + place + " 名");
+      setBar(dist);
+      if (dist >= GOAL) return place;
+      if (t > 40) return 4;
+    });
+    cv.removeEventListener("pointerdown", tap); removeEventListener("keydown", key);
+    return clamp([0, 1, 0.78, 0.55, 0.3][finish] * 0.7 + (inZone / t) * 0.3, 0, 1);
+  };
+
+  /* ---------- 抢答：限时三选一 ---------- */
+  const QUIZ = [
+    ["「床前明月光」的下一句是？", "疑是地上霜", "举头望明月", "低头思故乡"],
+    ["水的化学式是？", "H₂O", "CO₂", "NaCl"],
+    ["π 约等于？", "3.14", "2.71", "1.41"],
+    ["光在真空中的速度大约是每秒？", "30 万公里", "3 万公里", "300 万公里"],
+    ["《红楼梦》的作者是？", "曹雪芹", "罗贯中", "施耐庵"],
+    ["中国最长的河流是？", "长江", "黄河", "珠江"],
+    ["1 GB 等于多少 MB？", "1024", "1000", "512"],
+    ["下面哪个不是质数？", "9", "7", "11"],
+    ["「deadline」最准确的意思是？", "截止日期", "死亡线", "终点站"],
+    ["人体最大的器官是？", "皮肤", "肝脏", "大脑"],
+    ["「三人行，必有我师焉」出自？", "《论语》", "《孟子》", "《大学》"],
+    ["DNA 的结构是？", "双螺旋", "单链", "环形"],
+    ["GDP 指的是？", "国内生产总值", "人均收入", "居民消费指数"],
+    ["「procrastinate」是什么意思？", "拖延", "预习", "坚持"],
+    ["地球绕太阳一圈大约要？", "一年", "一个月", "一天"],
+    ["「千里之行」的下半句是？", "始于足下", "不如读书", "贵在坚持"],
+    ["牛顿第一定律又叫？", "惯性定律", "万有引力定律", "能量守恒定律"],
+    ["「Out of sight, out of mind」的意思最接近？", "眼不见，心不念", "看不见，想不通", "失明又失智"],
+    ["以下哪个是哺乳动物？", "鲸鱼", "鲨鱼", "企鹅"],
+    ["二进制里的 10 等于十进制的？", "2", "10", "1"],
+    ["「庄周梦蝶」的庄周是？", "庄子", "孔子", "老子"],
+    ["「serendipity」最接近的意思是？", "意外的好运", "严重的失误", "安静的午后"],
+    ["一个标准篮球场上，一队有几人上场？", "5 人", "6 人", "11 人"],
+    ["「沉没成本」应该怎么对待？", "不影响以后的决策", "一定要赚回来", "越多越好"],
+  ];
+  GAMES.quiz = async (info) => {
+    const dom = q(".mg-dom");
+    const pool = QUIZ.slice().sort(() => rnd() - 0.5).slice(0, info.n);
+    let right = 0, bonus = 0;
+    for (let i = 0; i < pool.length; i++) {
+      const [qq, ...opts] = pool[i];
+      const order = [0, 1, 2].sort(() => rnd() - 0.5);
+      dom.innerHTML = `<div class="quiz"><p class="qz-n">第 ${i + 1} / ${pool.length} 题</p><h4>${qq}</h4>${order.map((k) => `<button class="qz-o" data-k="${k}">${opts[k]}</button>`).join("")}<div class="qz-t"><i></i></div></div>`;
+      const bar = dom.querySelector(".qz-t i");
+      const t0 = performance.now(), lim = info.per * 1000;
+      const ans = await new Promise((resolve) => {
+        let done = false;
+        dom.querySelectorAll(".qz-o").forEach((b) => (b.onclick = () => { if (!done) { done = true; resolve({ k: +b.dataset.k, b }); } }));
+        const tick = () => { if (done) return; const p = (performance.now() - t0) / lim; bar.style.width = Math.max(0, 1 - p) * 100 + "%"; if (p >= 1) { done = true; resolve(null); } else requestAnimationFrame(tick); };
+        tick();
+      });
+      const used = (performance.now() - t0) / lim;
+      dom.querySelectorAll(".qz-o").forEach((b) => { b.disabled = true; if (+b.dataset.k === 0) b.classList.add("ok"); });
+      if (ans && ans.k === 0) { right++; bonus += Math.max(0, 1 - used); if (DL.Audio) DL.Audio.blip("choose"); }
+      else if (ans) ans.b.classList.add("bad");
+      hud("答对 " + right + " / " + (i + 1));
+      setBar((i + 1) / pool.length);
+      await sleep(650);
+    }
+    return clamp(right / pool.length * 0.85 + (bonus / pool.length) * 0.15, 0, 1);
   };
 
   DL.Games = { play, INFO };

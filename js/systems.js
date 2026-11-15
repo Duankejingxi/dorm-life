@@ -115,6 +115,8 @@
     { id: "shoot", icon: "🏀", name: "神投手", desc: "陪江野投篮，五投四中以上", test: (s) => g(s, "shoot") >= 0.8 },
     { id: "clutch", icon: "🎯", name: "最后一投", desc: "决赛前夜，帮江野投进那一个", test: (s) => g(s, "clutch") >= 0.5 },
     { id: "rhythm", icon: "🎸", name: "舞台中央", desc: "毕业晚会演出拿到 85% 以上", test: (s) => g(s, "rhythm") >= 0.85 },
+    { id: "run", icon: "🥇", name: "第一块金牌", desc: "1500 米跑出好成绩", test: (s) => g(s, "run") >= 0.75 },
+    { id: "quiz", icon: "💡", name: "反应最快的人", desc: "抢答拿到 85% 以上", test: (s) => g(s, "quiz") >= 0.85 },
     { id: "cram", icon: "📖", name: "考前一夜", desc: "考前冲刺满分", test: (s) => (s.flags.cramBest || 0) >= 0.95 },
     { id: "sch1", icon: "🥇", name: "一等奖学金", desc: "拿到一次一等奖学金", test: (s) => (s.flags.sch1 || 0) >= 1 },
     { id: "sch3x", icon: "💰", name: "奖学金专业户", desc: "拿到三次以上奖学金", test: (s) => (s.flags.schCount || 0) >= 3 },

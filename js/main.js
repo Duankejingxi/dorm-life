@@ -73,7 +73,10 @@
       say: guard(UI.say), ask: guard(UI.ask), scene: guard((sc) => UI.Stage.show(sc)), toast: (c, s) => UI.toast(c, s),
       memory: guard(UI.memory), card: guard(UI.card), heading: guard(UI.heading), chapter: guard(UI.chapter), plan: guard(UI.plan),
       montage: guard(UI.montage), transcript: guard(UI.transcript), currentScene: () => Object.assign({}, UI.Stage.cur),
-      game: guard((kind, o) => DL.Games.play(kind, o)),
+      game: guard(async (kind, o) => {
+        const v = await DL.Games.play(kind, o);
+        return v == null ? v : UI.settings.easy ? Math.min(1, v + 0.15) : v;
+      }),
       achieve: (a) => {
         if (token !== runToken) return;
         UI.achieve(a);
@@ -205,11 +208,13 @@
         <div class="setting"><span>字号</span>${seg("size", [["s", "小"], ["m", "中"], ["l", "大"]], st.size || "m")}</div>
         <div class="setting"><span>声音</span>${seg("snd", [["1", "开"], ["0", "关"]], st.sound ? "1" : "0")}</div>
         <div class="setting"><span>自动播放</span>${seg("auto", [["1", "开"], ["0", "关"]], st.auto ? "1" : "0")}</div>
+        <div class="setting"><span>小游戏<small style="display:block;font-size:12px;color:var(--ink-3)">轻松：成绩 +15%</small></span>${seg("easy", [["1", "轻松"], ["0", "标准"]], st.easy ? "1" : "0")}</div>
         <div class="menu-list" style="margin-top:16px"><button class="btn primary" data-a="resume">继续</button><button class="btn ghost" data-a="home">保存并回到首页</button><button class="btn text" data-a="restart">重新开始</button></div>
       </div>`;
     sheet.querySelectorAll('input[name="spd"]').forEach((i) => (i.onchange = () => { st.speed = i.value; UI.saveSettings(); }));
     sheet.querySelectorAll('input[name="size"]').forEach((i) => (i.onchange = () => { st.size = i.value; UI.saveSettings(); syncButtons(); }));
     sheet.querySelectorAll('input[name="snd"]').forEach((i) => (i.onchange = () => { if ((i.value === "1") !== st.sound) toggleSound(); }));
+    sheet.querySelectorAll('input[name="easy"]').forEach((i) => (i.onchange = () => { st.easy = i.value === "1"; UI.saveSettings(); }));
     sheet.querySelectorAll('input[name="auto"]').forEach((i) => (i.onchange = () => { if ((i.value === "1") !== !!st.auto) { st.auto = i.value === "1"; UI.saveSettings(); syncButtons(); } }));
     sheet.querySelector('[data-a="resume"]').onclick = () => UI.closeOverlay();
     sheet.querySelector('[data-a="home"]').onclick = () => closeApp();
