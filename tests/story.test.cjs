@@ -6,7 +6,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.resolve(__dirname, "..");
-const FILES = ["js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js"];
+const FILES = ["js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js", "js/systems.js"];
 
 function load() {
   const ctx = { console, Math, Date, JSON };
@@ -37,6 +37,8 @@ function mockIO(DL, pick, out) {
     plan: async (opts, n) => { assert.ok(opts.length >= 3); opts.forEach((o) => { check(o.name, "plan"); check(o.desc, "plan"); }); const r = []; for (let i = 0; i < n; i++) r.push(opts[pick(opts.length)].id); return r; },
     montage: async (lines) => lines.forEach((l) => check(l, "montage")),
     transcript: async () => {},
+    game: async (kind, o) => { out.games = (out.games || 0) + 1; if (o && o.optional && pick(3) === 0) return null; return pick(100) / 99; },
+    achieve: (a) => { out.ach = out.ach || {}; out.ach[a.id] = 1; },
     save: () => {},
     epilogue: async (e) => {
       check(e.path.text, "end"); check(e.title.name, "title"); check(e.reunion.text, "reunion");
@@ -59,7 +61,7 @@ test("所有场景、节拍都存在", () => {
 
 test("随机跑 4000 局：不崩、无残留文本、结局分布合理", async () => {
   const DL = load();
-  const stats = { path: {}, fate: {}, lin: {}, reunion: {}, title: {}, lines: 0, choices: 0, chars: 0 };
+  const stats = { path: {}, fate: {}, lin: {}, reunion: {}, title: {}, ach: {}, games: 0, lines: 0, choices: 0, chars: 0 };
   const N = 4000;
   for (let i = 0; i < N; i++) {
     let seed = i * 7919 + 13;
@@ -67,7 +69,7 @@ test("随机跑 4000 局：不崩、无残留文本、结局分布合理", async
     // 一半纯随机，一半“有偏好”的玩家（倾向某几个选项），覆盖更多分支
     const bias = i % 2 ? null : Math.floor(r() * 4);
     const pick = (n) => (bias != null && r() < 0.6 ? Math.min(bias, n - 1) : Math.floor(r() * n));
-    const s = DL.newState({ name: "测试", dorm: i % 3 ? "m" : "f", crush: i % 5 ? "f" : "m", family: ["rich", "mid", "poor"][i % 3], seed: i });
+    const tal = DL.drawTalents(5, r); const s = DL.newState({ name: "测试", dorm: i % 3 ? "m" : "f", crush: i % 5 ? "f" : "m", family: ["rich", "mid", "poor"][i % 3], seed: i, talents: [tal[0].id, tal[1].id] });
     const out = { lines: 0, choices: 0, chars: 0 };
     const e = await DL.playRun(s, mockIO(DL, pick, out));
     stats.path[e.path.id] = (stats.path[e.path.id] || 0) + 1;
@@ -75,6 +77,10 @@ test("随机跑 4000 局：不崩、无残留文本、结局分布合理", async
     stats.lin[e.lin.title] = (stats.lin[e.lin.title] || 0) + 1;
     stats.reunion[e.reunion.count] = (stats.reunion[e.reunion.count] || 0) + 1;
     stats.title[e.title.name] = (stats.title[e.title.name] || 0) + 1;
+    for (const k in out.ach || {}) stats.ach[k] = (stats.ach[k] || 0) + 1;
+    stats.games += out.games || 0;
+    // 学期预测要能在任意状态下给出合理结果
+    const pv = DL.previewPlan(s, ["library", "rest", "field"]); assert.ok(pv.gpaHi >= pv.gpaLo && pv.gpaHi <= 4);
     stats.lines += out.lines; stats.choices += out.choices; stats.chars += out.chars;
   }
   const pct = (o) => Object.fromEntries(Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, (v / N * 100).toFixed(1) + "%"]));
@@ -83,7 +89,9 @@ test("随机跑 4000 局：不崩、无残留文本、结局分布合理", async
   console.log("林溪", pct(stats.lin));
   console.log("重聚人数", pct(stats.reunion));
   console.log("称号", pct(stats.title));
-  console.log("平均每局：", Math.round(stats.lines / N), "句，", Math.round(stats.choices / N), "次选择，", Math.round(stats.chars / N), "字");
+  console.log("平均每局：", Math.round(stats.lines / N), "句，", Math.round(stats.choices / N), "次选择，", Math.round(stats.games / N), "个小游戏，", Math.round(stats.chars / N), "字");
+  console.log("成就", pct(stats.ach));
+  for (const a of DL.ACH) assert.ok(stats.ach[a.id] > 0, "成就不可达：" + a.id);
   // 每个人的每种命运都应该能达到
   for (const k of ["jiang:冠军教练", "jiang:少儿篮球教练", "jiang:健身房老板", "jiang:很少说话的人", "su:苏博士", "su:走得慢的人", "su:远方", "xu:主唱", "xu:livehouse 老板", "xu:穿西装的人"]) {
     assert.ok(stats.fate[k] > 0, "命运不可达：" + k);

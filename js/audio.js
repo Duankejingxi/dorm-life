@@ -92,6 +92,12 @@
       else if (kind === "choose") pluck(midi(84), t, 0.05, 0.4);
       else pluck(midi(91), t, 0.025, 0.12);
     },
+    note(n) {
+      if (!on || !ctx) return;
+      const t = ctx.currentTime;
+      pluck(midi(64 + (n % 24)), t, 0.16, 1.4);
+      pluck(midi(52 + (n % 12)), t, 0.06, 1.0);
+    },
     get on() { return on; },
   };
 })(typeof window !== "undefined" ? window : globalThis);

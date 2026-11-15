@@ -11,6 +11,7 @@
  *   { card: "三个月后" }            过场字幕
  *   { do: (s, io) => ... }         自定义逻辑
  *   { play: "sceneId" }             播放另一个场景
+ *   { game: "umbrella", tiers:[{ min, fx, then }] }  小游戏，按得分（0–1）走不同分支
  */
 (function (root) {
   "use strict";
@@ -63,11 +64,14 @@
       focus: {},
       journal: [],
       crises: {},
+      talents: Array.isArray(o.talents) ? o.talents.slice(0, 3) : [],
+      ach: [],
       rng: (o.seed != null ? o.seed : Math.floor(Math.random() * 2147483647)) | 0,
       startedAt: Date.now(),
     };
     if (fam === "rich") { s.stats.mood += 4; s.stats.money += 3000; }
     if (fam === "poor") { s.stats.study += 5; s.stats.body += 4; s.stats.money -= 500; s.rel.su += 5; }
+    if (DL.applyStartTalents) DL.applyStartTalents(s);
     return s;
   }
 
@@ -105,7 +109,8 @@
     for (const k of STAT_KEYS) {
       if (eff[k] == null) continue;
       const before = s.stats[k];
-      const after = k === "money" ? before + eff[k] : clamp(before + eff[k], 0, 100);
+      const d = DL.adjustStat ? DL.adjustStat(s, k, eff[k]) : eff[k];
+      const after = k === "money" ? before + d : clamp(before + d, 0, 100);
       s.stats[k] = after;
       if (after !== before) changes.push({ kind: "stat", key: k, name: STAT_NAMES[k], delta: after - before });
     }
@@ -113,7 +118,7 @@
       for (const who of Object.keys(eff.rel)) {
         if (!(who in s.rel)) continue;
         const before = s.rel[who];
-        let d0 = eff.rel[who];
+        let d0 = DL.adjustRel ? DL.adjustRel(s, who, eff.rel[who]) : eff.rel[who];
         // 室友的好感有边际递减：越熟越难再进一步，避免四年下来人人满格
         if (d0 > 0 && ROOMIES.includes(who)) d0 = Math.max(1, Math.round(d0 * 0.8 * (1 - before / 135)));
         s.rel[who] = clamp(before + d0, 0, 100);
@@ -200,6 +205,17 @@
     if (step.play) {
       return playScene(step.play, s, io);
     }
+    if (step.game) {
+      let score = await io.game(step.game, { title: fmt(step.title || "", s), s }, s);
+      score = score == null ? 0.5 : score;
+      score = clamp(score + (DL.gameBonus ? DL.gameBonus(s) : 0), 0, 1);
+      s.flags["g_" + step.game] = Math.max(score, s.flags["g_" + step.game] || 0);
+      s.flags.lastScore = score;
+      const tier = (step.tiers || []).find((t) => score >= (t.min || 0));
+      if (!tier) return;
+      if (tier.fx) io.toast(applyFx(s, typeof tier.fx === "function" ? tier.fx(s, score) : tier.fx), s);
+      return run(typeof tier.then === "function" ? tier.then(s, score) : tier.then, s, io);
+    }
     if (step.stop) return STOP;
   }
 
@@ -238,12 +254,11 @@
   }
 
   // 学期安排：从“时间去向”里挑 3 次（同一项最多 2 次，第二次效果打七折）
-  async function plan(s, io) {
+  // 把一组安排的效果作用到状态上（预测和正式结算共用）
+  function applyPlan(s, picks, lines) {
     const opts = DL.FOCUS.filter((f) => test(f.if, s));
-    const picks = await io.plan(opts.map((f) => ({ id: f.id, icon: f.icon, name: fmt(f.name, s), desc: fmt(f.desc, s), fx: f.fx })), 3, s);
     const count = {};
     const all = [];
-    const lines = [];
     for (const id of picks) {
       const f = DL.FOCUS.find((x) => x.id === id) || opts[0];
       count[f.id] = (count[f.id] || 0) + 1;
@@ -258,8 +273,15 @@
         else eff[key] = f.fx[key];
       }
       all.push(...applyFx(s, eff));
-      if (count[f.id] === 1) lines.push(fmt(pickOne(s, f.lines), s));
+      if (lines && count[f.id] === 1) lines.push(fmt(pickOne(s, f.lines), s));
     }
+    return all;
+  }
+  async function plan(s, io) {
+    const opts = DL.FOCUS.filter((f) => test(f.if, s));
+    const picks = await io.plan(opts.map((f) => ({ id: f.id, icon: f.icon, name: fmt(f.name, s), desc: fmt(f.desc, s), fx: f.fx })), 3, s);
+    const lines = [];
+    const all = applyPlan(s, picks, lines);
     io.toast(mergeChanges(all), s);
     await io.montage(lines, s);
   }
@@ -291,7 +313,14 @@
   // 期末：学业换算绩点，太低会挂科
   async function exam(s, io) {
     const st = s.stats;
-    let gpa = 1.3 + (st.study / 100) * 2.75 + (rand(s) - 0.5) * 0.4;
+    // 考前冲刺：一个小游戏，最多 +0.25 绩点；也可以直接去考
+    let cram = await io.game("cram", { optional: true, s }, s);
+    if (cram != null) {
+      cram = clamp(cram + (DL.gameBonus ? DL.gameBonus(s) : 0), 0, 1);
+      s.flags.cramBest = Math.max(s.flags.cramBest || 0, cram);
+    }
+    const lucky = DL.luck ? DL.luck(s) / 100 : 0;
+    let gpa = 1.3 + (st.study / 100) * 2.75 + (rand(s) - 0.5) * 0.4 + lucky + (cram != null ? cram * 0.25 : 0);
     if (st.mood < 25) gpa -= 0.25;
     if (st.body < 25) gpa -= 0.2;
     gpa = Math.round(clamp(gpa, 0.8, 4.0) * 100) / 100;
@@ -299,11 +328,28 @@
     if (st.study < 30) failed = st.study < 18 ? 2 : 1;
     s.gpas.push(gpa);
     s.fails += failed;
+    // 奖学金
+    const sch = DL.scholarship ? DL.scholarship(gpa) : null;
+    if (sch) {
+      applyFx(s, { money: sch.amount });
+      s.flags.schCount = (s.flags.schCount || 0) + 1;
+      if (sch.tier === 1) s.flags.sch1 = (s.flags.sch1 || 0) + 1;
+      s.journal.push({ sem: s.sem, text: "拿到了" + sch.name + "，¥" + sch.amount + "。" });
+    }
+    // 秋季学期有体测
+    let fitness = null;
+    if (s.sem % 2 === 0 && DL.fitnessPass) {
+      fitness = DL.fitnessPass(s);
+      if (fitness) s.flags.fitPass = (s.flags.fitPass || 0) + 1;
+      else applyFx(s, { mood: -5 });
+    }
     // 学期结算：生活开销 + 学业自然回落（不学就会忘）
-    applyFx(s, { money: -LIVING_COST, study: -4, mood: -6 });
+    const living = Math.round(LIVING_COST * (DL.livingFactor ? DL.livingFactor(s) : 1));
+    const stress = DL.hasTalent && DL.hasTalent(s, "chill") ? 0 : -10;
+    applyFx(s, { money: -living, study: -4, mood: stress, body: -3 });
     const avg = gpaAvg(s);
-    await io.transcript({ sem: DL.SEMESTERS[s.sem], gpa, avg, failed, totalFails: s.fails, money: st.money, rank: rankOf(gpa) }, s);
-    s.journal.push({ sem: s.sem, text: "期末绩点 " + gpa.toFixed(2) + (failed ? "，挂了 " + failed + " 门。" : "。") });
+    await io.transcript({ sem: DL.SEMESTERS[s.sem], gpa, avg, failed, totalFails: s.fails, money: st.money, rank: rankOf(gpa), scholarship: sch, fitness, living, cram }, s);
+    s.journal.push({ sem: s.sem, text: "期末绩点 " + gpa.toFixed(2) + (failed ? "，挂了 " + failed + " 门。" : "。") + (fitness === false ? "体测没过。" : "") });
     if (st.money < 0) await playScene("broke", s, io);
   }
   function gpaAvg(s) {
@@ -322,10 +368,10 @@
   // 每个节拍结束后检查：心情或体魄太低，会触发“低谷”（每学年一次），有人会来找你
   async function checkCrisis(s, io) {
     const y = year(s);
-    if (s.stats.mood <= 12 && !s.crises["mood" + y]) {
+    if (s.stats.mood <= 24 && !s.crises["mood" + y]) {
       s.crises["mood" + y] = 1;
       await playScene("crisis_mood", s, io);
-    } else if (s.stats.body <= 12 && !s.crises["body" + y]) {
+    } else if (s.stats.body <= 16 && !s.crises["body" + y]) {
       s.crises["body" + y] = 1;
       await playScene("crisis_body", s, io);
     }
@@ -339,6 +385,7 @@
         io.save(clone(s));
         await playBeat(sem.beats[s.beat], s, io);
         await checkCrisis(s, io);
+        if (DL.checkAchievements) for (const a of DL.checkAchievements(s)) if (io.achieve) io.achieve(a, s);
         s.beat++;
       }
       s.beat = 0;
@@ -347,13 +394,14 @@
     s.done = true;
     const ending = DL.computeEnding(s);
     s.ending = { path: ending.path.id, title: ending.title.id };
+    if (DL.checkAchievements) for (const a of DL.checkAchievements(s)) if (io.achieve) io.achieve(a, s);
     io.save(clone(s));
     await io.epilogue(ending, s);
     return ending;
   }
 
   Object.assign(DL, {
-    rand, randInt, pickOne, clamp, newState, clone, fmt, applyFx, test, run, playScene, playRun,
+    rand, randInt, pickOne, clamp, newState, clone, fmt, applyFx, applyPlan, test, run, playScene, playRun,
     gpaAvg, year, currentSeason, STAT_NAMES, FAMILY, LIVING_COST, LIVING_MONTHLY, MONTHS, mergeChanges,
   });
 })(typeof window !== "undefined" ? window : globalThis);

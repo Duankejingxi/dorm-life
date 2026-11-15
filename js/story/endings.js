@@ -7,7 +7,7 @@
   DL.computeOutcome = function (s) {
     const st = s.stats;
     const g = DL.gpaAvg(s);
-    const luck = DL.rand(s) * 14 - 7;
+    const luck = DL.rand(s) * 14 - 7 + (DL.luck ? DL.luck(s) : 0);
     const p = s.flags.path || "free";
     if (s.fails >= 4) {
       return { id: "delay", ok: false, city: "这里", name: "延毕一年", reveal: "教务系统里，你的名字后面跟着一行红字：「学分未修满，不予毕业。」你挂了 " + s.fails + " 门课。" };

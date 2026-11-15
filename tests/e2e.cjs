@@ -34,14 +34,24 @@ const fs = require("node:fs");
     await shot("setup");
     await page.click("#setupForm button[type=submit]");
 
-    const want = new Set(["chapter", "say", "choice", "plan", "transcript", "memory", "yearbook"]);
+    const want = new Set(["talent", "chapter", "say", "choice", "plan", "transcript", "memory", "yearbook", "mg-intro", "mg-play:stand", "mg-play:umbrella", "mg-play:rush", "mg-play:shoot", "mg-play:rhythm", "mg-play:cram", "mg-result"]);
+    const played = {};
+    let cramPlayed = 0;
     const shotTaken = new Set();
     let steps = 0;
-    while (steps++ < 3000) {
+    while (steps++ < 6000) {
       const st = await page.evaluate(() => {
         const vis = (id) => !document.getElementById(id).classList.contains("hidden");
         const ov = document.getElementById("overlay");
         if (vis("yearbook")) return "yearbook";
+        if (document.querySelector(".talent-screen")) return "talent";
+        const mg = document.querySelector(".mg");
+        if (mg && !mg.classList.contains("hidden")) {
+          const c = mg.querySelector(".mg-card.on:not(.count)");
+          if (c && c.querySelector(".mg-score")) return "mg-result";
+          if (c && c.querySelector("button")) return /开始冲刺/.test(c.innerText) ? "mg-cram" : "mg-intro";
+          return "mg-play:" + mg.dataset.kind;
+        }
         if (vis("overlay") && ov.classList.contains("out")) return "wait";
         if (vis("overlay")) {
           if (ov.querySelector(".focus-card")) return "plan";
@@ -56,7 +66,28 @@ const fs = require("node:fs");
       });
       if (st === "yearbook") break;
       if (want.has(st) && !shotTaken.has(st)) { await page.waitForTimeout(st === "chapter" ? 2400 : st === "memory" ? 2600 : 700); await shot(st); shotTaken.add(st); }
-      if (st === "plan") {
+      if (st === "talent") {
+        await page.waitForTimeout(1900);
+        await page.click('.tcard[data-i="0"]'); await page.click('.tcard[data-i="2"]');
+        await page.click("#tGo");
+      } else if (st === "mg-intro" || st === "mg-result") {
+        await page.click(".mg-card.on .btn.primary");
+      } else if (st === "mg-cram") {
+        await page.click(cramPlayed++ < 1 ? ".mg-card.on .btn.primary" : ".mg-card.on .btn.ghost");
+      } else if (st.startsWith("mg-play:")) {
+        const kind = st.slice(8);
+        played[kind] = 1;
+        const box = await page.$(".mg-stage");
+        const b = await box.boundingBox();
+        if (kind === "shoot" || kind === "clutch") { await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); await page.waitForTimeout(900); }
+        else if (kind === "stand") { await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down(); await page.waitForTimeout(400); await page.mouse.up(); }
+        else if (kind === "umbrella") { await page.mouse.click(b.x + b.width * (0.3 + Math.random() * 0.4), b.y + b.height / 2); }
+        else if (kind === "rush") { const g = await page.$$(".rush-t.green"); if (g[0]) await g[0].click(); }
+        else if (kind === "rhythm") { await page.mouse.click(b.x + b.width / 2, b.y + b.height * 0.8); }
+        else if (kind === "cram") { const cs = await page.$$(".cram-c:not(.done):not(.up)"); if (cs[0]) await cs[0].click(); }
+        await page.waitForTimeout(120);
+        continue;
+      } else if (st === "plan") {
         await page.waitForTimeout(500);
         for (let k = 0; k < 10; k++) {
           const filled = await page.$$eval(".slot.filled", (x) => x.length);
@@ -77,7 +108,9 @@ const fs = require("node:fs");
       }
       await page.waitForTimeout(st === "wait" ? 120 : 40);
     }
-    assert.ok(steps < 3000, "没能在 3000 步内打完");
+    assert.ok(steps < 6000, "没能在 6000 步内打完");
+    for (const k of ["stand", "umbrella", "rush", "rhythm", "cram"]) assert.ok(played[k] || k === "umbrella" || k === "rhythm", "没玩到小游戏：" + k);
+    console.log("玩到的小游戏：", Object.keys(played).join(" "));
     await page.waitForTimeout(1500);
     await shot("yearbook");
     await page.evaluate(() => { const y = document.getElementById("yearbook"); y.scrollTop = y.scrollHeight; });
@@ -89,6 +122,8 @@ const fs = require("node:fs");
     await page.click("#ybAgain");
     await page.waitForTimeout(800);
     await page.click("#setupForm button[type=submit]");
+    await page.waitForSelector(".tcard", { timeout: 5000 }); await page.waitForTimeout(1900);
+    await page.click('.tcard[data-i="1"]'); await page.click('.tcard[data-i="3"]'); await page.click("#tGo");
     await page.evaluate(() => DL.UI.setSkip(true));
     await page.waitForSelector("#choices.on .choice", { timeout: 9000 });
     assert.ok(await page.evaluate(() => DL.UI.settings.skip), "已读部分不应中断快进");

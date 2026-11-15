@@ -73,6 +73,14 @@
       say: guard(UI.say), ask: guard(UI.ask), scene: guard((sc) => UI.Stage.show(sc)), toast: (c, s) => UI.toast(c, s),
       memory: guard(UI.memory), card: guard(UI.card), heading: guard(UI.heading), chapter: guard(UI.chapter), plan: guard(UI.plan),
       montage: guard(UI.montage), transcript: guard(UI.transcript), currentScene: () => Object.assign({}, UI.Stage.cur),
+      game: guard((kind, o) => DL.Games.play(kind, o)),
+      achieve: (a) => {
+        if (token !== runToken) return;
+        UI.achieve(a);
+        const ar = UI.store.get(ARCHIVE, { runs: 0, paths: {}, titles: {}, memories: {} });
+        ar.ach = ar.ach || {};
+        if (!ar.ach[a.id]) { ar.ach[a.id] = Date.now(); UI.store.set(ARCHIVE, ar); }
+      },
       save: (st) => { if (token === runToken) UI.store.set(SAVE, st); },
       epilogue: guard(async (e, s) => {
         archive(e, s);
@@ -220,11 +228,12 @@
     const allPaths = Object.keys(DL.PATH_EPILOGUE);
     const mems = Object.values(a.memories || {});
     sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>回忆相册</h3><p>毕业 ${a.runs} 次 · ${mems.length} 段回忆 · 去向 ${Object.keys(a.paths).length} / ${allPaths.length}</p></div>
-      <div class="tabs"><button class="tab on" data-t="m">回忆</button><button class="tab" data-t="p">去向</button></div>
+      <div class="tabs"><button class="tab on" data-t="m">回忆</button><button class="tab" data-t="a">成就</button><button class="tab" data-t="p">去向</button></div>
       <div class="sheet-body"></div><div class="sheet-foot"><button class="btn ghost">合上</button></div>`;
     const body = sheet.querySelector(".sheet-body");
     const show = (t) => {
       sheet.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+      if (t === "a") { const got = a.ach || {}; body.innerHTML = `<p class="muted" style="margin:4px 0 12px">已解锁 ${Object.keys(got).length} / ${DL.ACH.length}</p><div class="ach-grid">` + DL.ACH.map((x) => `<div class="ach-item ${got[x.id] ? "" : "locked"}"><span class="ai">${x.icon}</span><span><b>${got[x.id] ? esc(x.name) : "？？？"}</b><span>${esc(x.desc)}</span></span></div>`).join("") + "</div>"; return; }
       if (t === "m") body.innerHTML = mems.length ? `<div class="mem-grid">${mems.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("")}</div>` : '<p class="empty">还是空的。去过一遍四年吧。</p>';
       else body.innerHTML = allPaths.map((id) => { const p = DL.PATH_EPILOGUE[id], got = a.paths[id]; return `<div class="person"><span class="yc-icon" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:22px;${got ? "" : "filter:grayscale(1);opacity:.35"}">${p.icon}</span><div><h5>${got ? esc(p.name) : "？？？"}<small>${got ? "× " + got : "未解锁"}</small></h5><p>${got ? esc(DL.fmt(p.text, { name: "你", flags: {}, dorm: "m", crush: "f" })).slice(0, 46) + "…" : "换一种活法，也许会遇见。"}</p></div></div>`; }).join("") +
         (Object.keys(a.titles).length ? `<p class="muted" style="margin-top:16px">得到过的称号：${Object.keys(a.titles).map(esc).join("、")}</p>` : "");
@@ -246,7 +255,7 @@
     close: closeApp,
     hasSave,
     saveLabel() { const s = UI.store.get(SAVE, null); return s ? (DL.SEMESTERS[s.sem] || DL.SEMESTERS[0]).label : ""; },
-    metaLine() { const a = UI.store.get(ARCHIVE, null); return a && a.runs ? `你已经毕业 ${a.runs} 次，收集了 ${Object.keys(a.memories || {}).length} 段回忆。` : ""; },
+    metaLine() { const a = UI.store.get(ARCHIVE, null); return a && a.runs ? `你已经毕业 ${a.runs} 次，收集了 ${Object.keys(a.memories || {}).length} 段回忆、${Object.keys(a.ach || {}).length} / ${DL.ACH.length} 个成就。` : ""; },
   };
 
   /* ---------- 启动 ---------- */
@@ -261,7 +270,8 @@
       const name = String(fd.get("name") || "").trim().replace(/[{}<>]/g, "") || "林一";
       UI.store.set("dl2.lastName", name);
       UI.store.del(SAVE);
-      play(DL.newState({ name, dorm: fd.get("dorm"), crush: fd.get("crush"), family: fd.get("family") }));
+      const opts = { name, dorm: fd.get("dorm"), crush: fd.get("crush"), family: fd.get("family") };
+      UI.talentDraw().then((talents) => play(DL.newState(Object.assign(opts, { talents }))));
     };
     $("tap").addEventListener("click", UI.advance);
     $("dialog").addEventListener("click", UI.advance);

@@ -193,7 +193,39 @@
       t.style.animationDelay = i * 0.12 + "s";
       box.appendChild(t);
       setTimeout(() => t.remove(), 3000 + i * 120);
+      // 关系升级
+      if (c.kind === "rel" && up && DL.levelOf) {
+        const after = s.rel[c.key], lv = DL.levelOf(after);
+        if (lv > DL.levelOf(after - c.delta) && lv >= 2) {
+          const L = el("div", "toast lvl", `${esc(c.name)} 成为你的 <b>${DL.LEVELS[lv]}</b>`);
+          L.style.animationDelay = (i * 0.12 + 0.5) + "s";
+          box.appendChild(L);
+          setTimeout(() => L.remove(), 3800);
+          if (DL.Audio) setTimeout(() => DL.Audio.blip("mem"), 500);
+        }
+      }
     });
+  }
+  // 成就横幅：依次弹出
+  const achQueue = [];
+  let achBusy = false;
+  function achieve(a) {
+    achQueue.push(a);
+    if (!achBusy) nextAch();
+  }
+  async function nextAch() {
+    const a = achQueue.shift();
+    if (!a) { achBusy = false; return; }
+    achBusy = true;
+    const t = el("div", "ach-toast", `<span class="ai">${a.icon}</span><span><small>成就解锁</small><b>${esc(a.name)}</b></span>`);
+    $("app").appendChild(t);
+    if (DL.Audio) DL.Audio.blip("mem");
+    requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show")));
+    await sleep(2600);
+    t.classList.remove("show");
+    await sleep(600);
+    t.remove();
+    nextAch();
   }
   function heading(text) {
     const h = $("heading");
@@ -266,7 +298,7 @@
       $("dialog").classList.add("idle");
       const picks = [];
       const sheet = el("div", "sheet");
-      sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>这个学期，时间花在哪？</h3><p>选 ${n} 件事，同一件最多两次。</p><p class="plan-now">学业 <b>${s.stats.study}</b> · 体魄 <b>${s.stats.body}</b> · 心情 <b>${s.stats.mood}</b> · 存款 <b>¥${s.stats.money.toLocaleString()}</b></p></div><div class="slots"></div><div class="sheet-body"><div class="focus-grid"></div></div><div class="sheet-foot"><button class="btn primary" disabled>就这样过</button></div>`;
+      sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>这个学期，时间花在哪？</h3><p>选 ${n} 件事，同一件最多两次。</p><p class="plan-now">学业 <b>${s.stats.study}</b> · 体魄 <b>${s.stats.body}</b> · 心情 <b>${s.stats.mood}</b> · 存款 <b>¥${s.stats.money.toLocaleString()}</b></p></div><div class="slots"></div><div class="plan-forecast"></div><div class="sheet-body"><div class="focus-grid"></div></div><div class="sheet-foot"><button class="btn primary" disabled>就这样过</button></div>`;
       const grid = sheet.querySelector(".focus-grid"), slots = sheet.querySelector(".slots"), go = sheet.querySelector(".sheet-foot .btn");
       const render = () => {
         slots.innerHTML = "";
@@ -283,6 +315,14 @@
           c.classList.toggle("dim", picks.length >= n && !k);
         });
         go.disabled = picks.length < n;
+        const fc = sheet.querySelector(".plan-forecast");
+        if (DL.previewPlan) {
+          const pv = DL.previewPlan(s, picks);
+          const d = (k) => { const v = pv.stats[k] - s.stats[k]; return v ? `<small style="color:${v > 0 ? "#9ee6b4" : "#ff9c92"}">${v > 0 ? "+" : ""}${v}</small>` : ""; };
+          fc.innerHTML = `预计期末绩点 <b>${pv.gpaLo.toFixed(2)}–${pv.gpaHi.toFixed(2)}</b>` + (pv.scholarship ? ` · <span class="pf-sch">有机会拿${pv.scholarship.name}</span>` : "") +
+            `<br>学业 <b>${pv.stats.study}</b>${d("study")} · 体魄 <b>${pv.stats.body}</b>${d("body")} · 心情 <b>${pv.stats.mood}</b>${d("mood")}` +
+            pv.warn.map((w) => `<span class="pf-warn">⚠ ${esc(w)}</span>`).join("");
+        }
       };
       for (const o of opts) {
         const c = el("button", "focus-card", `<span class="fi">${o.icon}</span><span><span class="fn">${esc(o.name)}</span><span class="fd">${esc(o.desc)}</span><span class="ft">${tagsFor(o.fx)}</span></span><span class="fc"></span>`);
@@ -315,11 +355,11 @@
 
   async function transcript(d, s) {
     hud(s);
-    const stamp = d.failed ? "补考" : d.gpa >= 3.7 ? "优秀" : d.gpa >= 3 ? "良好" : d.gpa >= 2 ? "合格" : "警告";
+    const stamp = d.failed ? "补考" : d.scholarship ? ["", "一等", "二等", "三等"][d.scholarship.tier] + "<br>奖学金" : d.gpa >= 3 ? "良好" : d.gpa >= 2 ? "合格" : "警告";
     const t = el("div", "transcript paper");
     t.innerHTML = `<h3>成绩单</h3><p class="t-sub">${esc(d.sem.label)} · ${esc(s.name)}</p><div class="gpa">${d.gpa.toFixed(2)}</div><p class="gpa-l">本学期绩点</p>
       <div class="stamp">${stamp}</div>
-      <dl><dt>专业排名</dt><dd>${esc(d.rank)}</dd><dt>平均绩点</dt><dd>${d.avg.toFixed(2)}</dd><dt>挂科</dt><dd class="${d.failed ? "bad" : ""}">${d.failed ? d.failed + " 门（累计 " + d.totalFails + "）" : "无"}</dd><dt>生活开销</dt><dd>−¥${DL.LIVING_COST.toLocaleString()}<small style="font-weight:400;color:#86868b"> · 每月 ${DL.LIVING_MONTHLY}</small></dd><dt>余额</dt><dd class="${d.money < 0 ? "bad" : ""}">¥${d.money.toLocaleString()}</dd></dl>
+      <dl><dt>专业排名</dt><dd>${esc(d.rank)}</dd><dt>平均绩点</dt><dd>${d.avg.toFixed(2)}</dd><dt>挂科</dt><dd class="${d.failed ? "bad" : ""}">${d.failed ? d.failed + " 门（累计 " + d.totalFails + "）" : "无"}</dd>${d.cram != null ? `<dt>考前冲刺</dt><dd>${Math.round(d.cram * 100)}%</dd>` : ""}${d.scholarship ? `<dt>${esc(d.scholarship.name)}</dt><dd style="color:#1e8a4c">+¥${d.scholarship.amount.toLocaleString()}</dd>` : ""}${d.fitness != null ? `<dt>体测</dt><dd class="${d.fitness ? "" : "bad"}">${d.fitness ? "通过" : "没过，下学期补测"}</dd>` : ""}<dt>生活开销</dt><dd>−¥${(d.living || DL.LIVING_COST).toLocaleString()}<small style="font-weight:400;color:#86868b"> · 5 个月</small></dd><dt>余额</dt><dd class="${d.money < 0 ? "bad" : ""}">¥${d.money.toLocaleString()}</dd></dl>
       <p class="tapline">轻触继续</p>`;
     const o = overlay(t, "dark");
     await overlayTap(o, 900);
@@ -348,7 +388,8 @@
         const keys = ["study", "body", "mood"].concat(s.sem >= 4 ? ["exp", "prep"] : ["exp"]);
         body.innerHTML = keys.map((k) => `<div class="statrow"><span>${DL.STAT_NAMES[k]}</span><span class="sb"><i style="width:${s.stats[k]}%;background:${STAT_COLOR[k]}"></i></span><b>${s.stats[k]}</b></div>`).join("") +
           `<div class="statrow"><span>存款</span><span></span><b>¥${s.stats.money.toLocaleString()}</b></div>` +
-          `<p class="muted">学业决定绩点和去向；体魄或心情太低，会撑不住。${s.flags.path ? "你选择了：" + esc(DL.PATHS[s.flags.path].name) + "。" : ""}</p>`;
+          `<p class="muted">学业决定绩点和去向；体魄或心情太低，会撑不住。${s.flags.path ? "你选择了：" + esc(DL.PATHS[s.flags.path].name) + "。" : ""}</p>` +
+          (DL.talentsOf && DL.talentsOf(s).length ? `<p class="muted" style="margin-top:14px">你的天赋</p>` + DL.talentsOf(s).map((t) => `<div class="ach-item"><span class="ai">${t.icon}</span><span><b>${esc(t.name)}</b><span>${esc(t.desc)}</span></span></div>`).join("") : "");
       } else if (t === "people") {
         body.innerHTML = DL.REL_ORDER.filter((k) => k !== "lin" || s.flags.metLin).filter((k) => k !== "cheng" || s.flags.metCheng).map((k) => {
           const C = DL.CAST[k], v = s.rel[k];
@@ -380,7 +421,8 @@
       const mems = s.memories.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("");
       const heroImg = DL.Art.url(e.path.ok ? "station-dawn" : "station-night");
       yb.innerHTML = `<div class="yb-hero"><div class="yb-img" style="background-image:url('${heroImg}')"></div><div class="yb-cover"><p class="k">毕业纪念册</p><h1>${esc(s.name)} 的四年</h1><p class="muted">7 号楼 · 404 · 「${esc(s.flags.group || "404")}」</p></div></div><div class="yb">
-        <div class="yb-title"><small>你的称号</small><b>${esc(e.title.name)}</b><p>${esc(e.title.desc)}</p></div>
+        <div class="yb-title"><small>你的称号</small><b>${esc(e.title.name)}</b><p>${esc(e.title.desc)}</p>${DL.talentsOf ? `<div class="tal-row">${DL.talentsOf(s).map((t) => `<span class="tal-chip ${t.r}">${t.icon} ${esc(t.name)}</span>`).join("")}</div>` : ""}</div>
+        ${s.ach && s.ach.length ? `<section class="yb-sec"><h3>这一局的成就 · ${s.ach.length}</h3><div class="ach-grid">${s.ach.map((id) => DL.ACH.find((x) => x.id === id)).filter(Boolean).map((x) => `<div class="ach-item"><span class="ai">${x.icon}</span><span><b>${esc(x.name)}</b><span>${esc(x.desc)}</span></span></div>`).join("")}</div></section>` : ""}
         <section class="yb-sec"><h3>十年后的你</h3><div class="yb-card"><div class="yc-top"><span class="yc-icon">${e.path.icon}</span><div><h4>${esc(e.path.name)}<span class="result ${e.path.ok ? "ok" : "no"}">${esc(e.path.result)}</span></h4></div></div><p>${esc(e.path.text)}</p></div></section>
         <section class="yb-sec"><h3>十年后的他们</h3>${e.fates.map(fate).join("")}${fate(e.lin)}</section>
         <section class="yb-sec"><h3>十年后的 404</h3><div class="yb-reunion" style="--rimg:url('${new URL(DL.Art.url(e.reunion.count >= 3 ? "dormout-night" : "dorm-dusk"), location.href).href}')"><p class="count">${esc(e.reunion.title)}</p><p>${esc(e.reunion.text)}</p></div></section>
@@ -452,6 +494,33 @@
     o.onclick = (ev) => { if (ev.target === o) closeOverlay(); };
   }
 
+  /* ---------- 天赋抽卡：五张选两张，可以重抽一次 ---------- */
+  function talentDraw() {
+    return new Promise((resolve) => {
+      let rerolls = 1, hand = [], picked = [];
+      const box = el("div", "talent-screen");
+      $("app").appendChild(box);
+      const render = (animate) => {
+        box.innerHTML = `<h2>抽取你的天赋</h2><p>五张里选两张，带着它们入学。还可以重抽 ${rerolls} 次。</p>
+          <div class="tcards">${hand.map((t, i) => `<button class="tcard ${animate ? "" : "flip"} ${picked.includes(t.id) ? "sel" : ""}" data-i="${i}" data-r="${t.r}" aria-label="${esc(t.name)}"><span class="face back"></span><span class="face front"><span class="ti">${t.icon}</span><span class="tr">${DL.RARITY[t.r].name}</span><span class="tn">${esc(t.name)}</span><span class="td">${esc(t.desc)}</span></span></button>`).join("")}</div>
+          <div class="talent-actions"><button class="btn ghost" id="tReroll" ${rerolls ? "" : "disabled"}>重抽</button><button class="btn primary" id="tGo" ${picked.length === 2 ? "" : "disabled"}>就它们了（${picked.length}/2）</button></div>`;
+        const cards = [...box.querySelectorAll(".tcard")];
+        if (animate) cards.forEach((c, i) => setTimeout(() => { c.classList.add("flip"); if (DL.Audio) DL.Audio.blip(hand[i].r === "gold" ? "mem" : undefined); }, 350 + i * 260));
+        cards.forEach((c) => (c.onclick = () => {
+          const id = hand[+c.dataset.i].id;
+          if (picked.includes(id)) picked = picked.filter((x) => x !== id);
+          else if (picked.length < 2) picked.push(id);
+          else picked = [picked[1], id];
+          render(false);
+        }));
+        box.querySelector("#tReroll").onclick = () => { if (!rerolls) return; rerolls--; deal(); };
+        box.querySelector("#tGo").onclick = () => { if (picked.length !== 2) return; box.remove(); resolve(picked.slice()); };
+      };
+      const deal = () => { hand = DL.drawTalents(5); picked = []; render(true); };
+      deal();
+    });
+  }
+
   /* ---------- 剧情回看 ---------- */
   function backlog() {
     const sheet = el("div", "sheet");
@@ -473,6 +542,6 @@
     }
   }
 
-  DL.UI = { Stage, backlog, history, setSkip, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { Stage, backlog, history, setSkip, achieve, talentDraw, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);
