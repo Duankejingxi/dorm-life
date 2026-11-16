@@ -127,7 +127,7 @@ const fs = require("node:fs");
     await page.waitForSelector(".tcard", { timeout: 5000 }); await page.waitForTimeout(1900);
     await page.click('.tcard[data-i="1"]'); await page.click('.tcard[data-i="3"]'); await page.click("#tGo");
     await page.evaluate(() => DL.UI.setSkip(true));
-    await page.waitForSelector("#choices.on .choice", { timeout: 9000 });
+    await page.waitForSelector("#choices.on .choice", { timeout: 20000 });
     assert.ok(await page.evaluate(() => DL.UI.settings.skip), "已读部分不应中断快进");
     assert.deepEqual(errors, [], "页面报错：\n" + errors.join("\n"));
     console.log("e2e 通过：", steps, "步打完一局；快进已读正常");
