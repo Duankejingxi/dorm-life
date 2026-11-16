@@ -151,6 +151,40 @@
     } catch (e) { cr.textContent = "署名清单在 img/credits.json。"; }
   };
 
+  /* 人物分页点 */
+  const dots = $("#railDots");
+  if (rail && dots) {
+    const cards = $$(".pcard", rail);
+    dots.innerHTML = cards.map(() => "<li></li>").join("");
+    const lis = $$("li", dots);
+    const sync = () => {
+      const w = cards[0].offsetWidth + 20;
+      const i = Math.min(cards.length - 1, Math.round(rail.scrollLeft / w));
+      lis.forEach((li, k) => li.classList.toggle("on", k === i));
+    };
+    rail.addEventListener("scroll", sync, { passive: true });
+    sync();
+  }
+
+  /* 展开大图：圆角卡片随滚动展开到满屏 */
+  const ex = $("#expand");
+  function expandTick() {
+    if (!ex) return;
+    const r = ex.getBoundingClientRect(), vh = innerHeight;
+    const p = Math.min(1, Math.max(0, -r.top / (r.height - vh)));
+    ex.style.setProperty("--ep", p.toFixed(3));
+  }
+  addEventListener("scroll", () => requestAnimationFrame(expandTick), { passive: true });
+  expandTick();
+
+  /* 去向墙 */
+  const pg = $("#pathGrid");
+  if (pg && window.DL && DL.PATH_EPILOGUE) {
+    const seen = (() => { try { return Object.keys((JSON.parse(localStorage.getItem("dl2.archive")) || {}).paths || {}); } catch (e) { return []; } })();
+    pg.innerHTML = Object.entries(DL.PATH_EPILOGUE).map(([id, p], i) => `<div class="pg reveal ${seen.includes(id) ? "got" : ""}" style="transition-delay:${(i % 6) * 0.05}s"><span class="pg-i">${p.icon}</span><span class="pg-n">${p.name}</span>${seen.includes(id) ? '<span class="pg-b">已解锁</span>' : ""}</div>`).join("");
+    $$(".pg", pg).forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
+  }
+
   /* 开始游戏 */
   function refreshContinue() {
     const has = window.DL && DL.Game && DL.Game.hasSave();

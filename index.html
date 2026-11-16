@@ -95,7 +95,7 @@
       <article class="pcard" style="--c:#f2c14e"><div class="pc-img" data-bg="img/station-dawn.webp"></div><div class="pc-copy"><p class="pc-role">大三学姐 · 社长</p><h3>程橙</h3><p class="pc-quote">「没有人是准备好了才出发的。」</p><p class="pc-arc">她会在你大二那年毕业。走出校门的时候，学士帽掉了，她没再扶正。</p></div></article>
       <article class="pcard" style="--c:#9fb4c7"><div class="pc-img" data-bg="img/classroom-dusk.webp"></div><div class="pc-copy"><p class="pc-role">专业课教授</p><h3>周老师</h3><p class="pc-quote">「「一点」就是不会。」</p><p class="pc-arc">上课从不点名，挂人从不手软。他在报告上批「尚可」的时候，你会记很久。</p></div></article>
     </div>
-    <div class="rail-nav"><button class="rn" id="railPrev" aria-label="上一个">‹</button><button class="rn" id="railNext" aria-label="下一个">›</button></div>
+    <div class="rail-nav"><ol class="rail-dots" id="railDots" aria-hidden="true"></ol><button class="rn" id="railPrev" aria-label="上一个">‹</button><button class="rn" id="railNext" aria-label="下一个">›</button></div>
   </section>
 
   <section class="choice" id="choice">
@@ -122,6 +122,17 @@
             <button class="ph-again hidden" id="demoAgain">再选一次</button>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="expand" id="expand">
+    <div class="expand-sticky">
+      <div class="expand-media" data-bg="img/library-night.webp"></div>
+      <div class="expand-copy">
+        <p class="eyebrow">画面</p>
+        <h2>真实的照片，<br><span class="grad">电影的光。</span></h2>
+        <p>五十多张实拍照片，用 AI 超分辨率重建到两倍清晰度，再统一调成同一套色调。清晨、黄昏、深夜各有各的光，雨和雪会真的落下来。</p>
       </div>
     </div>
   </section>
@@ -154,6 +165,11 @@
       </div>
       <p class="muted center reveal">以上只是其中几种。你的会不一样。</p>
     </div>
+  </section>
+
+  <section class="paths light">
+    <div class="sec-head"><p class="eyebrow reveal">十年以后</p><h2 class="reveal d1">你会去哪里？</h2><p class="reveal d2">十九种去向，没有哪一种是标准答案。考研上岸、去山里支教、在成都的小 livehouse 唱歌，或者晚一年毕业。</p></div>
+    <div class="path-grid" id="pathGrid"></div>
   </section>
 
   <section class="bento">
