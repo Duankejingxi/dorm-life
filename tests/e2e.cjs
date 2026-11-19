@@ -34,7 +34,7 @@ const fs = require("node:fs");
     await shot("setup");
     await page.click("#setupForm button[type=submit]");
 
-    const want = new Set(["talent", "chapter", "say", "choice", "plan", "transcript", "memory", "yearbook", "mg-intro", "mg-play:stand", "mg-play:umbrella", "mg-play:rush", "mg-play:shoot", "mg-play:rhythm", "mg-play:cram", "mg-result"]);
+    const want = new Set(["free", "chat", "bond", "talent", "chapter", "say", "choice", "plan", "transcript", "memory", "yearbook", "mg-intro", "mg-play:stand", "mg-play:umbrella", "mg-play:rush", "mg-play:shoot", "mg-play:rhythm", "mg-play:cram", "mg-result"]);
     const played = {};
     let cramPlayed = 0;
     const shotTaken = new Set();
@@ -55,6 +55,9 @@ const fs = require("node:fs");
         if (vis("overlay") && ov.classList.contains("out")) return "wait";
         if (vis("overlay")) {
           if (ov.querySelector(".focus-card")) return "plan";
+          if (ov.querySelector(".free-card")) return "free";
+          if (ov.querySelector(".chat")) return ov.querySelector(".chat-reply") ? "chat" : ov.querySelector(".chat-done") ? "chat-done" : "wait";
+          if (ov.querySelector(".bond-card")) return "bond";
           if (ov.querySelector(".chapter")) return "chapter";
           if (ov.querySelector(".transcript")) return "transcript";
           if (ov.querySelector(".polaroid")) return "memory";
@@ -82,13 +85,23 @@ const fs = require("node:fs");
         if (kind === "shoot" || kind === "clutch") { await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); await page.waitForTimeout(900); }
         else if (kind === "stand") { await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.down(); await page.waitForTimeout(400); await page.mouse.up(); }
         else if (kind === "umbrella") { await page.mouse.click(b.x + b.width * (0.3 + Math.random() * 0.4), b.y + b.height / 2); }
-        else if (kind === "rush") { const g = await page.$$(".rush-t.green"); if (g[0]) await g[0].click(); }
+        else if (kind === "rush") { const g = await page.$$(".rush-t.green"); if (g[0]) await g[0].click({ timeout: 800 }).catch(() => {}); }
         else if (kind === "rhythm") { await page.mouse.click(b.x + b.width / 2, b.y + b.height * 0.8); }
         else if (kind === "run") { await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); }
         else if (kind === "quiz") { const o = await page.$(".qz-o:not([disabled])"); if (o) await o.click().catch(() => {}); }
-        else if (kind === "cram") { const cs = await page.$$(".cram-c:not(.done):not(.up)"); if (cs[0]) await cs[0].click(); }
+        else if (kind === "cram") { const cs = await page.$$(".cram-c:not(.done):not(.up)"); if (cs[0]) await cs[0].click({ timeout: 1500 }).catch(() => {}); }
         await page.waitForTimeout(120);
         continue;
+      } else if (st === "free") {
+        await page.waitForTimeout(700);
+        const cards = await page.$$(".free-card");
+        const story = await page.$(".free-card.story");
+        const target = story || cards[steps % Math.max(1, cards.length)];
+        if (target) await target.click().catch(() => {});
+      } else if (st === "chat") {
+        await page.click(".chat-reply");
+      } else if (st === "chat-done") {
+        await page.click(".chat-done");
       } else if (st === "plan") {
         await page.waitForTimeout(500);
         for (let k = 0; k < 10; k++) {
@@ -102,7 +115,7 @@ const fs = require("node:fs");
       } else if (st === "choice") {
         const cs = await page.$$("#choices .choice");
         await cs[steps % cs.length].click();
-      } else if (st === "overlay" || st === "chapter" || st === "transcript" || st === "memory") {
+      } else if (st === "overlay" || st === "chapter" || st === "transcript" || st === "memory" || st === "bond") {
         await page.waitForTimeout(st === "chapter" ? 1500 : 950);
         await page.mouse.click(195, 400);
       } else if (st === "say") {

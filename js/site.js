@@ -191,7 +191,7 @@
     ["#heroContinue", "#ctaContinue"].forEach((s) => { const b = $(s); if (b) { b.classList.toggle("hidden", !has); if (has) b.textContent = "继续 · " + DL.Game.saveLabel(); } });
     const m = $("#siteMeta"); if (m && window.DL && DL.Game) m.textContent = DL.Game.metaLine();
   }
-  $$("[data-play]").forEach((b) => (b.onclick = () => DL.Game.open(b.dataset.play)));
+  $$("[data-play]").forEach((b) => (b.onclick = (e) => DL.Game.open(b.dataset.play, e)));
   window.addEventListener("dorm:closed", refreshContinue);
   refreshContinue();
   if (location.hash === "#play") DL.Game.open("new");

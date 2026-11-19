@@ -6,7 +6,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.resolve(__dirname, "..");
-const FILES = ["js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js", "js/systems.js"];
+const FILES = ["js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js", "js/story/social.js", "js/systems.js"];
 
 function load() {
   const ctx = { console, Math, Date, JSON };
@@ -38,6 +38,11 @@ function mockIO(DL, pick, out) {
     montage: async (lines) => lines.forEach((l) => check(l, "montage")),
     transcript: async () => {},
     game: async (kind, o) => { out.games = (out.games || 0) + 1; if (o && o.optional && pick(3) === 0) return null; return pick(100) / 99; },
+    free: async (opts) => { assert.ok(opts.length >= 2 && opts.length <= 4); opts.forEach((o) => { check(o.name, "free"); if (o.title) check(o.title, "free"); }); out.free = (out.free || 0) + 1;
+      // 一半的玩家专挑有“新故事”的地点
+      const k = opts.findIndex((o) => o.story); return k >= 0 && pick(2) === 0 ? k : pick(opts.length); },
+    chat: async (c) => { check(c.title, "chat"); c.msgs.forEach((m) => check(m.text, "chat")); c.replies.forEach((r) => check(r, "chat")); c.follow.forEach((f) => f.forEach((m) => check(m.text, "chat"))); out.chats = (out.chats || 0) + 1; return pick(c.replies.length); },
+    bond: async () => {},
     achieve: (a) => { out.ach = out.ach || {}; out.ach[a.id] = 1; },
     save: () => {},
     epilogue: async (e) => {
@@ -49,7 +54,7 @@ function mockIO(DL, pick, out) {
 
 test("所有场景、节拍都存在", () => {
   const DL = load();
-  const builtins = ["chapter", "plan", "moment", "exam", "summer"];
+  const builtins = ["chapter", "plan", "moment", "exam", "summer", "chat", "free"];
   for (const sem of DL.SEMESTERS) for (const b of sem.beats) {
     if (builtins.includes(b) && b !== "summer") continue;
     assert.ok(DL.SCENES[b], "缺少场景 " + b);

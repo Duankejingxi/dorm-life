@@ -242,6 +242,8 @@
     if (beat === "moment") return moment(s, io);
     if (beat === "exam") return exam(s, io);
     if (beat === "summer") return playScene("summer", s, io);
+    if (beat === "free") return DL.playFree ? DL.playFree(s, io) : undefined;
+    if (beat === "chat") return DL.playChat ? DL.playChat(s, io) : undefined;
     return playScene(beat, s, io);
   }
 

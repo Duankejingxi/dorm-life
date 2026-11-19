@@ -10,11 +10,17 @@
   let opened = false;
 
   /* ---------- 打开 / 关闭 ---------- */
+  let origin = null;
   function openApp() {
     if (opened) return;
     opened = true;
     document.documentElement.classList.add("in-game");
     const app = $("app");
+    const o = origin || { x: innerWidth / 2, y: innerHeight / 2 };
+    app.style.setProperty("--rx", o.x + "px"); app.style.setProperty("--ry", o.y + "px");
+    origin = null;
+    // 安卓返回键：先暂停，而不是离开页面
+    try { if (!history.state || !history.state.dl) history.pushState({ dl: 1 }, ""); } catch (e) { /* 忽略 */ }
     app.setAttribute("aria-hidden", "false");
     requestAnimationFrame(() => app.classList.add("open"));
     if (UI.settings.sound) DL.Audio.start();
@@ -39,6 +45,7 @@
       for (const id of ["setupScreen", "gameScreen"]) $(id).classList.add("hidden");
     }, 650);
     if (location.hash === "#play") history.replaceState(null, "", location.pathname + location.search);
+    try { if (history.state && history.state.dl) { ignorePop = true; history.back(); } } catch (e) { /* 忽略 */ }
     window.dispatchEvent(new Event("dorm:closed"));
   }
 
@@ -73,6 +80,7 @@
       say: guard(UI.say), ask: guard(UI.ask), scene: guard((sc) => UI.Stage.show(sc)), toast: (c, s) => UI.toast(c, s),
       memory: guard(UI.memory), card: guard(UI.card), heading: guard(UI.heading), chapter: guard(UI.chapter), plan: guard(UI.plan),
       montage: guard(UI.montage), transcript: guard(UI.transcript), currentScene: () => Object.assign({}, UI.Stage.cur),
+      free: guard(UI.free), chat: guard(UI.chat), bond: guard(UI.bond),
       game: guard(async (kind, o) => {
         const v = await DL.Games.play(kind, o);
         return v == null ? v : UI.settings.easy ? Math.min(1, v + 0.15) : v;
@@ -110,6 +118,7 @@
     $("choices").innerHTML = "";
     UI.hud(state);
     syncButtons();
+    setTimeout(() => { if (current === state) UI.coach(); }, 2600);
     try {
       await DL.playRun(state, makeIO(token));
     } catch (err) {
@@ -252,7 +261,8 @@
 
   /* ---------- 对外 ---------- */
   DL.Game = {
-    open(mode) {
+    open(mode, ev) {
+      if (ev && ev.clientX != null) origin = { x: ev.clientX, y: ev.clientY };
       if (mode === "continue") { const s = UI.store.get(SAVE, null); if (s) return play(s); }
       if (mode === "album") return album();
       return toSetup();
@@ -264,6 +274,17 @@
   };
 
   /* ---------- 启动 ---------- */
+  let ignorePop = false;
+  addEventListener("popstate", () => {
+    if (ignorePop) { ignorePop = false; return; }
+    if (!opened) return;
+    // 有面板就关面板，在游戏里就打开暂停菜单；都留在游戏里
+    try { history.pushState({ dl: 1 }, ""); } catch (e) { /* 忽略 */ }
+    const ov = $("overlay");
+    if (!ov.classList.contains("hidden") && ov.querySelector(".sheet")) { if ($("app").dataset.screen === "album") closeApp(); else UI.closeOverlay(); return; }
+    if (!$("gameScreen").classList.contains("hidden") && ov.classList.contains("hidden")) menu();
+    else if (!$("setupScreen").classList.contains("hidden")) closeApp();
+  });
   function boot() {
     UI.Stage.init();
     DL.API.detect();

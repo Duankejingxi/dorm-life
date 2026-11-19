@@ -89,12 +89,13 @@
   }
   function setSpeaker(who, s) {
     const sp = $("speaker"), mono = $("speakerMono"), name = $("speakerName");
-    if (!who) { sp.classList.add("none"); return; }
+    if (!who) { sp.classList.add("none"); sp.dataset.who = ""; return; }
     sp.classList.remove("none");
     let n, c, m;
     if (who === "me") { n = s.name; c = "#e9e3d6"; m = s.name.slice(0, 1); }
     else if (who[0] === "?") { n = who.slice(1); c = "#9aa0b4"; m = n.slice(0, 1); }
     else { const C = DL.CAST[who] || {}; n = C.name || who; c = C.color || "#ccc"; m = C.mono || n.slice(0, 1); }
+    if (sp.dataset.who !== who) { sp.dataset.who = who; sp.classList.remove("swap"); void sp.offsetWidth; sp.classList.add("swap"); }
     name.textContent = n; mono.textContent = m; sp.style.setProperty("--c", c); mono.style.setProperty("--c", c); name.style.color = c;
   }
   const history = [];
@@ -159,6 +160,7 @@
         if (!box.classList.contains("on")) return;
         box.classList.remove("on"); btn.classList.add("picked"); box.classList.add("leaving");
         if (DL.Audio) DL.Audio.blip("choose");
+        haptic(8);
         remember({ choice: true, text: opts[i].t });
         keyHandler = null;
         await sleep(380);
@@ -237,6 +239,7 @@
     const t = el("div", "ach-toast", `<span class="ai">${a.icon}</span><span><small>成就解锁</small><b>${esc(a.name)}</b></span>`);
     $("app").appendChild(t);
     if (DL.Audio) DL.Audio.blip("mem");
+    haptic(20);
     requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show")));
     await sleep(2600);
     t.classList.remove("show");
@@ -540,6 +543,118 @@
     });
   }
 
+
+  /* ---------- 周末自由时间：校园地图 ---------- */
+  function free(opts, s) {
+    return new Promise((resolve) => {
+      $("dialog").classList.add("idle");
+      const sheet = el("div", "sheet free-sheet");
+      sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>这个周末，去哪？</h3><p>去找一个人，或者一个人待着。关系够深，会有只属于你们的故事。</p></div><div class="sheet-body"><div class="free-grid"></div></div>`;
+      const grid = sheet.querySelector(".free-grid");
+      opts.forEach((o, i) => {
+        const C = o.who ? DL.CAST[o.who] : null;
+        const card = el("button", "free-card" + (o.story ? " story" : ""), `
+          <span class="fc-img" style="background-image:url('${DL.Art.thumb(o.scene)}')"></span>
+          <span class="fc-shade"></span>
+          <span class="fc-top">${esc(o.name)}</span>
+          <span class="fc-who">${C ? `<i class="mono" style="--c:${C.color}">${C.mono}</i><span><b>${esc(o.whoName)}</b><small>${esc(o.level)} · 羁绊 ${o.rank}/4</small></span>` : `<span><b>一个人</b><small>好好待一会儿</small></span>`}</span>
+          ${o.story ? `<span class="fc-badge">✦ 新故事 · ${esc(o.title)}</span>` : ""}`);
+        card.style.animationDelay = 0.08 * i + 0.1 + "s";
+        card.onclick = async () => {
+          if (sheet.dataset.done) return;
+          sheet.dataset.done = 1;
+          card.classList.add("picked");
+          haptic(10);
+          if (DL.Audio) DL.Audio.blip("choose");
+          await sleep(420);
+          await closeOverlay();
+          resolve(i);
+        };
+        grid.appendChild(card);
+      });
+      overlay(sheet, "sheet-mode");
+    });
+  }
+
+  /* ---------- 手机消息 ---------- */
+  function chat(c, s) {
+    return new Promise(async (resolve) => {
+      $("dialog").classList.add("idle");
+      const fast = !!settings.skip || CPS[settings.speed] === 0;
+      const ph = el("div", "chat");
+      const avatars = c.group ? ["jiang", "su", "xu"].map((k) => `<i class="mono" style="--c:${DL.CAST[k].color}">${DL.CAST[k].mono}</i>`).join("") : `<i class="mono" style="--c:${c.msgs[0].color}">${esc(c.msgs[0].name.slice(0, 1))}</i>`;
+      ph.innerHTML = `<div class="chat-head"><span class="chat-av">${avatars}</span><b>${esc(c.title)}</b><small>${c.group ? "4 人" : "在线"}</small></div><div class="chat-body"></div><div class="chat-foot"></div>`;
+      const body = ph.querySelector(".chat-body"), foot = ph.querySelector(".chat-foot");
+      overlay(ph, "chat-mode");
+      if (DL.Audio) DL.Audio.blip("mem");
+      haptic(12);
+      const bubble = (m, mine) => {
+        const b = el("div", "bub " + (mine ? "me" : "them"), (!mine && c.group ? `<small style="color:${m.color}">${esc(m.name)}</small>` : "") + `<span>${esc(m.text)}</span>`);
+        body.appendChild(b);
+        requestAnimationFrame(() => b.classList.add("in"));
+        body.scrollTop = body.scrollHeight;
+      };
+      const typing = async (m) => {
+        if (fast) return;
+        const t = el("div", "bub them typing", "<span><i></i><i></i><i></i></span>");
+        body.appendChild(t); requestAnimationFrame(() => t.classList.add("in")); body.scrollTop = body.scrollHeight;
+        await sleep(Math.min(1300, 450 + Array.from(m.text).length * 35));
+        t.remove();
+      };
+      await sleep(fast ? 100 : 500);
+      for (const m of c.msgs) { await typing(m); bubble(m); await sleep(fast ? 60 : 220); }
+      const idx = await new Promise((res) => {
+        foot.innerHTML = c.replies.map((r, i) => `<button class="chat-reply" data-i="${i}">${esc(r)}</button>`).join("");
+        foot.querySelectorAll(".chat-reply").forEach((b) => (b.onclick = () => { if (foot.dataset.done) return; foot.dataset.done = 1; haptic(8); res(+b.dataset.i); }));
+        if (settings.skip) setTimeout(() => { if (!foot.dataset.done) { foot.dataset.done = 1; res(0); } }, 300);
+      });
+      foot.innerHTML = "";
+      bubble({ text: c.replies[idx] }, true);
+      remember({ choice: true, text: "（消息）" + c.replies[idx] });
+      await sleep(fast ? 80 : 500);
+      for (const m of c.follow[idx] || []) { await typing(m); bubble(m); await sleep(fast ? 60 : 220); }
+      foot.innerHTML = `<button class="btn primary chat-done">收起手机</button>`;
+      await new Promise((res) => { foot.querySelector(".chat-done").onclick = res; if (settings.skip) setTimeout(res, 400); });
+      await closeOverlay();
+      resolve(idx);
+    });
+  }
+
+  /* ---------- 羁绊进度 ---------- */
+  async function bond(who, rank, s) {
+    const C = DL.CAST[who];
+    const box = el("div", "bond-card", `<i class="mono" style="--c:${C.color}">${C.mono}</i><p class="bk">羁绊</p><h3>${esc(C.name)}</h3><div class="bond-dots">${[1, 2, 3, 4].map((k) => `<i class="${k <= rank ? "on" : ""} ${k === rank ? "new" : ""}" style="--c:${C.color}"></i>`).join("")}</div><p class="bt">${rank >= 4 ? "你们之间，已经不需要再多说什么了。" : `第 ${rank} 段故事 · 关系更深时，会有下一段`}</p><p class="tapnote">轻触继续</p>`);
+    box.style.setProperty("--c", C.color);
+    if (DL.Audio) DL.Audio.blip("mem");
+    haptic([10, 40, 10]);
+    const o = overlay(box, "dark");
+    await overlayTap(o, 900);
+    await closeOverlay();
+  }
+
+  function haptic(p) { try { if (navigator.vibrate && !settings.noHaptic) navigator.vibrate(p); } catch (e) { /* 忽略 */ } }
+
+  /* ---------- 第一次进游戏：按钮说明 ---------- */
+  function coach() {
+    if (store.get("dl2.coach", false)) return;
+    store.set("dl2.coach", true);
+    const right = document.querySelector(".hud-right");
+    if (!right) return;
+    const labels = ["回看", "快进", "自动", "手账", "菜单"];
+    const tip = el("div", "coach", `<div class="coach-labels">${labels.map((l) => `<span>${l}</span>`).join("")}</div><p>轻触屏幕任意位置，继续读下去</p>`);
+    $("gameScreen").appendChild(tip);
+    const btns = right.querySelectorAll(".icon-btn");
+    const place = () => {
+      const spans = tip.querySelectorAll(".coach-labels span");
+      btns.forEach((b, i) => { const r = b.getBoundingClientRect(); if (spans[i]) { spans[i].style.left = r.left + r.width / 2 + "px"; spans[i].style.top = r.bottom + 8 + "px"; } });
+    };
+    place();
+    requestAnimationFrame(() => tip.classList.add("show"));
+    const off = () => { tip.classList.remove("show"); setTimeout(() => tip.remove(), 500); removeEventListener("pointerdown", off, true); };
+    setTimeout(() => addEventListener("pointerdown", off, true), 300);
+    setTimeout(off, 7000);
+  }
+
   /* ---------- 剧情回看 ---------- */
   function backlog() {
     const sheet = el("div", "sheet");
@@ -561,6 +676,6 @@
     }
   }
 
-  DL.UI = { Stage, backlog, history, setSkip, achieve, talentDraw, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -137,7 +137,10 @@
     { id: "mem12", icon: "📷", name: "收藏家", desc: "一局里收集 15 段回忆", test: (s) => s.memories.length >= 15 },
     { id: "landed", icon: "🎓", name: "上岸", desc: "考研、保研或考公成功", test: (s) => s.flags.result && s.flags.result.ok && /kaoyan|baoyan|gongwu/.test(s.flags.result.id) },
     { id: "follow", icon: "🏠", name: "撑伞的人", desc: "毕业后和林溪去了同一座城市", test: (s) => s.flags.linFollow },
-    { id: "reunion", icon: "🔑", name: "四个人", desc: "十年后，404 一个都没少", test: (s) => s.done && ["jiang", "su", "xu"].every((k) => s.rel[k] >= 62) },
+    { id: "reunion", icon: "🔑", name: "四个人", desc: "十年后，404 一个都没少", test: (s) => s.done && ["jiang", "su", "xu"].every((k) => s.rel[k] >= 76) },
+    { id: "bond1", icon: "🫶", name: "只属于你们的故事", desc: "解锁第一段羁绊故事", test: (s) => ["jiang", "su", "xu", "lin"].some((k) => (s.flags["bond_" + k] || 0) >= 1) },
+    { id: "bond4", icon: "💫", name: "最懂你的人", desc: "和一个人走完全部四段羁绊故事", test: (s) => ["jiang", "su", "xu", "lin"].some((k) => (s.flags["bond_" + k] || 0) >= 4) },
+    { id: "bondall", icon: "🌙", name: "每个人的夜晚", desc: "和三个室友都至少有两段羁绊故事", test: (s) => ["jiang", "su", "xu"].every((k) => (s.flags["bond_" + k] || 0) >= 2) },
     { id: "gold", icon: "✨", name: "天选之人", desc: "抽到一张传说天赋", test: (s) => talentsOf(s).some((t) => t.r === "gold") },
     { id: "gold2", icon: "🌈", name: "欧皇", desc: "同时带着两张传说天赋入学", test: (s) => talentsOf(s).filter((t) => t.r === "gold").length >= 2 },
   ];
