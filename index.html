@@ -21,9 +21,10 @@
 <link rel="preload" as="image" href="img/dormout-night.webp">
 <!-- 字体异步加载：在打不开 Google Fonts 的网络下，不会卡住页面，直接用系统字体 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/site.css">
 <link rel="stylesheet" href="css/game.css">
+<link rel="stylesheet" href="css/art.css">
 </head>
 <body>
 
@@ -47,7 +48,7 @@
     <div class="hero-media"><div class="hero-img" style="background-image:url('img/dormout-night.webp')"></div></div>
     <div class="hero-shade"></div>
     <div class="hero-copy">
-      <p class="eyebrow reveal">一部关于大学四年的互动小说</p>
+      <p class="eyebrow reveal"><span class="latin">Dorm Life — A Novel in Four Years</span>一部关于大学四年的互动小说</p>
       <h1 class="reveal d1">四张床，<br>三个陌生人。</h1>
       <p class="hero-sub reveal d2">和一个很长很长的夏天。</p>
       <div class="hero-cta reveal d3">
@@ -98,7 +99,7 @@
     <div class="rail-nav"><ol class="rail-dots" id="railDots" aria-hidden="true"></ol><button class="rn" id="railPrev" aria-label="上一个">‹</button><button class="rn" id="railNext" aria-label="下一个">›</button></div>
   </section>
 
-  <section class="choice" id="choice">
+  <section class="choice-sec" id="choice">
     <div class="choice-grid">
       <div class="choice-copy">
         <p class="eyebrow reveal">试一试</p>
@@ -302,6 +303,7 @@
 <script src="js/audio.js"></script>
 <script src="js/api.js"></script>
 <script src="js/games.js"></script>
+<script src="js/marks.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
 <script src="js/site.js"></script>

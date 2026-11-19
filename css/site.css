@@ -54,12 +54,12 @@ html.in-game #site, html.in-game .gnav { visibility: hidden; }
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out); }
 .reveal.in { opacity: 1; transform: none; }
 .d1 { transition-delay: .12s; } .d2 { transition-delay: .24s; } .d3 { transition-delay: .36s; }
-.pill { display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 28px; border-radius: 999px; font-size: 17px; font-weight: 500; transition: transform .2s var(--ease), background .2s, box-shadow .3s; }
-.pill:active { transform: scale(.97); }
-.pill.primary { background: var(--fg); color: #000; }
-.pill.primary:hover { background: #fff; box-shadow: 0 0 0 6px rgba(255, 255, 255, .12); }
-.pill.ghost { background: rgba(255, 255, 255, .1); color: var(--fg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.pill.ghost:hover { background: rgba(255, 255, 255, .18); }
+#site .pill { display: inline-flex; align-items: center; justify-content: center; height: 50px; padding: 0 28px; border-radius: 999px; font-size: 17px; font-weight: 500; transition: transform .2s var(--ease), background .2s, box-shadow .3s; }
+#site .pill:active { transform: scale(.97); }
+#site .pill.primary { background: var(--fg); color: #000; }
+#site .pill.primary:hover { background: #fff; box-shadow: 0 0 0 6px rgba(255, 255, 255, .12); }
+#site .pill.ghost { background: rgba(255, 255, 255, .1); color: var(--fg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+#site .pill.ghost:hover { background: rgba(255, 255, 255, .18); }
 .link-more { font-size: 17px; color: var(--lamp); text-decoration: none; }
 .link-more::after { content: " ›"; }
 .link-more:hover { text-decoration: underline; }
@@ -125,7 +125,7 @@ html.in-game #site, html.in-game .gnav { visibility: hidden; }
 .rn[disabled] { opacity: .3; pointer-events: none; }
 
 /* ---------- 选择（手机演示） ---------- */
-.choice { padding: 16vh 0; background: linear-gradient(#000, var(--bg-2)); }
+.choice-sec { padding: 16vh 0; background: linear-gradient(#000, var(--bg-2)); }
 .choice-grid { max-width: 1024px; margin: 0 auto; padding: 0 var(--gutter-r) 0 var(--gutter); display: grid; grid-template-columns: 1fr; gap: 64px; align-items: center; }
 @media (min-width: 860px) { .choice-grid { grid-template-columns: 1.1fr .9fr; } }
 .choice-copy .muted { margin-top: 18px; font-size: 15px; color: var(--fg-3); }

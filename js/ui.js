@@ -107,6 +107,7 @@
     return (DL.CAST[who] || {}).name || who;
   }
   let autoTimer = null;
+  let coached = false;
   /* 已读记录：跨周目保存，用于“快进已读” */
   const READ_KEY = "dl2.read";
   const readSet = new Set(store.get(READ_KEY, []));
@@ -138,6 +139,7 @@
     }
     await typeText(line, text);
     d.classList.add("ready");
+    if (!coached) { coached = true; setTimeout(coach, 400); }
     const wait = waitAdvance();
     if (settings.auto) autoTimer = setTimeout(() => { if (advanceResolver && !$("app").querySelector(".overlay:not(.hidden)")) advance(); }, 1100 + Array.from(text).length * 70);
     await wait;
@@ -168,8 +170,8 @@
         resolve(i);
       };
       opts.forEach((o, i) => {
-        const b = el("button", "choice", esc(o.t) + (o.hint ? "<small>" + esc(o.hint) + "</small>" : ""));
-        b.dataset.n = i + 1; b.style.animationDelay = 0.06 * i + 0.1 + "s";
+        const b = el("button", "choice", esc(DL.stripEmoji ? DL.stripEmoji(o.t) : o.t) + (o.hint ? "<small>" + esc(o.hint) + "</small>" : ""));
+        b.dataset.n = DL.NUM_CN ? DL.NUM_CN[i] : i + 1; b.style.animationDelay = 0.06 * i + 0.1 + "s";
         b.addEventListener("click", (e) => { e.stopPropagation(); pick(i, b); });
         box.appendChild(b);
       });
@@ -183,7 +185,7 @@
   let lastStats = null;
   function hud(s) {
     const sem = DL.SEMESTERS[Math.min(s.sem, 7)];
-    $("hudSem").textContent = sem ? sem.label : "";
+    $("hudSem").innerHTML = sem ? `<small>Semester ${DL.ROMAN[Math.min(s.sem, 7)]}</small>${esc(sem.label)}` : "";
     const box = $("hudStats");
     const keys = ["study", "body", "mood"];
     if (!box.children.length) {
@@ -294,7 +296,10 @@
     hud(s);
     $("dialog").classList.add("idle");
     const N = ["第一章", "第二章", "第三章", "第四章", "第五章", "第六章", "第七章", "终章"][i];
-    const o = overlay(`<div class="letterbox top"></div><div class="letterbox bot"></div><div class="chapter"><p class="ch-n">${N}</p><p class="ch-label">${esc(sem.label)}</p><h2>${esc(sem.title)}</h2><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
+    const EN = i === 7 ? "The Last Chapter" : "Chapter " + DL.EN_NUM[i];
+    // 竖排：每个字一行，不依赖字体的竖排度量
+    const col = (t) => Array.from(t).filter((c) => c.trim() && c !== "·").map((c) => `<span>${esc(c)}</span>`).join("");
+    const o = overlay(`<div class="letterbox top"></div><div class="letterbox bot"></div><div class="chapter v2"><p class="ch-latin">${EN}</p><div class="ch-row"><div class="ch-meta"><p class="ch-n vcol">${col(N)}</p><p class="ch-label vcol">${col(sem.label)}</p><span class="ch-seal">${DL.NUM_CAP[i]}</span></div><h2 class="ch-title vcol">${col(sem.title)}</h2></div><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
     await overlayTap(o, 1400);
     await closeOverlay();
   }
@@ -391,7 +396,7 @@
   async function memory(mem, s) {
     if (DL.Audio) DL.Audio.blip("mem");
     const p = el("div", "", "");
-    p.innerHTML = `<p class="mem-badge">✦ 收进回忆 ✦</p><div class="polaroid"><div class="ph" style="background-image:url('${DL.Art.thumb(mem.scene)}')"></div><h4>${esc(mem.title)}</h4><p>${esc(mem.text)}</p></div>`;
+    p.innerHTML = `<p class="mem-badge">✦ 收进回忆 ✦</p><div class="polaroid"><div class="ph" style="background-image:url('${DL.Art.thumb(mem.scene)}')"><span class="ph-date">${esc((DL.SEMESTERS[mem.sem] || {}).label || "")}</span></div><h4>${esc(mem.title)}</h4><p>${esc(mem.text)}</p></div>`;
     const o = overlay(p, "dark");
     await overlayTap(o, 1200);
     await closeOverlay();
@@ -623,7 +628,7 @@
   /* ---------- 羁绊进度 ---------- */
   async function bond(who, rank, s) {
     const C = DL.CAST[who];
-    const box = el("div", "bond-card", `<i class="mono" style="--c:${C.color}">${C.mono}</i><p class="bk">羁绊</p><h3>${esc(C.name)}</h3><div class="bond-dots">${[1, 2, 3, 4].map((k) => `<i class="${k <= rank ? "on" : ""} ${k === rank ? "new" : ""}" style="--c:${C.color}"></i>`).join("")}</div><p class="bt">${rank >= 4 ? "你们之间，已经不需要再多说什么了。" : `第 ${rank} 段故事 · 关系更深时，会有下一段`}</p><p class="tapnote">轻触继续</p>`);
+    const box = el("div", "bond-card", `<i class="seal-lg">${C.mono}</i><p class="bk">Bond · 羁绊</p><h3>${esc(C.name)}</h3><div class="bond-dots">${[1, 2, 3, 4].map((k) => `<i class="${k <= rank ? "on" : ""} ${k === rank ? "new" : ""}" style="--c:${C.color}"></i>`).join("")}</div><p class="bt">${rank >= 4 ? "你们之间，已经不需要再多说什么了。" : `第 ${rank} 段故事 · 关系更深时，会有下一段`}</p><p class="tapnote">轻触继续</p>`);
     box.style.setProperty("--c", C.color);
     if (DL.Audio) DL.Audio.blip("mem");
     haptic([10, 40, 10]);

@@ -71,7 +71,7 @@
     ensureHost();
     host.classList.remove("hidden");
     host.dataset.kind = kind;
-    q(".mg-title").textContent = info.icon + "  " + (opts.title || info.name);
+    q(".mg-title").textContent = opts.title || info.name;
     hud(""); setBar(0);
     q(".mg-dom").innerHTML = "";
     const cv = q("canvas"); const g0 = cv.getContext("2d"); g0.clearRect(0, 0, cv.width, cv.height);

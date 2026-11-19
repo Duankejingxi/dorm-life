@@ -118,7 +118,6 @@
     $("choices").innerHTML = "";
     UI.hud(state);
     syncButtons();
-    setTimeout(() => { if (current === state) UI.coach(); }, 2600);
     try {
       await DL.playRun(state, makeIO(token));
     } catch (err) {
