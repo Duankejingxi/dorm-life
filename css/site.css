@@ -138,7 +138,7 @@ html.in-game #site, html.in-game .gnav { visibility: hidden; }
 .ph-top { position: absolute; top: 46px; left: 18px; right: 18px; display: flex; justify-content: space-between; font-size: 11px; color: #fff; font-family: var(--serif); letter-spacing: .1em; }
 .ph-pills { display: flex; gap: 4px; } .ph-pills i { font-style: normal; font-family: var(--sans); font-size: 9px; padding: 2px 6px; border-radius: 8px; background: rgba(0,0,0,.4); letter-spacing: 0; }
 .ph-dialog { position: absolute; left: 0; right: 0; bottom: 0; padding: 60px 18px 28px; background: linear-gradient(transparent, rgba(6,6,12,.88) 30%, rgba(6,6,12,.96)); }
-.ph-name { margin: 0 0 4px; font-family: var(--serif); font-weight: 600; font-size: 13px; color: #6fa8e8; letter-spacing: .1em; }
+.ph-name { margin: 0 0 4px; font-family: var(--serif); font-weight: 600; font-size: 13px; color: #8fa8c4; letter-spacing: .1em; }
 .ph-line { margin: 0 0 14px; font-family: var(--serif); font-size: 14px; line-height: 1.8; min-height: 5.4em; transition: opacity .3s; }
 .ph-choices { display: flex; flex-direction: column; gap: 7px; }
 .ph-choices button { text-align: left; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14); font-family: var(--serif); font-size: 13px; transition: background .2s, transform .15s; }

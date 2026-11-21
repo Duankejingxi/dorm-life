@@ -118,7 +118,7 @@
     }));
     demoAgain.onclick = () => {
       demoChoices.classList.remove("hidden"); demoAgain.classList.add("hidden");
-      $(".ph-name").textContent = "林溪"; $(".ph-name").style.color = "#6fa8e8";
+      $(".ph-name").textContent = "林溪"; $(".ph-name").style.color = "#8fa8c4";
       type(orig);
     };
   }

@@ -229,7 +229,7 @@
   }
   // “江野会记住这件事。”
   let remTimer = null;
-  function remember(r) {
+  function rememberHint(r) {
     let box = $("remember");
     if (!box) { box = el("div", "remember"); box.id = "remember"; $("gameScreen").appendChild(box); }
     box.className = "remember " + (r.up ? "up" : "down");
@@ -374,7 +374,7 @@
         slots.innerHTML = "";
         for (let i = 0; i < n; i++) {
           const f = opts.find((o) => o.id === picks[i]);
-          const sl = el("button", "slot" + (f ? " filled" : ""), f ? `<span class="si">${f.icon}</span>${esc(f.name)}` : "空");
+          const sl = el("button", "slot" + (f ? " filled" : ""), f ? `<span class="si">${f.icon}</span>${esc(f.name)}` : "");
           if (f) sl.onclick = () => { picks.splice(i, 1); render(); };
           slots.appendChild(sl);
         }
@@ -606,7 +606,7 @@
           <span class="fc-shade"></span>
           <span class="fc-top">${esc(o.name)}</span>
           <span class="fc-who">${C ? `<i class="mono" style="--c:${C.color}">${C.mono}</i><span><b>${esc(o.whoName)}</b><small>${esc(o.level)} · 羁绊 ${o.rank}/4</small></span>` : `<span><b>一个人</b><small>好好待一会儿</small></span>`}</span>
-          ${o.story ? `<span class="fc-badge">✦ 新故事 · ${esc(o.title)}</span>` : ""}`);
+          ${o.story ? `<span class="fc-badge">新故事 · ${esc(o.title)}</span>` : ""}`);
         card.style.animationDelay = 0.08 * i + 0.1 + "s";
         card.onclick = async () => {
           if (sheet.dataset.done) return;
@@ -724,6 +724,6 @@
     }
   }
 
-  DL.UI = { remember, recap, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { remember: rememberHint, recap, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);

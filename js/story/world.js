@@ -5,13 +5,13 @@
 
   DL.CAST = {
     me: { name: "我", color: "#e9e3d6" },
-    jiang: { name: "江野", mono: "江", color: "#f08a4b", line: "404 下铺 · 篮球特长生", bio: "嗓门大，心更大。梦想是打进 CUBA 首发。" },
-    su: { name: "苏念", mono: "苏", color: "#5fb3a1", line: "404 靠门上铺 · 村里第一个大学生", bio: "话很少，起得最早，记得每个人的生日。" },
-    xu: { name: "许多", mono: "许", color: "#a58be0", line: "404 靠窗下铺 · 吉他 & 段子", bio: "家里让学金融，自己只想写歌。" },
-    lin: { name: "林溪", mono: "林", color: "#6fa8e8", line: "隔壁学院 · 总背着一台旧相机", bio: "说话不多，看人很准。喜欢凌晨和雨天的光。" },
-    cheng: { name: "程橙", mono: "程", color: "#f2c14e", line: "大三学姐 · 社长", bio: "干脆利落，什么都见过，什么都不怕。" },
+    jiang: { name: "江野", mono: "江", color: "#c98d62", line: "404 下铺 · 篮球特长生", bio: "嗓门大，心更大。梦想是打进 CUBA 首发。" },
+    su: { name: "苏念", mono: "苏", color: "#8db3a3", line: "404 靠门上铺 · 村里第一个大学生", bio: "话很少，起得最早，记得每个人的生日。" },
+    xu: { name: "许多", mono: "许", color: "#a597c2", line: "404 靠窗下铺 · 吉他 & 段子", bio: "家里让学金融，自己只想写歌。" },
+    lin: { name: "林溪", mono: "林", color: "#8fa8c4", line: "隔壁学院 · 总背着一台旧相机", bio: "说话不多，看人很准。喜欢凌晨和雨天的光。" },
+    cheng: { name: "程橙", mono: "程", color: "#c9ad74", line: "大三学姐 · 社长", bio: "干脆利落，什么都见过，什么都不怕。" },
     zhou: { name: "周老师", mono: "周", color: "#9fb4c7", line: "专业课教授", bio: "上课从不点名，挂人从不手软。" },
-    mom: { name: "妈妈", mono: "妈", color: "#e7a1a1" },
+    mom: { name: "妈妈", mono: "妈", color: "#c79d9a" },
   };
   // 关系面板里展示的人（顺序）
   DL.REL_ORDER = ["jiang", "su", "xu", "lin", "cheng", "zhou"];

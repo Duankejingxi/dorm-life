@@ -1,0 +1,203 @@
+/* 宿舍人生 · 第五层：「暗房」
+ * 上一层把所有“文件”都做成了象牙纸，结果是：暗的电影画面上不断弹出一张张白色表单，像模板，不像作品。
+ * 这一层只认一种材质 —— 暗房里的烟色玻璃：照片在后面虚化，界面浮在前面，只有字在发光。
+ *   · 纸只留给真正的“物件”：成绩单、拍立得
+ *   · 不再给字套方框：字本身就是图形
+ *   · 朱砂只出现在三处：章印、被选中、真正重要的提示
+ *   · 角色色降饱和成胶片色，只用作一根细线或一个点
+ *   · 按钮统一为胶囊；表面统一 18px 圆角；分隔只用发丝线
+ */
+:root {
+  --n-glass: rgba(18, 16, 14, .66);
+  --n-glass-2: rgba(28, 25, 22, .58);
+  --n-line: rgba(236, 230, 218, .1);
+  --n-line-2: rgba(236, 230, 218, .18);
+  --n-text: #ece6da;
+  --n-text-2: rgba(236, 230, 218, .66);
+  --n-text-3: rgba(236, 230, 218, .4);
+  --n-r: 18px;
+  --n-blur: blur(34px) saturate(130%);
+}
+
+/* ---------- 按钮：胶囊 ---------- */
+.btn { border-radius: 999px; letter-spacing: .2em; font-weight: 500; font-size: 15px; transition: transform .25s var(--a-ease), background .3s, box-shadow .3s, opacity .3s; }
+.btn:active { transform: scale(.97); }
+.btn.primary, .sheet .btn.primary, .form-card .btn.primary, .mg-panel .btn.primary { background: var(--n-text); color: #12100e; box-shadow: 0 10px 30px -12px rgba(236,230,218,.35); }
+.btn.primary:disabled, .sheet .btn.primary:disabled { background: rgba(236,230,218,.12); color: var(--n-text-3); box-shadow: none; }
+.btn.ghost, .sheet .btn.ghost, .form-card .btn.ghost, .mg-panel .btn.ghost { background: rgba(236,230,218,.04); color: var(--n-text); box-shadow: inset 0 0 0 1px var(--n-line-2); }
+.btn.text, .sheet .btn.text, .form-card .btn.text { color: var(--n-text-2); }
+
+/* ---------- 统一表面：烟色玻璃 ---------- */
+.sheet, .form-card, .mg-panel, .chat {
+  --ink: var(--n-text); --ink-2: var(--n-text-2); --ink-3: var(--n-text-3); --line: var(--n-line); --lamp: var(--a-seal-2);
+  background: linear-gradient(180deg, rgba(36,32,28,.72), rgba(16,14,12,.86)) !important; color: var(--n-text);
+  backdrop-filter: var(--n-blur); -webkit-backdrop-filter: var(--n-blur);
+  box-shadow: inset 0 1px 0 rgba(236,230,218,.08), inset 0 0 0 1px var(--n-line), 0 -30px 90px rgba(0,0,0,.55) !important;
+  border-radius: 26px 26px 0 0;
+}
+@media (min-width: 760px) { .sheet, .form-card { border-radius: 26px; } }
+.mg-panel { border-radius: var(--n-r) !important; }
+.sheet-grip { background: rgba(236,230,218,.22); width: 36px; }
+.sheet-head { border-bottom: 1px solid var(--n-line); padding: 24px 26px 16px; }
+.sheet-head::before { color: var(--n-text-3); font-size: 15px; }
+.sheet-head h3 { font-weight: 600; font-size: 24px; letter-spacing: .1em; color: var(--n-text); }
+.sheet-head p, .sheet .muted, .sheet .empty { color: var(--n-text-3); }
+.sheet-body { padding: 4px 26px 20px; }
+.tabs { border-bottom: 1px solid var(--n-line); margin: 0 26px 16px; }
+.tab { color: var(--n-text-3) !important; }
+.tab.on { color: var(--n-text) !important; }
+.tab.on::after { height: 1px; background: var(--n-text); }
+
+/* 分段选择：玻璃轨道 + 象牙滑块 */
+.seg { background: rgba(236,230,218,.05); box-shadow: inset 0 0 0 1px var(--n-line); border-radius: 999px; padding: 3px; }
+.seg span { border-radius: 999px; color: var(--n-text-2); transition: background .35s var(--a-ease), color .35s; }
+.seg input:checked + span { background: var(--n-text); color: #12100e; }
+
+/* ---------- 入学登记：一页安静的扉页 ---------- */
+.form-card { padding-top: 40px; }
+.form-kicker { color: var(--n-text-3); }
+.form-head { border-bottom: 1px solid var(--n-line); }
+.form-head h2 { font-weight: 600; letter-spacing: .14em; color: var(--n-text); }
+.form-sub { color: var(--n-text-3); }
+.field-label { color: var(--n-text-3); }
+.field input:not([type="radio"]) { color: var(--n-text); border-bottom: 1px solid var(--n-line-2); font-size: 24px; letter-spacing: .1em; }
+.field input:not([type="radio"]):focus { box-shadow: 0 1px 0 var(--n-text); }
+.field input::placeholder { color: rgba(236,230,218,.18); }
+.field-hint { color: var(--n-text-3); }
+
+/* ---------- 字印：去掉方框，字本身就是图形 ---------- */
+.focus-card .fi, .pg-i, .tcard .ti, .ach-item .ai, .yb-card .yc-icon, .ach-toast .ai {
+  background: none !important; box-shadow: none !important; border-radius: 0 !important; transform: none;
+  font-weight: 400 !important; color: var(--n-text-2) !important;
+}
+.focus-card { grid-template-columns: 44px 1fr auto; border-bottom: 1px solid var(--n-line); padding: 16px 0; transition: background .3s; }
+.focus-card .fi { font-size: 30px !important; width: 44px; height: 44px; }
+.focus-card .fn { color: var(--n-text); font-weight: 600; font-size: 17px; }
+.focus-card .fd { color: var(--n-text-3); }
+.focus-card.n1, .focus-card.n2 { background: linear-gradient(90deg, rgba(208,106,82,.1), transparent 70%); box-shadow: inset 1px 0 0 var(--a-seal-2) !important; }
+.focus-card.n1 .fi, .focus-card.n2 .fi { color: var(--a-seal-2) !important; background: none !important; }
+.focus-card.n1 .fc, .focus-card.n2 .fc { color: var(--a-seal-2); }
+.tag { color: var(--n-text-3); }
+.tag.up { color: #9cc2a6; } .tag.down { color: #df9a88; } .tag.rel { color: #c9a9c0; }
+
+/* 课表三格 */
+.slot { border-radius: 14px; margin: 0 4px; background: rgba(236,230,218,.04); box-shadow: inset 0 0 0 1px var(--n-line); color: var(--n-text-3); }
+.slot:empty::before { content: "—"; font-size: 15px; color: rgba(236,230,218,.2); }
+.slot.filled { background: rgba(236,230,218,.08); box-shadow: inset 0 0 0 1px var(--n-line-2); color: var(--n-text); }
+.slot .si { color: var(--a-seal-2); }
+.plan-forecast { border-color: var(--n-line); color: var(--n-text-2); }
+.plan-forecast b, .plan-now b { color: var(--n-text); }
+.plan-now { color: var(--n-text-3) !important; }
+.plan-forecast .pf-warn, .plan-forecast .pf-sch { color: var(--a-seal-2); }
+
+/* 手账 / 相册 */
+.statrow .sb { background: var(--n-line); }
+.statrow .sb i { background: var(--n-text) !important; height: 1px; margin-top: 0; }
+.person, .ach-item, .diary p, .backlog p { border-bottom-color: var(--n-line) !important; }
+.diary p, .backlog p { color: var(--n-text-2); }
+.diary .sem, .backlog p.ch { color: var(--n-text-3); }
+.ach-item .ai { font-size: 24px !important; color: var(--a-seal-2) !important; }
+.ach-item.locked .ai { color: rgba(236,230,218,.18) !important; }
+.hearts { background: var(--n-line); }
+.ch-item { border-radius: 14px; border-color: var(--n-line); }
+
+/* ---------- 人物标记：一个圈，一点胶片色 ---------- */
+.mono, .person .mono, .fc-who .mono, .yb-card .mono, .ybc .mono, .chat-av .mono {
+  background: rgba(14,12,10,.5) !important; color: var(--n-text) !important; font-family: var(--a-serif); font-weight: 400;
+  border-radius: 50% !important; box-shadow: inset 0 0 0 1px var(--c, var(--n-line-2)) !important;
+}
+.chat-av .mono { box-shadow: inset 0 0 0 1px var(--c), 0 0 0 2px #171513 !important; }
+.bond-card .mono { box-shadow: inset 0 0 0 1px var(--c), 0 0 80px -6px var(--c) !important; }
+
+/* ---------- 天赋：暗色藏书票 ---------- */
+.talent-screen { background: radial-gradient(120% 80% at 50% 0%, #231e19, #0b0a09 60%); }
+.talent-screen h2 { font-weight: 600; letter-spacing: .2em; }
+.talent-screen h2::before { color: var(--n-text-3); }
+.tcard .face { border-radius: 14px; }
+.tcard .back { background: linear-gradient(160deg, #1d1a17, #0f0e0c) !important; box-shadow: inset 0 0 0 1px var(--n-line), inset 0 0 0 6px #14120f, inset 0 0 0 7px rgba(236,230,218,.06) !important; }
+.tcard .back::after { color: rgba(236,230,218,.14); }
+.tcard .front { background: linear-gradient(165deg, #25211c, #12100e 70%) !important; color: var(--n-text); box-shadow: inset 0 1px 0 rgba(236,230,218,.1), inset 0 0 0 1px var(--n-line-2) !important; }
+.tcard .ti { width: auto; height: auto; font-size: 40px !important; font-weight: 900 !important; color: var(--n-text) !important; margin-bottom: 4px; }
+.tcard[data-r="gold"] .ti { color: var(--a-seal-2) !important; }
+.tcard .tr { color: var(--n-text-3) !important; }
+.tcard[data-r="gold"] .tr { color: var(--a-seal-2) !important; }
+.tcard[data-r="purple"] .tr { color: #c9b8dd !important; }
+.tcard .tn { color: var(--n-text); font-weight: 600; }
+.tcard .td { color: var(--n-text-3); }
+.tcard[data-r="gold"].flip .front { box-shadow: inset 0 1px 0 rgba(236,230,218,.12), inset 0 0 0 1px rgba(208,106,82,.7), 0 0 50px -14px rgba(208,106,82,.7) !important; }
+.tcard[data-r="gold"].flip .front::after { background: linear-gradient(115deg, transparent 35%, rgba(255,220,190,.16) 50%, transparent 65%); background-size: 250% 100%; }
+.tcard.sel .front { box-shadow: inset 0 0 0 1.5px var(--n-text), 0 18px 40px -16px rgba(236,230,218,.25) !important; }
+.tcard.sel::after { border-radius: 50%; background: var(--n-text); color: #12100e; }
+
+/* ---------- 小游戏 ---------- */
+.mg { background: radial-gradient(100% 70% at 50% 30%, #1c1915, #0b0a09 70%); }
+.mg-stage { background: radial-gradient(90% 70% at 50% 40%, rgba(236,230,218,.035), transparent 70%); box-shadow: none; border-radius: 0; }
+.mg-count { font-family: var(--a-latin); font-style: italic; font-weight: 300; font-size: 160px; opacity: .9; }
+.mg-icon { width: 58px; height: 58px; font-size: 28px !important; transform: none; border-radius: 50%; background: none; color: var(--a-seal-2); box-shadow: inset 0 0 0 1px rgba(208,106,82,.6); }
+.mg-panel h3 { font-weight: 600; letter-spacing: .2em; color: var(--n-text); }
+.mg-panel p { color: var(--n-text-2); }
+.mg-score { color: var(--n-text); font-family: var(--a-latin); font-style: italic; font-weight: 300; letter-spacing: 0; }
+.mg-rate { color: var(--n-text-2) !important; }
+.mg-rate.r3 { color: var(--a-seal-2) !important; } .mg-rate.r0 { color: var(--n-text-3) !important; }
+.mg-card { background: rgba(8,7,6,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
+/* ---------- 周末 ---------- */
+.free-card { border-radius: 16px; overflow: hidden; }
+.free-card.story { box-shadow: inset 0 0 0 1px rgba(208,106,82,.55) !important; }
+.free-card.picked { box-shadow: inset 0 0 0 1.5px var(--n-text) !important; }
+.fc-badge { background: rgba(10,9,8,.55) !important; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: var(--n-text) !important; border-radius: 999px !important; padding-left: 18px !important; position: absolute; top: auto !important; bottom: 64px !important; left: 12px !important; font-size: 11px; letter-spacing: .1em; font-weight: 400; box-shadow: none !important; }
+.fc-badge::before { content: ""; position: absolute; left: 8px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; background: var(--a-seal-2); }
+.fc-top { color: var(--n-text-2); }
+
+/* ---------- 手机群聊 ---------- */
+.chat { border-radius: 30px 30px 0 0; }
+.chat-head { background: transparent; border-bottom: 1px solid var(--n-line); }
+.bub.them span { background: rgba(236,230,218,.08); color: var(--n-text); }
+.bub.me span { background: var(--n-text); color: #12100e; }
+.chat-reply { border-radius: 999px; background: rgba(236,230,218,.04); box-shadow: inset 0 0 0 1px var(--n-line-2); }
+.chat-reply:hover { background: rgba(236,230,218,.08); }
+
+/* ---------- 羁绊 / 成就 / 提示 ---------- */
+.seal-lg { border-radius: 50%; transform: none; background: none; color: var(--n-text); box-shadow: inset 0 0 0 1px var(--c, var(--a-seal-2)), 0 0 90px -10px var(--c, var(--a-seal-2)); font-weight: 400; }
+.ach-toast { border-radius: 999px; background: rgba(22,20,18,.82); backdrop-filter: var(--n-blur); -webkit-backdrop-filter: var(--n-blur); box-shadow: inset 0 0 0 1px var(--n-line-2), 0 20px 50px rgba(0,0,0,.5); padding-right: 22px; }
+.ach-toast .ai { color: var(--a-seal-2) !important; font-size: 24px !important; }
+.ach-toast small { color: var(--n-text-3); }
+.coach-labels span { background: rgba(22,20,18,.82); color: var(--n-text); border-radius: 999px; padding: 4px 10px; box-shadow: inset 0 0 0 1px var(--n-line-2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); font-weight: 400; }
+.toast { border-radius: 999px; background: rgba(22,20,18,.7); box-shadow: inset 0 0 0 1px var(--n-line); }
+.remember { background: rgba(18,16,14,.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 999px; box-shadow: inset 0 0 0 1px var(--n-line); }
+
+/* ---------- 纪念册 ---------- */
+.yb-card .yc-icon { color: var(--a-seal-2) !important; font-size: 26px !important; }
+.tal-chip { border-radius: 999px; }
+.result { border-radius: 999px; }
+.wall-form input { border-radius: 999px; background: rgba(236,230,218,.04); box-shadow: inset 0 0 0 1px var(--n-line); padding: 0 16px; }
+
+/* =========================================================
+   官网
+   ========================================================= */
+.gnav-cta { border-radius: 999px; background: rgba(236,230,218,.1); color: var(--n-text); box-shadow: inset 0 0 0 1px var(--n-line-2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 0 16px; }
+.gnav-cta:hover { background: var(--n-text); color: #12100e; }
+.gnav.solid { background: rgba(13,12,11,.6); backdrop-filter: var(--n-blur); -webkit-backdrop-filter: var(--n-blur); box-shadow: inset 0 -1px 0 var(--n-line); }
+#site .pill { border-radius: 999px; padding-left: 26px; padding-right: 26px; }
+#site .pill.ghost { background: rgba(236,230,218,.06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: inset 0 0 0 1px var(--n-line-2); }
+.hero h1 { font-size: clamp(44px, 12.5vw, 112px); letter-spacing: .02em; line-height: 1.08; }
+.pcard, .tile { border-radius: 22px; }
+.ybc { border-radius: 18px; background: rgba(18,16,14,.6); backdrop-filter: var(--n-blur); -webkit-backdrop-filter: var(--n-blur); }
+.rn { border-radius: 50%; }
+
+/* 浅色区块不再是“纸”，而是更深一层的暗 —— 整个官网是一卷连续的胶片 */
+.numbers.light, .paths.light { background: #0a0908 !important; color: var(--n-text) !important; }
+.numbers.light .num-head h2, .paths.light h2 { color: var(--n-text) !important; }
+.numbers.light .eyebrow, .paths.light .eyebrow { color: var(--a-seal-2) !important; }
+.numbers.light .eyebrow .latin, .paths.light .eyebrow .latin { color: var(--n-text-3) !important; }
+.paths.light .sec-head p:not(.eyebrow) { color: var(--n-text-2) !important; }
+.numbers.light .num { border-top: 1px solid var(--n-line) !important; }
+.numbers.light .num b { color: var(--n-text) !important; font-family: var(--a-latin); font-style: italic; font-weight: 300; letter-spacing: -.01em; }
+.num b { font-family: var(--a-latin); font-style: italic; font-weight: 300; letter-spacing: -.01em; }
+.numbers.light .num span, .num span { color: var(--n-text-3) !important; }
+.pg { box-shadow: inset 0 -1px 0 var(--n-line) !important; }
+.pg-i { width: 36px; height: 36px; font-size: 24px !important; color: var(--n-text-3) !important; }
+.pg.got .pg-i { color: var(--a-seal-2) !important; }
+.pg-n { color: var(--n-text); }
+.pg-b { color: var(--a-seal-2); }
+@media (hover: hover) { .pg:hover { box-shadow: inset 0 -1px 0 var(--a-seal-2) !important; } }
