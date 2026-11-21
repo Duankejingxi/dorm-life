@@ -52,6 +52,14 @@ function mockIO(DL, pick, out) {
   };
 }
 
+test("剧情用到的字都在内置字体里（新增剧情后运行 tools/subset-fonts.py）", () => {
+  const have = new Set(Array.from(fs.readFileSync(path.join(ROOT, "fonts/chars.txt"), "utf8")));
+  let txt = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  for (const f of FILES.concat(["js/ui.js", "js/main.js", "js/games.js", "js/site.js", "js/marks.js"])) txt += fs.readFileSync(path.join(ROOT, f), "utf8");
+  const missing = [...new Set(Array.from(txt).filter((c) => c.codePointAt(0) > 0x2e80 && !have.has(c)))];
+  assert.deepEqual(missing, [], "字体里缺这些字：" + missing.join(""));
+});
+
 test("所有场景、节拍都存在", () => {
   const DL = load();
   const builtins = ["chapter", "plan", "moment", "exam", "summer", "chat", "free"];

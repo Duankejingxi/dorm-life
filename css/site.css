@@ -14,7 +14,7 @@
   --lamp-2: #ee9a5c;
   --grad: linear-gradient(100deg, #fbe2ae 0%, #f6c978 40%, #ee9a5c 100%);
   --sans: -apple-system, BlinkMacSystemFont, "SF Pro SC", "SF Pro Display", "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Noto Sans SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --serif: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "STSong", serif;
+  --serif: "DL Serif", "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "STSong", serif;
   --gutter: max(20px, env(safe-area-inset-left, 0px));
   --gutter-r: max(20px, env(safe-area-inset-right, 0px));
   --ease: cubic-bezier(.25, .1, .25, 1);

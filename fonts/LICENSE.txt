@@ -1,0 +1,6 @@
+Fonts in this folder are subsets of:
+- Noto Serif CJK SC (c) Adobe / Google, SIL Open Font License 1.1
+- Cormorant Garamond (c) Christian Thalmann, SIL Open Font License 1.1
+- IBM Plex Mono (c) IBM Corp., SIL Open Font License 1.1
+https://openfontlicense.org
+Regenerate with tools/subset-fonts.py

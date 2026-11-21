@@ -5,6 +5,12 @@
  * ─ 形：发丝线、直角或极小圆角、留白；印章是唯一的装饰
  * 作为最后加载的样式层，覆盖 site.css / game.css 的组件外观
  */
+/* 内置字体（子集化，SIL OFL）：不依赖 Google Fonts，国内也能显示同一套字 */
+@font-face { font-family: "DL Serif"; src: url("../fonts/serif-400.woff2") format("woff2"); font-weight: 300 500; font-display: swap; }
+@font-face { font-family: "DL Serif"; src: url("../fonts/serif-600.woff2") format("woff2"); font-weight: 501 700; font-display: swap; }
+@font-face { font-family: "DL Serif"; src: url("../fonts/serif-900.woff2") format("woff2"); font-weight: 701 900; font-display: swap; }
+@font-face { font-family: "DL Latin"; src: url("../fonts/latin-italic.woff2") format("woff2"); font-style: italic; font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "DL Mono"; src: url("../fonts/mono.woff2") format("woff2"); font-weight: 300 600; font-display: swap; }
 :root {
   --a-black: #0d0c0b;
   --a-black-2: #161412;
@@ -17,9 +23,9 @@
   --a-seal-2: #d06a52;
   --a-rule: rgba(236, 230, 218, .16);
   --a-rule-ink: rgba(29, 26, 22, .16);
-  --a-serif: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "STSong", serif;
-  --a-latin: "Cormorant Garamond", "Iowan Old Style", "Palatino", "Noto Serif SC", serif;
-  --a-mono: "IBM Plex Mono", "SF Mono", ui-monospace, "Menlo", monospace;
+  --a-serif: "DL Serif", "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", "STSong", serif;
+  --a-latin: "DL Latin", "Cormorant Garamond", "Iowan Old Style", "Palatino", "Noto Serif SC", serif;
+  --a-mono: "DL Mono", "IBM Plex Mono", "SF Mono", ui-monospace, "Menlo", monospace;
   --a-ease: cubic-bezier(.16, 1, .3, 1);
   /* 纸张纹理：极淡的噪点 */
   --a-paper-tex: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .22  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
