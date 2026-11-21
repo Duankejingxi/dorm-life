@@ -227,6 +227,31 @@
       }
     });
   }
+  // “江野会记住这件事。”
+  let remTimer = null;
+  function remember(r) {
+    let box = $("remember");
+    if (!box) { box = el("div", "remember"); box.id = "remember"; $("gameScreen").appendChild(box); }
+    box.className = "remember " + (r.up ? "up" : "down");
+    box.innerHTML = `<i></i><span><b>${esc(r.name)}</b>${r.up ? "会记住这件事。" : "记下了这件事。"}</span>`;
+    void box.offsetWidth; box.classList.add("show");
+    clearTimeout(remTimer); remTimer = setTimeout(() => box.classList.remove("show"), 3400);
+  }
+  // 继续游戏：前情提要
+  async function recap(s) {
+    const sem = DL.SEMESTERS[Math.min(s.sem, 7)];
+    const notes = s.journal.slice(-3).map((j) => j.text);
+    const mems = s.memories.slice(-2).map((m) => m.title);
+    const days = Math.max(0, Math.round((Date.now() - (s.savedAt || Date.now())) / 864e5));
+    const ago = s.savedAt ? (days < 1 ? "今天早些时候" : days === 1 ? "昨天" : days + " 天前") : "";
+    const o = overlay(`<div class="recap"><p class="rc-latin">Previously</p><h3>上次说到</h3><p class="rc-sem"><span class="ch-seal">${DL.NUM_CAP[Math.min(s.sem, 7)]}</span>${esc(sem.label)} · ${esc(sem.title)}</p>
+      ${mems.length ? `<p class="rc-mem">最近的回忆：${mems.map((m) => "「" + esc(m) + "」").join("")}</p>` : ""}
+      ${notes.length ? `<ul>${notes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : `<p class="rc-mem">四年才刚开始。</p>`}
+      <p class="rc-ago">${ago ? esc(ago) + "离开 · " : ""}轻触继续</p></div>`, "dark");
+    await overlayTap(o, 700);
+    await closeOverlay();
+  }
+
   // 成就横幅：依次弹出
   const achQueue = [];
   let achBusy = false;
@@ -290,8 +315,26 @@
     const f = DL.FAMILY[s.family];
     return `每月生活费 <b>¥${f.monthly.toLocaleString()}</b> · 本学期 ¥${f.allowance.toLocaleString()}` + (f.grant ? ` · 助学金 ¥${f.grant.toLocaleString()}` : "");
   }
+  // 后台按顺序预载这一学期会出现的照片，进场景时不再等图
+  function preloadSemester(sem, s) {
+    const season = (sem.season || (sem.label && sem.label.indexOf("下") >= 0 ? "spring" : "autumn"));
+    const seen = new Set();
+    const add = (st) => { if (st && st.at) { const u = DL.Art.url(DL.Art.photoFor({ at: st.at, time: st.time || "day", weather: st.weather || "clear", season: st.season || season, photo: st.photo })); seen.add(u); } };
+    for (const b of sem.beats) {
+      const sc = DL.SCENES && DL.SCENES[b];
+      if (!sc) continue;
+      add(sc);
+      let steps = sc.steps;
+      if (typeof steps === "function") { try { steps = steps(s); } catch (e) { steps = null; } }
+      if (Array.isArray(steps)) steps.forEach((x) => x && typeof x === "object" && !Array.isArray(x) && add(x));
+    }
+    const list = [...seen];
+    const next = () => { const u = list.shift(); if (u) DL.Art.preload(u).then(() => setTimeout(next, 120)); };
+    setTimeout(next, 1800);
+  }
   async function chapter(sem, s) {
     const i = DL.SEMESTERS.indexOf(sem);
+    preloadSemester(sem, s);
     await Stage.show(Object.assign({ weather: "clear" }, CH_SCENE[i] || CH_SCENE[0]));
     hud(s);
     $("dialog").classList.add("idle");
@@ -681,6 +724,6 @@
     }
   }
 
-  DL.UI = { Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { remember, recap, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);

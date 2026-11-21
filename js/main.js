@@ -3,7 +3,7 @@
   "use strict";
   const DL = root.DL;
   const UI = DL.UI, $ = (id) => document.getElementById(id), esc = UI.esc;
-  const SAVE = "dl2.save", ARCHIVE = "dl2.archive";
+  const SAVE = "dl2.save", ARCHIVE = "dl2.archive", SNAPS = "dl2.snaps";
   const ABORT = { abort: true };
   let runToken = 0;
   let current = null;
@@ -81,6 +81,7 @@
       memory: guard(UI.memory), card: guard(UI.card), heading: guard(UI.heading), chapter: guard(UI.chapter), plan: guard(UI.plan),
       montage: guard(UI.montage), transcript: guard(UI.transcript), currentScene: () => Object.assign({}, UI.Stage.cur),
       free: guard(UI.free), chat: guard(UI.chat), bond: guard(UI.bond),
+      remember: (r) => { if (token === runToken && !UI.settings.skip) UI.remember(r); },
       game: guard(async (kind, o) => {
         const v = await DL.Games.play(kind, o);
         return v == null ? v : UI.settings.easy ? Math.min(1, v + 0.15) : v;
@@ -92,7 +93,13 @@
         ar.ach = ar.ach || {};
         if (!ar.ach[a.id]) { ar.ach[a.id] = Date.now(); UI.store.set(ARCHIVE, ar); }
       },
-      save: (st) => { if (token === runToken) UI.store.set(SAVE, st); },
+      save: (st) => {
+        if (token !== runToken) return;
+        st.savedAt = Date.now();
+        UI.store.set(SAVE, st);
+        // 每学期开头留一份快照，毕业后可以从任意学期重来
+        if (st.beat === 0 && !st.done) { const m = UI.store.get(SNAPS, {}); m[st.sem] = st; UI.store.set(SNAPS, m); }
+      },
       epilogue: guard(async (e, s) => {
         archive(e, s);
         $("dialog").classList.add("idle");
@@ -106,8 +113,9 @@
     };
   }
 
-  async function play(state) {
+  async function play(state, opt) {
     openApp();
+    UI.closeOverlay();
     UI.settings.skip = false;
     const token = ++runToken;
     current = state;
@@ -119,6 +127,7 @@
     UI.hud(state);
     syncButtons();
     try {
+      if (opt && opt.recap && (state.sem > 0 || state.beat > 1)) { await UI.Stage.show(UI.Stage.cur && UI.Stage.cur.at ? UI.Stage.cur : { at: "dormout", time: "night", season: "autumn" }); if (token !== runToken) return; await UI.recap(state); if (token !== runToken) return; }
       await DL.playRun(state, makeIO(token));
     } catch (err) {
       if (err !== ABORT) { console.error(err); UI.store.del(SAVE); closeApp(); }
@@ -241,12 +250,18 @@
     const allPaths = Object.keys(DL.PATH_EPILOGUE);
     const mems = Object.values(a.memories || {});
     sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>回忆相册</h3><p>毕业 ${a.runs} 次 · ${mems.length} 段回忆 · 去向 ${Object.keys(a.paths).length} / ${allPaths.length}</p></div>
-      <div class="tabs"><button class="tab on" data-t="m">回忆</button><button class="tab" data-t="a">成就</button><button class="tab" data-t="p">去向</button></div>
+      <div class="tabs"><button class="tab on" data-t="m">回忆</button><button class="tab" data-t="a">成就</button><button class="tab" data-t="p">去向</button>${a.runs ? '<button class="tab" data-t="c">章节</button>' : ""}</div>
       <div class="sheet-body"></div><div class="sheet-foot"><button class="btn ghost">合上</button></div>`;
     const body = sheet.querySelector(".sheet-body");
     const show = (t) => {
       sheet.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
       if (t === "a") { const got = a.ach || {}; body.innerHTML = `<p class="muted" style="margin:4px 0 12px">已解锁 ${Object.keys(got).length} / ${DL.ACH.length}</p><div class="ach-grid">` + DL.ACH.map((x) => `<div class="ach-item ${got[x.id] ? "" : "locked"}"><span class="ai">${x.icon}</span><span><b>${got[x.id] ? esc(x.name) : "？？？"}</b><span>${esc(x.desc)}</span></span></div>`).join("") + "</div>"; return; }
+      if (t === "c") {
+        const snaps = UI.store.get(SNAPS, {});
+        body.innerHTML = `<p class="muted" style="margin:4px 0 12px">回到上一次四年里的任意一个学期，换一种选法。会覆盖当前的存档。</p><div class="ch-list">` + DL.SEMESTERS.map((sem, i) => snaps[i] ? `<button class="ch-item" data-sem="${i}"><span class="ch-seal">${DL.NUM_CAP[i]}</span><span><b>${esc(sem.label)}</b><small>${esc(sem.title)}</small></span><em>${esc(snaps[i].name)}</em></button>` : `<div class="ch-item locked"><span class="ch-seal">${DL.NUM_CAP[i]}</span><span><b>${esc(sem.label)}</b><small>还没走到这里</small></span></div>`).join("") + "</div>";
+        body.querySelectorAll("[data-sem]").forEach((b) => (b.onclick = () => { const st = UI.store.get(SNAPS, {})[b.dataset.sem]; if (st) { UI.store.set(SAVE, st); play(st); } }));
+        return;
+      }
       if (t === "m") body.innerHTML = mems.length ? `<div class="mem-grid">${mems.map((m) => `<div class="mem"><div class="ph" style="background-image:url('${DL.Art.thumb(m.scene)}')"></div><h6>${esc(m.title)}</h6><p>${esc(m.text)}</p></div>`).join("")}</div>` : '<p class="empty">还是空的。去过一遍四年吧。</p>';
       else body.innerHTML = allPaths.map((id) => { const p = DL.PATH_EPILOGUE[id], got = a.paths[id]; return `<div class="person"><span class="yc-icon" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:22px;${got ? "" : "filter:grayscale(1);opacity:.35"}">${p.icon}</span><div><h5>${got ? esc(p.name) : "？？？"}<small>${got ? "× " + got : "未解锁"}</small></h5><p>${got ? esc(DL.fmt(p.text, { name: "你", flags: {}, dorm: "m", crush: "f" })).slice(0, 46) + "…" : "换一种活法，也许会遇见。"}</p></div></div>`; }).join("") +
         (Object.keys(a.titles).length ? `<p class="muted" style="margin-top:16px">得到过的称号：${Object.keys(a.titles).map(esc).join("、")}</p>` : "");
@@ -262,7 +277,7 @@
   DL.Game = {
     open(mode, ev) {
       if (ev && ev.clientX != null) origin = { x: ev.clientX, y: ev.clientY };
-      if (mode === "continue") { const s = UI.store.get(SAVE, null); if (s) return play(s); }
+      if (mode === "continue") { const s = UI.store.get(SAVE, null); if (s) return play(s, { recap: true }); }
       if (mode === "album") return album();
       return toSetup();
     },

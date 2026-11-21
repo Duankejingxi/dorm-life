@@ -174,6 +174,13 @@
       const o = opts[idx] || opts[0];
       if (step.key) s.flags[step.key] = o.v != null ? o.v : idx;
       if (o.fx) io.toast(applyFx(s, o.fx), s);
+      // 分量重的选择：让玩家知道有人记住了
+      if (io.remember && o.fx && o.fx.rel && typeof o.fx.rel === "object") {
+        for (const who of ["lin", "jiang", "su", "xu"]) {
+          const v = o.fx.rel[who];
+          if ((v >= 8 || v <= -6) && DL.CAST[who] && (who !== "lin" || s.flags.metLin !== false)) { io.remember({ who, name: DL.CAST[who].name, up: v > 0 }); break; }
+        }
+      }
       return run(o.then, s, io);
     }
     if (step.fx) {
