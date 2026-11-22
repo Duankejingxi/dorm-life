@@ -5,13 +5,13 @@
 
   DL.CAST = {
     me: { name: "我", color: "#e9e3d6" },
-    jiang: { name: "江野", mono: "江", color: "#f08a4b", line: "404 下铺 · 篮球特长生", bio: "嗓门大，心更大。梦想是打进 CUBA 首发。" },
-    su: { name: "苏念", mono: "苏", color: "#5fb3a1", line: "404 靠门上铺 · 村里第一个大学生", bio: "话很少，起得最早，记得每个人的生日。" },
-    xu: { name: "许多", mono: "许", color: "#a58be0", line: "404 靠窗下铺 · 吉他 & 段子", bio: "家里让学金融，自己只想写歌。" },
-    lin: { name: "林溪", mono: "林", color: "#6fa8e8", line: "隔壁学院 · 总背着一台旧相机", bio: "说话不多，看人很准。喜欢凌晨和雨天的光。" },
-    cheng: { name: "程橙", mono: "程", color: "#f2c14e", line: "大三学姐 · 社长", bio: "干脆利落，什么都见过，什么都不怕。" },
+    jiang: { name: "江野", mono: "江", color: "#c98d62", line: "404 下铺 · 篮球特长生", bio: "嗓门大，心更大。梦想是打进 CUBA 首发。" },
+    su: { name: "苏念", mono: "苏", color: "#8db3a3", line: "404 靠门上铺 · 村里第一个大学生", bio: "话很少，起得最早，记得每个人的生日。" },
+    xu: { name: "许多", mono: "许", color: "#a597c2", line: "404 靠窗下铺 · 吉他 & 段子", bio: "家里让学金融，自己只想写歌。" },
+    lin: { name: "林溪", mono: "林", color: "#8fa8c4", line: "隔壁学院 · 总背着一台旧相机", bio: "说话不多，看人很准。喜欢凌晨和雨天的光。" },
+    cheng: { name: "程橙", mono: "程", color: "#c9ad74", line: "大三学姐 · 社长", bio: "干脆利落，什么都见过，什么都不怕。" },
     zhou: { name: "周老师", mono: "周", color: "#9fb4c7", line: "专业课教授", bio: "上课从不点名，挂人从不手软。" },
-    mom: { name: "妈妈", mono: "妈", color: "#e7a1a1" },
+    mom: { name: "妈妈", mono: "妈", color: "#c79d9a" },
   };
   // 关系面板里展示的人（顺序）
   DL.REL_ORDER = ["jiang", "su", "xu", "lin", "cheng", "zhou"];
@@ -37,21 +37,21 @@
   // 每学期的节拍：chapter 开篇 / plan 时间安排 / moment 校园碎片 / exam 期末 / summer 暑假 / 其余是剧情场景
   DL.SEMESTERS = [
     { id: "y1a", label: "大一 · 秋", year: "大一", term: "上学期", season: "autumn", title: "四个陌生人", quote: "那年九月，我们还不知道彼此的名字。",
-      beats: ["chapter", "y1a_arrival", "y1a_military", "y1a_midautumn", "plan", "y1a_club", "moment", "y1a_rain", "moment", "exam"] },
+      beats: ["chapter", "chat", "y1a_arrival", "y1a_military", "y1a_midautumn", "plan", "free", "y1a_club", "moment", "y1a_rain", "moment", "exam"] },
     { id: "y1b", label: "大一 · 春", year: "大一", term: "下学期", season: "spring", title: "春天的夜晚很长", quote: "好像什么都还来得及。",
-      beats: ["chapter", "y1b_return", "y1b_cheng", "plan", "y1b_guitar", "moment", "y1b_night", "moment", "exam", "summer"] },
+      beats: ["chapter", "chat", "y1b_return", "y1b_cheng", "plan", "free", "y1b_guitar", "moment", "y1b_night", "moment", "exam", "summer"] },
     { id: "y2a", label: "大二 · 秋", year: "大二", term: "上学期", season: "autumn", title: "第一次有人倒下", quote: "原来长大，是从学会守夜开始的。",
-      beats: ["chapter", "y2a_freshman", "y2a_injury", "plan", "y2a_low", "moment", "y2a_snow", "moment", "exam"] },
+      beats: ["chapter", "chat", "y2a_freshman", "y2a_injury", "plan", "free", "y2a_low", "moment", "y2a_snow", "moment", "exam"] },
     { id: "y2b", label: "大二 · 春", year: "大二", term: "下学期", season: "spring", title: "有人毕业了", quote: "我们第一次送别别人。",
-      beats: ["chapter", "y2b_band", "plan", "moment", "y2b_farewell", "y2b_stage", "moment", "exam", "summer"] },
+      beats: ["chapter", "chat", "y2b_band", "plan", "free", "moment", "y2b_farewell", "y2b_stage", "moment", "exam", "summer"] },
     { id: "y3a", label: "大三 · 秋", year: "大三", term: "上学期", season: "autumn", title: "岔路口", quote: "每个人都开始往不同的方向看。",
-      beats: ["chapter", "y3a_crossroad", "plan", "y3a_su", "moment", "y3a_lin", "moment", "exam"] },
+      beats: ["chapter", "chat", "y3a_crossroad", "plan", "free", "y3a_su", "moment", "y3a_lin", "moment", "exam"] },
     { id: "y3b", label: "大三 · 春", year: "大三", term: "下学期", season: "spring", title: "各自的远方", quote: "有人回到球场，有人奔向车站。",
-      beats: ["chapter", "y3b_jiang", "plan", "y3b_xu", "moment", "y3b_grind", "moment", "exam", "summer"] },
+      beats: ["chapter", "chat", "y3b_jiang", "plan", "free", "y3b_xu", "moment", "y3b_grind", "moment", "exam", "summer"] },
     { id: "y4a", label: "大四 · 秋", year: "大四", term: "上学期", season: "autumn", title: "最后一个秋天", quote: "银杏又黄了，这是最后一次。",
-      beats: ["chapter", "y4a_battle", "plan", "y4a_autumn", "moment", "y4a_lin", "exam"] },
+      beats: ["chapter", "chat", "y4a_battle", "plan", "free", "y4a_autumn", "moment", "y4a_lin", "exam"] },
     { id: "y4b", label: "大四 · 夏", year: "大四", term: "下学期", season: "summer", title: "404 Not Found", quote: "后来，那个房间住进了新的人。",
-      beats: ["chapter", "y4b_results", "y4b_thesis", "plan", "y4b_photo", "y4b_dinner", "y4b_leave"] },
+      beats: ["chapter", "chat", "y4b_results", "y4b_thesis", "plan", "free", "y4b_photo", "y4b_dinner", "y4b_leave"] },
   ];
 
   const y = (s) => Math.floor(s.sem / 2) + 1;

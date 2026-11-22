@@ -18,12 +18,12 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="preload" as="image" href="img/dormout-night.webp">
-<!-- 字体异步加载：在打不开 Google Fonts 的网络下，不会卡住页面，直接用系统字体 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" media="print" onload="this.media='all'">
+<link rel="preload" as="image" href="img/station-dawn.webp">
+<link rel="preload" as="font" type="font/woff2" href="fonts/serif-400.woff2" crossorigin>
 <link rel="stylesheet" href="css/site.css">
 <link rel="stylesheet" href="css/game.css">
+<link rel="stylesheet" href="css/art.css">
+<link rel="stylesheet" href="css/noir.css">
 </head>
 <body>
 
@@ -44,10 +44,10 @@
 <main id="site">
 
   <section class="hero" id="top">
-    <div class="hero-media"><div class="hero-img" style="background-image:url('img/dormout-night.webp')"></div></div>
+    <div class="hero-media"><div class="hero-img" style="background-image:url('img/station-dawn.webp')"></div></div>
     <div class="hero-shade"></div>
     <div class="hero-copy">
-      <p class="eyebrow reveal">一部关于大学四年的互动小说</p>
+      <p class="eyebrow reveal"><span class="latin">Dorm Life — A Novel in Four Years</span>一部关于大学四年的互动小说</p>
       <h1 class="reveal d1">四张床，<br>三个陌生人。</h1>
       <p class="hero-sub reveal d2">和一个很长很长的夏天。</p>
       <div class="hero-cta reveal d3">
@@ -88,17 +88,17 @@
       <p class="reveal d1">每个人都有一段只属于自己的故事。你在不在场，会让结局完全不同。</p>
     </div>
     <div class="rail" id="rail" tabindex="0" aria-label="人物">
-      <article class="pcard" style="--c:#f08a4b"><div class="pc-img" data-bg="img/gym.webp"></div><div class="pc-copy"><p class="pc-role">下铺 · 篮球特长生</p><h3>江野</h3><p class="pc-quote">「等我打上首发，你一定要来看我比赛。坐第一排。」</p><p class="pc-arc">大二那场比赛，他起跳，落地。之后的十七个月，取决于有没有人在早上六点叫醒他。</p></div></article>
-      <article class="pcard" style="--c:#5fb3a1"><div class="pc-img" data-bg="img/library-dawn.webp"></div><div class="pc-copy"><p class="pc-role">靠门上铺 · 村里第一个大学生</p><h3>苏念</h3><p class="pc-quote">「我是我们村第一个考上大学的。」</p><p class="pc-arc">话很少，起得最早，记得每个人的生日。大三那年，一通电话让苏念想去电子厂。</p></div></article>
-      <article class="pcard" style="--c:#a58be0"><div class="pc-img" data-bg="img/feat-guitar.webp"></div><div class="pc-copy"><p class="pc-role">靠窗下铺 · 吉他和段子</p><h3>许多</h3><p class="pc-quote">「我在火车站。还剩四十分钟。」</p><p class="pc-arc">家里让学金融，自己只想写歌。那首歌的名字，会是你起的。</p></div></article>
-      <article class="pcard" style="--c:#6fa8e8"><div class="pc-img" data-bg="img/feat-camera.webp"></div><div class="pc-copy"><p class="pc-role">隔壁学院 · 总背着一台旧相机</p><h3>林溪</h3><p class="pc-quote">「拍下来，至少能证明那天真的存在过。」</p><p class="pc-arc">雨夜的图书馆门口，你可以撑伞送林溪回去，也可以戴上耳机冲进雨里。</p></div></article>
-      <article class="pcard" style="--c:#f2c14e"><div class="pc-img" data-bg="img/station-dawn.webp"></div><div class="pc-copy"><p class="pc-role">大三学姐 · 社长</p><h3>程橙</h3><p class="pc-quote">「没有人是准备好了才出发的。」</p><p class="pc-arc">她会在你大二那年毕业。走出校门的时候，学士帽掉了，她没再扶正。</p></div></article>
+      <article class="pcard" style="--c:#c98d62"><div class="pc-img" data-bg="img/gym.webp"></div><div class="pc-copy"><p class="pc-role">下铺 · 篮球特长生</p><h3>江野</h3><p class="pc-quote">「等我打上首发，你一定要来看我比赛。坐第一排。」</p><p class="pc-arc">大二那场比赛，他起跳，落地。之后的十七个月，取决于有没有人在早上六点叫醒他。</p></div></article>
+      <article class="pcard" style="--c:#8db3a3"><div class="pc-img" data-bg="img/library-dawn.webp"></div><div class="pc-copy"><p class="pc-role">靠门上铺 · 村里第一个大学生</p><h3>苏念</h3><p class="pc-quote">「我是我们村第一个考上大学的。」</p><p class="pc-arc">话很少，起得最早，记得每个人的生日。大三那年，一通电话让苏念想去电子厂。</p></div></article>
+      <article class="pcard" style="--c:#a597c2"><div class="pc-img" data-bg="img/feat-guitar.webp"></div><div class="pc-copy"><p class="pc-role">靠窗下铺 · 吉他和段子</p><h3>许多</h3><p class="pc-quote">「我在火车站。还剩四十分钟。」</p><p class="pc-arc">家里让学金融，自己只想写歌。那首歌的名字，会是你起的。</p></div></article>
+      <article class="pcard" style="--c:#8fa8c4"><div class="pc-img" data-bg="img/feat-camera.webp"></div><div class="pc-copy"><p class="pc-role">隔壁学院 · 总背着一台旧相机</p><h3>林溪</h3><p class="pc-quote">「拍下来，至少能证明那天真的存在过。」</p><p class="pc-arc">雨夜的图书馆门口，你可以撑伞送林溪回去，也可以戴上耳机冲进雨里。</p></div></article>
+      <article class="pcard" style="--c:#c9ad74"><div class="pc-img" data-bg="img/station-dusk.webp"></div><div class="pc-copy"><p class="pc-role">大三学姐 · 社长</p><h3>程橙</h3><p class="pc-quote">「没有人是准备好了才出发的。」</p><p class="pc-arc">她会在你大二那年毕业。走出校门的时候，学士帽掉了，她没再扶正。</p></div></article>
       <article class="pcard" style="--c:#9fb4c7"><div class="pc-img" data-bg="img/classroom-dusk.webp"></div><div class="pc-copy"><p class="pc-role">专业课教授</p><h3>周老师</h3><p class="pc-quote">「「一点」就是不会。」</p><p class="pc-arc">上课从不点名，挂人从不手软。他在报告上批「尚可」的时候，你会记很久。</p></div></article>
     </div>
     <div class="rail-nav"><ol class="rail-dots" id="railDots" aria-hidden="true"></ol><button class="rn" id="railPrev" aria-label="上一个">‹</button><button class="rn" id="railNext" aria-label="下一个">›</button></div>
   </section>
 
-  <section class="choice" id="choice">
+  <section class="choice-sec" id="choice">
     <div class="choice-grid">
       <div class="choice-copy">
         <p class="eyebrow reveal">试一试</p>
@@ -108,7 +108,7 @@
       </div>
       <div class="phone reveal d1" aria-label="游戏画面示意">
         <div class="phone-screen">
-          <div class="ph-bg" data-bg="img/library-night.webp"></div>
+          <div class="ph-bg" data-bg="img/road-rain.webp"></div>
           <div class="ph-rain"></div>
           <div class="ph-top"><span>大一 · 秋</span><span class="ph-pills"><i>学业</i><i>体魄</i><i>心情</i></span></div>
           <div class="ph-dialog" id="demoDialog">
@@ -128,7 +128,7 @@
 
   <section class="expand" id="expand">
     <div class="expand-sticky">
-      <div class="expand-media" data-bg="img/library-night.webp"></div>
+      <div class="expand-media" data-bg="img/lake-dusk.webp"></div>
       <div class="expand-copy">
         <p class="eyebrow">画面</p>
         <h2>真实的照片，<br><span class="grad">电影的光。</span></h2>
@@ -145,7 +145,7 @@
       <div class="num reveal d2"><b data-count="19">19</b><span>种毕业去向</span></div>
       <div class="num reveal"><b data-count="9">9</b><span>个触屏小游戏</span></div>
       <div class="num reveal d1"><b data-count="18">18</b><span>张天赋卡</span></div>
-      <div class="num reveal d2"><b data-count="32">32</b><span>个成就</span></div>
+      <div class="num reveal d2"><b data-count="35">35</b><span>个成就</span></div>
     </div>
   </section>
 
@@ -159,9 +159,9 @@
         <p class="reveal d2">不是一个结局，是很多个：你去了哪里，他们后来怎样，十年后那扇门前，还能站几个人。</p>
       </div>
       <div class="yb-fan">
-        <div class="ybc reveal" style="--c:#f08a4b"><i class="mono" style="--c:#f08a4b">江</i><h4>冠军教练</h4><p>他带的球队拿了全市冠军。每次比赛前，他都会讲同一个故事：「我十九岁那年，摔断了腿……」</p></div>
-        <div class="ybc reveal d1" style="--c:#5fb3a1"><i class="mono" style="--c:#5fb3a1">苏</i><h4>苏博士</h4><p>苏念的博士论文致谢里写着：「感谢 404。没有你们，我在流水线上。」</p></div>
-        <div class="ybc reveal d2" style="--c:#a58be0"><i class="mono" style="--c:#a58be0">许</i><h4>穿西装的人</h4><p>他的吉他挂在办公室墙上。偶尔，他会在深夜发一段弹唱，配文只有三个字：「给 404」。</p></div>
+        <div class="ybc reveal" style="--c:#c98d62"><i class="mono" style="--c:#c98d62">江</i><h4>冠军教练</h4><p>他带的球队拿了全市冠军。每次比赛前，他都会讲同一个故事：「我十九岁那年，摔断了腿……」</p></div>
+        <div class="ybc reveal d1" style="--c:#8db3a3"><i class="mono" style="--c:#8db3a3">苏</i><h4>苏博士</h4><p>苏念的博士论文致谢里写着：「感谢 404。没有你们，我在流水线上。」</p></div>
+        <div class="ybc reveal d2" style="--c:#a597c2"><i class="mono" style="--c:#a597c2">许</i><h4>穿西装的人</h4><p>他的吉他挂在办公室墙上。偶尔，他会在深夜发一段弹唱，配文只有三个字：「给 404」。</p></div>
       </div>
       <p class="muted center reveal">以上只是其中几种。你的会不一样。</p>
     </div>
@@ -178,7 +178,7 @@
       <div class="tile t-photo reveal" data-bg="img/road-autumn.webp"><div class="tile-copy"><h3>真实的四季</h3><p>五十多张实拍照片，统一调色。银杏、初雪、雨夜，和凌晨的站台。</p></div></div>
       <div class="tile t-music reveal d1"><div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h3>亲手去做</h3><p>站军姿、抢课、雨夜撑伞、投篮、上台演出、1500 米、抢答、考前冲刺。打得好不好，会改写剧情。</p></div>
       <div class="tile t-phone reveal"><div class="mini-phone" aria-hidden="true"></div><h3>就在手机上</h3><p>竖屏、单手。添加到主屏幕，断网也能玩。</p></div>
-      <div class="tile t-save reveal d1"><b class="big">✦</b><h3>每局都不一样</h3><p>开局抽天赋：过目不忘、锦鲤附体、恋爱脑……五张选两张，传说卡很稀有。</p></div>
+      <div class="tile t-save reveal d1"><b class="big">签</b><h3>每局都不一样</h3><p>开局抽天赋：过目不忘、锦鲤附体、恋爱脑……五张选两张，传说卡很稀有。</p></div>
       <div class="tile t-wall reveal d2" data-bg="img/station-night.webp"><div class="tile-copy"><h3>这一届</h3><p>看看和你一起毕业的人，都去了哪里。再给下一个住进 404 的人留一句话。</p></div></div>
     </div>
   </section>
@@ -296,11 +296,13 @@
 <script src="js/story/y4.js"></script>
 <script src="js/story/moments.js"></script>
 <script src="js/story/endings.js"></script>
+<script src="js/story/social.js"></script>
 <script src="js/systems.js"></script>
 <script src="js/art.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/api.js"></script>
 <script src="js/games.js"></script>
+<script src="js/marks.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
 <script src="js/site.js"></script>

@@ -78,13 +78,13 @@
     const f = s.flags;
     if (f.jiangBack) return { who: "jiang", title: "冠军教练", text: "江野在一所中学当体育老师，兼篮球队教练。他带的球队拿了全市冠军。每次比赛前，他都会跟孩子们讲同一个故事：「我十九岁那年，摔断了腿……」" };
     if (f.jiangCoach) return { who: "jiang", title: "少儿篮球教练", text: "江野后来考了教练证，在一家少儿篮球训练营。他的膝盖每到阴雨天还会疼，但他每天都站在球场边上，冲一群小孩吼：「摔倒了就站起来！」" };
-    if (s.rel.jiang >= 60) return { who: "jiang", title: "健身房老板", text: "江野回了老家，在县城开了一家健身房。生意一般，但他过得挺开心。他偶尔会在朋友圈发一张空荡荡的篮球场的照片，什么都不配。" };
+    if (s.rel.jiang >= 72) return { who: "jiang", title: "健身房老板", text: "江野回了老家，在县城开了一家健身房。生意一般，但他过得挺开心。他偶尔会在朋友圈发一张空荡荡的篮球场的照片，什么都不配。" };
     return { who: "jiang", title: "很少说话的人", text: "江野后来很少在群里说话了。听说他换了好几份工作，送过外卖，做过销售。有一年冬天，他突然在群里发了一句：「突然很想你们。」那条消息下面，很快多了三十几条回复。" };
   }
   function fateSu(s) {
     const f = s.flags;
     if (f.suStayed) return { who: "su", title: "苏博士", text: "苏念读完了博士，回到家乡的省城医院做研究。{ta}的博士论文致谢里写着：「感谢「{group}」。没有你们，我在流水线上。」" + (f.suLoan ? "毕业第一年，{ta}把那笔钱还给了你，连本带利，还有一箱红薯干。" : "") };
-    if (s.rel.su >= 50) return { who: "su", title: "走得慢的人", text: "苏念在深圳工作了三年，一边上班一边读完了自考本科，后来考上了家乡的卫生院。{ta}每年秋天都给你寄一箱红薯干，包裹上的字，还是那么工整。" };
+    if (s.rel.su >= 68) return { who: "su", title: "走得慢的人", text: "苏念在深圳工作了三年，一边上班一边读完了自考本科，后来考上了家乡的卫生院。{ta}每年秋天都给你寄一箱红薯干，包裹上的字，还是那么工整。" };
     return { who: "su", title: "远方", text: "苏念在深圳待了很多年。你们的联系渐渐少了。有一次你在深圳出差，路过一片工业园，忽然想起{ta}，在路边站了很久，最后给{ta}发了一句：「最近好吗？」{ta}秒回了。" };
   }
   function fateXu(s) {
@@ -109,7 +109,7 @@
   }
 
   function reunion(s) {
-    const close = ["jiang", "su", "xu"].filter((k) => s.rel[k] >= 62);
+    const close = ["jiang", "su", "xu"].filter((k) => s.rel[k] >= 76);
     const board = s.flags.board || "{group}，到此一游。";
     if (close.length === 3) return { count: 4, title: "四个人", text: "十年后的冬天，你们真的回去了。404 住着四个大一新生，宿管阿姨换了人，听说你们是这间宿舍的老住户，破例让你们上去看了一眼。床板背面那行字还在：「" + board + "」。四个人站在门口，谁都没说话。然后，许多先哭了。" };
     if (close.length >= 1) {

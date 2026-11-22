@@ -71,7 +71,7 @@
     ensureHost();
     host.classList.remove("hidden");
     host.dataset.kind = kind;
-    q(".mg-title").textContent = info.icon + "  " + (opts.title || info.name);
+    q(".mg-title").textContent = opts.title || info.name;
     hud(""); setBar(0);
     q(".mg-dom").innerHTML = "";
     const cv = q("canvas"); const g0 = cv.getContext("2d"); g0.clearRect(0, 0, cv.width, cv.height);
@@ -373,7 +373,7 @@
         if (n.hit !== null && n.hit > 0) continue;
         const y = hitY - (n.t - t) * speed;
         if (y < -30 || y > H + 30) continue;
-        g.fillStyle = n.hit === 0 ? "rgba(255,120,110,.35)" : "#a58be0";
+        g.fillStyle = n.hit === 0 ? "rgba(255,120,110,.35)" : "#a597c2";
         const nx = x0 + n.lane * laneW + 8;
         g.beginPath(); g.roundRect ? g.roundRect(nx, y - 10, laneW - 16, 20, 10) : g.rect(nx, y - 10, laneW - 16, 20); g.fill();
       }

@@ -89,12 +89,13 @@
   }
   function setSpeaker(who, s) {
     const sp = $("speaker"), mono = $("speakerMono"), name = $("speakerName");
-    if (!who) { sp.classList.add("none"); return; }
+    if (!who) { sp.classList.add("none"); sp.dataset.who = ""; return; }
     sp.classList.remove("none");
     let n, c, m;
     if (who === "me") { n = s.name; c = "#e9e3d6"; m = s.name.slice(0, 1); }
     else if (who[0] === "?") { n = who.slice(1); c = "#9aa0b4"; m = n.slice(0, 1); }
     else { const C = DL.CAST[who] || {}; n = C.name || who; c = C.color || "#ccc"; m = C.mono || n.slice(0, 1); }
+    if (sp.dataset.who !== who) { sp.dataset.who = who; sp.classList.remove("swap"); void sp.offsetWidth; sp.classList.add("swap"); }
     name.textContent = n; mono.textContent = m; sp.style.setProperty("--c", c); mono.style.setProperty("--c", c); name.style.color = c;
   }
   const history = [];
@@ -106,6 +107,7 @@
     return (DL.CAST[who] || {}).name || who;
   }
   let autoTimer = null;
+  let coached = false;
   /* 已读记录：跨周目保存，用于“快进已读” */
   const READ_KEY = "dl2.read";
   const readSet = new Set(store.get(READ_KEY, []));
@@ -137,6 +139,7 @@
     }
     await typeText(line, text);
     d.classList.add("ready");
+    if (!coached) { coached = true; setTimeout(coach, 400); }
     const wait = waitAdvance();
     if (settings.auto) autoTimer = setTimeout(() => { if (advanceResolver && !$("app").querySelector(".overlay:not(.hidden)")) advance(); }, 1100 + Array.from(text).length * 70);
     await wait;
@@ -159,6 +162,7 @@
         if (!box.classList.contains("on")) return;
         box.classList.remove("on"); btn.classList.add("picked"); box.classList.add("leaving");
         if (DL.Audio) DL.Audio.blip("choose");
+        haptic(8);
         remember({ choice: true, text: opts[i].t });
         keyHandler = null;
         await sleep(380);
@@ -166,8 +170,8 @@
         resolve(i);
       };
       opts.forEach((o, i) => {
-        const b = el("button", "choice", esc(o.t) + (o.hint ? "<small>" + esc(o.hint) + "</small>" : ""));
-        b.dataset.n = i + 1; b.style.animationDelay = 0.06 * i + 0.1 + "s";
+        const b = el("button", "choice", esc(DL.stripEmoji ? DL.stripEmoji(o.t) : o.t) + (o.hint ? "<small>" + esc(o.hint) + "</small>" : ""));
+        b.dataset.n = DL.NUM_CN ? DL.NUM_CN[i] : i + 1; b.style.animationDelay = 0.06 * i + 0.1 + "s";
         b.addEventListener("click", (e) => { e.stopPropagation(); pick(i, b); });
         box.appendChild(b);
       });
@@ -181,7 +185,7 @@
   let lastStats = null;
   function hud(s) {
     const sem = DL.SEMESTERS[Math.min(s.sem, 7)];
-    $("hudSem").textContent = sem ? sem.label : "";
+    $("hudSem").innerHTML = sem ? `<small>Semester ${DL.ROMAN[Math.min(s.sem, 7)]}</small>${esc(sem.label)}` : "";
     const box = $("hudStats");
     const keys = ["study", "body", "mood"];
     if (!box.children.length) {
@@ -223,6 +227,31 @@
       }
     });
   }
+  // “江野会记住这件事。”
+  let remTimer = null;
+  function rememberHint(r) {
+    let box = $("remember");
+    if (!box) { box = el("div", "remember"); box.id = "remember"; $("gameScreen").appendChild(box); }
+    box.className = "remember " + (r.up ? "up" : "down");
+    box.innerHTML = `<i></i><span><b>${esc(r.name)}</b>${r.up ? "会记住这件事。" : "记下了这件事。"}</span>`;
+    void box.offsetWidth; box.classList.add("show");
+    clearTimeout(remTimer); remTimer = setTimeout(() => box.classList.remove("show"), 3400);
+  }
+  // 继续游戏：前情提要
+  async function recap(s) {
+    const sem = DL.SEMESTERS[Math.min(s.sem, 7)];
+    const notes = s.journal.slice(-3).map((j) => j.text);
+    const mems = s.memories.slice(-2).map((m) => m.title);
+    const days = Math.max(0, Math.round((Date.now() - (s.savedAt || Date.now())) / 864e5));
+    const ago = s.savedAt ? (days < 1 ? "今天早些时候" : days === 1 ? "昨天" : days + " 天前") : "";
+    const o = overlay(`<div class="recap"><p class="rc-latin">Previously</p><h3>上次说到</h3><p class="rc-sem"><span class="ch-seal">${DL.NUM_CAP[Math.min(s.sem, 7)]}</span>${esc(sem.label)} · ${esc(sem.title)}</p>
+      ${mems.length ? `<p class="rc-mem">最近的回忆：${mems.map((m) => "「" + esc(m) + "」").join("")}</p>` : ""}
+      ${notes.length ? `<ul>${notes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : `<p class="rc-mem">四年才刚开始。</p>`}
+      <p class="rc-ago">${ago ? esc(ago) + "离开 · " : ""}轻触继续</p></div>`, "dark");
+    await overlayTap(o, 700);
+    await closeOverlay();
+  }
+
   // 成就横幅：依次弹出
   const achQueue = [];
   let achBusy = false;
@@ -237,6 +266,7 @@
     const t = el("div", "ach-toast", `<span class="ai">${a.icon}</span><span><small>成就解锁</small><b>${esc(a.name)}</b></span>`);
     $("app").appendChild(t);
     if (DL.Audio) DL.Audio.blip("mem");
+    haptic(20);
     requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show")));
     await sleep(2600);
     t.classList.remove("show");
@@ -285,14 +315,56 @@
     const f = DL.FAMILY[s.family];
     return `每月生活费 <b>¥${f.monthly.toLocaleString()}</b> · 本学期 ¥${f.allowance.toLocaleString()}` + (f.grant ? ` · 助学金 ¥${f.grant.toLocaleString()}` : "");
   }
+  // 后台按顺序预载这一学期会出现的照片，进场景时不再等图
+  function preloadSemester(sem, s) {
+    const season = (sem.season || (sem.label && sem.label.indexOf("下") >= 0 ? "spring" : "autumn"));
+    const seen = new Set();
+    const add = (st) => { if (st && st.at) { const u = DL.Art.url(DL.Art.photoFor({ at: st.at, time: st.time || "day", weather: st.weather || "clear", season: st.season || season, photo: st.photo })); seen.add(u); } };
+    for (const b of sem.beats) {
+      const sc = DL.SCENES && DL.SCENES[b];
+      if (!sc) continue;
+      add(sc);
+      let steps = sc.steps;
+      if (typeof steps === "function") { try { steps = steps(s); } catch (e) { steps = null; } }
+      if (Array.isArray(steps)) steps.forEach((x) => x && typeof x === "object" && !Array.isArray(x) && add(x));
+    }
+    const list = [...seen];
+    const next = () => { const u = list.shift(); if (u) DL.Art.preload(u).then(() => setTimeout(next, 120)); };
+    setTimeout(next, 1800);
+  }
   async function chapter(sem, s) {
     const i = DL.SEMESTERS.indexOf(sem);
+    preloadSemester(sem, s);
     await Stage.show(Object.assign({ weather: "clear" }, CH_SCENE[i] || CH_SCENE[0]));
     hud(s);
     $("dialog").classList.add("idle");
     const N = ["第一章", "第二章", "第三章", "第四章", "第五章", "第六章", "第七章", "终章"][i];
-    const o = overlay(`<div class="letterbox top"></div><div class="letterbox bot"></div><div class="chapter"><p class="ch-n">${N}</p><p class="ch-label">${esc(sem.label)}</p><h2>${esc(sem.title)}</h2><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
+    const EN = i === 7 ? "The Last Chapter" : "Chapter " + DL.EN_NUM[i];
+    // 竖排：每个字一行，不依赖字体的竖排度量
+    const col = (t) => Array.from(t).filter((c) => c.trim() && c !== "·").map((c) => `<span>${esc(c)}</span>`).join("");
+    const o = overlay(`<div class="letterbox top"></div><div class="letterbox bot"></div><div class="chapter v2"><p class="ch-latin">${EN}</p><div class="ch-row"><div class="ch-meta"><p class="ch-n vcol">${col(N)}</p><p class="ch-label vcol">${col(sem.label)}</p><span class="ch-seal">${DL.NUM_CAP[i]}</span></div><h2 class="ch-title vcol">${col(sem.title)}</h2></div><p class="ch-quote">${esc(sem.quote)}</p><p class="ch-money">${moneyLine(s)}</p><p class="ch-tap">轻触继续</p></div>`, "dark");
     await overlayTap(o, 1400);
+    await closeOverlay();
+  }
+
+  // 新的一局：片头。黑场，三行字，然后片名和章印。轻触可跳过
+  async function opening(s) {
+    $("dialog").classList.add("idle");
+    const fam = { rich: "家里给的生活费很宽裕", mid: "家里给的生活费刚刚好", poor: "口袋里是家里凑出来的学费" }[s.family] || "";
+    const lines = ["九月。", "火车晃了一整夜。", fam + "，", "箱子里装着一个人的全部家当。"];
+    const o = overlay(`<div class="opening"><div class="op-lines" style="animation-delay:${0.1 + lines.length * 1.5}s">${lines.map((l, i) => `<p style="animation-delay:${0.5 + i * 1.5}s">${esc(l)}</p>`).join("")}</div>
+      <div class="op-title" style="animation-delay:${0.9 + lines.length * 1.5}s"><span class="op-seal">四<br>〇<br>四</span><h1>宿舍人生</h1><p class="op-latin">Dorm Life — A Novel in Four Years</p><p class="op-name">主演 · ${esc(s.name)}</p></div></div>`, "black");
+    let skip = false;
+    const tap = () => (skip = true);
+    o.addEventListener("click", tap);
+    keyHandler = tap;
+    const total = (0.9 + lines.length * 1.5 + 3.4) * 1000;
+    const t0 = Date.now();
+    while (!skip && !settings.skip && Date.now() - t0 < total) await sleep(100);
+    o.removeEventListener("click", tap);
+    keyHandler = null;
+    o.querySelector(".opening").classList.add("out");
+    await sleep(700);
     await closeOverlay();
   }
 
@@ -323,7 +395,7 @@
         slots.innerHTML = "";
         for (let i = 0; i < n; i++) {
           const f = opts.find((o) => o.id === picks[i]);
-          const sl = el("button", "slot" + (f ? " filled" : ""), f ? `<span class="si">${f.icon}</span>${esc(f.name)}` : "空");
+          const sl = el("button", "slot" + (f ? " filled" : ""), f ? `<span class="si">${f.icon}</span>${esc(f.name)}` : "");
           if (f) sl.onclick = () => { picks.splice(i, 1); render(); };
           slots.appendChild(sl);
         }
@@ -388,7 +460,7 @@
   async function memory(mem, s) {
     if (DL.Audio) DL.Audio.blip("mem");
     const p = el("div", "", "");
-    p.innerHTML = `<p class="mem-badge">✦ 收进回忆 ✦</p><div class="polaroid"><div class="ph" style="background-image:url('${DL.Art.thumb(mem.scene)}')"></div><h4>${esc(mem.title)}</h4><p>${esc(mem.text)}</p></div>`;
+    p.innerHTML = `<p class="mem-badge">✦ 收进回忆 ✦</p><div class="polaroid"><div class="ph" style="background-image:url('${DL.Art.thumb(mem.scene)}')"><span class="ph-date">${esc((DL.SEMESTERS[mem.sem] || {}).label || "")}</span></div><h4>${esc(mem.title)}</h4><p>${esc(mem.text)}</p></div>`;
     const o = overlay(p, "dark");
     await overlayTap(o, 1200);
     await closeOverlay();
@@ -540,6 +612,118 @@
     });
   }
 
+
+  /* ---------- 周末自由时间：校园地图 ---------- */
+  function free(opts, s) {
+    return new Promise((resolve) => {
+      $("dialog").classList.add("idle");
+      const sheet = el("div", "sheet free-sheet");
+      sheet.innerHTML = `<div class="sheet-grip"></div><div class="sheet-head"><h3>这个周末，去哪？</h3><p>去找一个人，或者一个人待着。关系够深，会有只属于你们的故事。</p></div><div class="sheet-body"><div class="free-grid"></div></div>`;
+      const grid = sheet.querySelector(".free-grid");
+      opts.forEach((o, i) => {
+        const C = o.who ? DL.CAST[o.who] : null;
+        const card = el("button", "free-card" + (o.story ? " story" : ""), `
+          <span class="fc-img" style="background-image:url('${DL.Art.thumb(o.scene)}')"></span>
+          <span class="fc-shade"></span>
+          <span class="fc-top">${esc(o.name)}</span>
+          <span class="fc-who">${C ? `<i class="mono" style="--c:${C.color}">${C.mono}</i><span><b>${esc(o.whoName)}</b><small>${esc(o.level)} · 羁绊 ${o.rank}/4</small></span>` : `<span><b>一个人</b><small>好好待一会儿</small></span>`}</span>
+          ${o.story ? `<span class="fc-badge">新故事 · ${esc(o.title)}</span>` : ""}`);
+        card.style.animationDelay = 0.08 * i + 0.1 + "s";
+        card.onclick = async () => {
+          if (sheet.dataset.done) return;
+          sheet.dataset.done = 1;
+          card.classList.add("picked");
+          haptic(10);
+          if (DL.Audio) DL.Audio.blip("choose");
+          await sleep(420);
+          await closeOverlay();
+          resolve(i);
+        };
+        grid.appendChild(card);
+      });
+      overlay(sheet, "sheet-mode");
+    });
+  }
+
+  /* ---------- 手机消息 ---------- */
+  function chat(c, s) {
+    return new Promise(async (resolve) => {
+      $("dialog").classList.add("idle");
+      const fast = !!settings.skip || CPS[settings.speed] === 0;
+      const ph = el("div", "chat");
+      const avatars = c.group ? ["jiang", "su", "xu"].map((k) => `<i class="mono" style="--c:${DL.CAST[k].color}">${DL.CAST[k].mono}</i>`).join("") : `<i class="mono" style="--c:${c.msgs[0].color}">${esc(c.msgs[0].name.slice(0, 1))}</i>`;
+      ph.innerHTML = `<div class="chat-head"><span class="chat-av">${avatars}</span><b>${esc(c.title)}</b><small>${c.group ? "4 人" : "在线"}</small></div><div class="chat-body"></div><div class="chat-foot"></div>`;
+      const body = ph.querySelector(".chat-body"), foot = ph.querySelector(".chat-foot");
+      overlay(ph, "chat-mode");
+      if (DL.Audio) DL.Audio.blip("mem");
+      haptic(12);
+      const bubble = (m, mine) => {
+        const b = el("div", "bub " + (mine ? "me" : "them"), (!mine && c.group ? `<small style="color:${m.color}">${esc(m.name)}</small>` : "") + `<span>${esc(m.text)}</span>`);
+        body.appendChild(b);
+        requestAnimationFrame(() => b.classList.add("in"));
+        body.scrollTop = body.scrollHeight;
+      };
+      const typing = async (m) => {
+        if (fast) return;
+        const t = el("div", "bub them typing", "<span><i></i><i></i><i></i></span>");
+        body.appendChild(t); requestAnimationFrame(() => t.classList.add("in")); body.scrollTop = body.scrollHeight;
+        await sleep(Math.min(1300, 450 + Array.from(m.text).length * 35));
+        t.remove();
+      };
+      await sleep(fast ? 100 : 500);
+      for (const m of c.msgs) { await typing(m); bubble(m); await sleep(fast ? 60 : 220); }
+      const idx = await new Promise((res) => {
+        foot.innerHTML = c.replies.map((r, i) => `<button class="chat-reply" data-i="${i}">${esc(r)}</button>`).join("");
+        foot.querySelectorAll(".chat-reply").forEach((b) => (b.onclick = () => { if (foot.dataset.done) return; foot.dataset.done = 1; haptic(8); res(+b.dataset.i); }));
+        if (settings.skip) setTimeout(() => { if (!foot.dataset.done) { foot.dataset.done = 1; res(0); } }, 300);
+      });
+      foot.innerHTML = "";
+      bubble({ text: c.replies[idx] }, true);
+      remember({ choice: true, text: "（消息）" + c.replies[idx] });
+      await sleep(fast ? 80 : 500);
+      for (const m of c.follow[idx] || []) { await typing(m); bubble(m); await sleep(fast ? 60 : 220); }
+      foot.innerHTML = `<button class="btn primary chat-done">收起手机</button>`;
+      await new Promise((res) => { foot.querySelector(".chat-done").onclick = res; if (settings.skip) setTimeout(res, 400); });
+      await closeOverlay();
+      resolve(idx);
+    });
+  }
+
+  /* ---------- 羁绊进度 ---------- */
+  async function bond(who, rank, s) {
+    const C = DL.CAST[who];
+    const box = el("div", "bond-card", `<i class="seal-lg">${C.mono}</i><p class="bk">Bond · 羁绊</p><h3>${esc(C.name)}</h3><div class="bond-dots">${[1, 2, 3, 4].map((k) => `<i class="${k <= rank ? "on" : ""} ${k === rank ? "new" : ""}" style="--c:${C.color}"></i>`).join("")}</div><p class="bt">${rank >= 4 ? "你们之间，已经不需要再多说什么了。" : `第 ${rank} 段故事 · 关系更深时，会有下一段`}</p><p class="tapnote">轻触继续</p>`);
+    box.style.setProperty("--c", C.color);
+    if (DL.Audio) DL.Audio.blip("mem");
+    haptic([10, 40, 10]);
+    const o = overlay(box, "dark");
+    await overlayTap(o, 900);
+    await closeOverlay();
+  }
+
+  function haptic(p) { try { if (navigator.vibrate && !settings.noHaptic) navigator.vibrate(p); } catch (e) { /* 忽略 */ } }
+
+  /* ---------- 第一次进游戏：按钮说明 ---------- */
+  function coach() {
+    if (store.get("dl2.coach", false)) return;
+    store.set("dl2.coach", true);
+    const right = document.querySelector(".hud-right");
+    if (!right) return;
+    const labels = ["回看", "快进", "自动", "手账", "菜单"];
+    const tip = el("div", "coach", `<div class="coach-labels">${labels.map((l) => `<span>${l}</span>`).join("")}</div><p>轻触屏幕任意位置，继续读下去</p>`);
+    $("gameScreen").appendChild(tip);
+    const btns = right.querySelectorAll(".icon-btn");
+    const place = () => {
+      const spans = tip.querySelectorAll(".coach-labels span");
+      btns.forEach((b, i) => { const r = b.getBoundingClientRect(); if (spans[i]) { spans[i].style.left = r.left + r.width / 2 + "px"; spans[i].style.top = r.bottom + 8 + "px"; } });
+    };
+    place();
+    requestAnimationFrame(() => tip.classList.add("show"));
+    const off = () => { tip.classList.remove("show"); setTimeout(() => tip.remove(), 500); removeEventListener("pointerdown", off, true); };
+    setTimeout(() => addEventListener("pointerdown", off, true), 300);
+    setTimeout(off, 7000);
+  }
+
   /* ---------- 剧情回看 ---------- */
   function backlog() {
     const sheet = el("div", "sheet");
@@ -561,6 +745,6 @@
     }
   }
 
-  DL.UI = { Stage, backlog, history, setSkip, achieve, talentDraw, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { remember: rememberHint, recap, opening, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);

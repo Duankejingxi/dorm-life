@@ -1,8 +1,8 @@
-/* 宿舍人生 · 生成式配乐：八音盒 + 柔和的和弦铺底 + 雨声。没有任何音频文件。 */
+/* 宿舍人生 · 生成式配乐：八音盒 + 柔和的和弦铺底 + 环境声（雨、夏夜虫鸣、清晨鸟叫、食堂人声）。没有任何音频文件。 */
 (function (root) {
   "use strict";
   const DL = (root.DL = root.DL || {});
-  let ctx = null, master = null, musicBus = null, rainGain = null, delay = null;
+  let ctx = null, master = null, musicBus = null, rainGain = null, delay = null, ambBus = null, murmurGain = null, ambTimer = null, amb = null;
   let timer = null, on = false, step = 0, chordIdx = 0, mood = "day";
   // C 大调：I – vi – IV – V，夜里换成 vi – IV – I – V
   const CHORDS = { day: [[0, 4, 7], [9, 12, 16], [5, 9, 12], [7, 11, 14]], night: [[9, 12, 16], [5, 9, 12], [0, 4, 7], [7, 11, 14]] };
@@ -28,6 +28,16 @@
     const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1400; bp.Q.value = 0.5;
     rainGain = ctx.createGain(); rainGain.gain.value = 0;
     src.connect(bp); bp.connect(rainGain); rainGain.connect(master); src.start();
+    // 环境声总线
+    ambBus = ctx.createGain(); ambBus.gain.value = 0.9; ambBus.connect(master);
+    // 食堂人声：同一段噪声，低通 + 共振峰 + 缓慢起伏，像远处很多人在说话
+    const src2 = ctx.createBufferSource(); src2.buffer = buf; src2.loop = true; src2.playbackRate.value = 0.6;
+    const lp2 = ctx.createBiquadFilter(); lp2.type = "lowpass"; lp2.frequency.value = 900;
+    const fm = ctx.createBiquadFilter(); fm.type = "peaking"; fm.frequency.value = 480; fm.Q.value = 1.4; fm.gain.value = 9;
+    murmurGain = ctx.createGain(); murmurGain.gain.value = 0;
+    const lfo = ctx.createOscillator(), lfoG = ctx.createGain(); lfo.frequency.value = 0.23; lfoG.gain.value = 0.05;
+    lfo.connect(lfoG); lfoG.connect(murmurGain.gain); lfo.start();
+    src2.connect(lp2); lp2.connect(fm); fm.connect(murmurGain); murmurGain.connect(ambBus); src2.start();
     return true;
   }
 
@@ -48,6 +58,46 @@
       g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.022, t + dur * 0.4); g.gain.linearRampToValueAtTime(0, t + dur);
       o.start(t); o.stop(t + dur + 0.1);
     }
+  }
+
+  /* ---------- 环境声 ---------- */
+  function panNode() {
+    if (!ctx.createStereoPanner) return null;
+    const p = ctx.createStereoPanner(); p.pan.value = Math.random() * 1.6 - 0.8; return p;
+  }
+  function voice(freq, t, dur, vel, sweep) {
+    const o = ctx.createOscillator(), g = ctx.createGain(), p = panNode();
+    o.type = "sine"; o.frequency.setValueAtTime(freq, t);
+    if (sweep) o.frequency.exponentialRampToValueAtTime(freq * sweep, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + dur * 0.25); g.gain.exponentialRampToValueAtTime(0.0005, t + dur);
+    o.connect(g); if (p) { g.connect(p); p.connect(ambBus); } else g.connect(ambBus);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+  function cricket(t) {
+    const f = 4200 + Math.random() * 600, n = 3 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < n; i++) voice(f, t + i * 0.055, 0.035, 0.010, 1.01);
+  }
+  function bird(t) {
+    const base = 2400 + Math.random() * 1600, n = 2 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < n; i++) voice(base * (1 + Math.random() * 0.15), t + i * (0.09 + Math.random() * 0.06), 0.07 + Math.random() * 0.05, 0.012, Math.random() < 0.5 ? 1.35 : 0.8);
+  }
+  function ambTick() {
+    if (!on || !ctx) { ambTimer = null; return; }
+    const t = ctx.currentTime + 0.05;
+    let next = 1000;
+    if (amb === "night") { if (Math.random() < 0.8) cricket(t); if (Math.random() < 0.35) cricket(t + 0.3); next = 500 + Math.random() * 700; }
+    else if (amb === "day") { if (Math.random() < 0.45) bird(t); next = 1400 + Math.random() * 3200; }
+    ambTimer = setTimeout(ambTick, next);
+  }
+  function setAmb(sc) {
+    const indoor = DL.Art && DL.Art.INDOOR.includes(sc.at);
+    const wet = sc.weather === "rain" || sc.weather === "snow";
+    const outdoorish = !indoor || sc.at === "dorm"; // 宿舍开着窗
+    amb = null;
+    if (!wet && outdoorish && sc.season !== "winter" && (sc.time === "night" || sc.time === "dusk") && sc.at !== "city") amb = "night";
+    else if (!wet && !indoor && sc.season !== "winter" && (sc.time === "dawn" || sc.time === "day") && sc.at !== "city" && sc.at !== "station") amb = "day";
+    if (ctx && murmurGain) murmurGain.gain.linearRampToValueAtTime(sc.at === "canteen" ? 0.16 : 0, ctx.currentTime + 1.5);
+    if (on && ctx && !ambTimer) ambTick();
   }
 
   function tick() {
@@ -76,13 +126,15 @@
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 2.5);
       if (!timer) tick();
+      if (!ambTimer) ambTick();
     },
     stop() {
-      on = false; clearTimeout(timer); timer = null;
+      on = false; clearTimeout(timer); timer = null; clearTimeout(ambTimer); ambTimer = null;
       if (ctx) { master.gain.cancelScheduledValues(ctx.currentTime); master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6); }
     },
     scene(sc) {
       mood = sc.time === "night" || sc.time === "dusk" ? "night" : "day";
+      setAmb(sc);
       if (ctx && rainGain) rainGain.gain.linearRampToValueAtTime(sc.weather === "rain" ? (DL.Art.INDOOR.includes(sc.at) ? 0.25 : 0.55) : 0, ctx.currentTime + 1.5);
     },
     blip(kind) {
