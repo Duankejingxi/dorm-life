@@ -68,7 +68,21 @@ const fs = require("node:fs");
         return "wait";
       });
       if (st === "yearbook") break;
-      if (want.has(st) && !shotTaken.has(st)) { await page.waitForTimeout(st === "chapter" ? 2400 : st === "memory" ? 2600 : 700); await shot(st); shotTaken.add(st); }
+      if (want.has(st) && !shotTaken.has(st)) {
+        await page.waitForTimeout(st === "chapter" ? 2400 : st === "memory" ? 2600 : 700); await shot(st); shotTaken.add(st);
+        // iOS WebKit 不渲染嵌套在另一层 backdrop-filter 里的 backdrop-filter 元素（会整块消失、游戏卡住）
+        const nested = await page.evaluate(() => {
+          const bf = (e) => { const cs = getComputedStyle(e); const v = cs.backdropFilter || cs.webkitBackdropFilter; return v && v !== "none"; };
+          const vis = (e) => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden";
+          const bad = [];
+          for (const e of document.querySelectorAll("body *")) {
+            if (!bf(e) || !vis(e)) continue;
+            for (let a = e.parentElement; a && a !== document.body; a = a.parentElement) if (bf(a)) { bad.push(a.className + " > " + e.className); break; }
+          }
+          return bad;
+        });
+        assert.deepEqual(nested, [], "嵌套的 backdrop-filter（iPhone 上会不显示）@" + st);
+      }
       if (st === "talent") {
         await page.waitForTimeout(1900);
         await page.click('.tcard[data-i="0"]'); await page.click('.tcard[data-i="2"]');
