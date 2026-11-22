@@ -1,5 +1,5 @@
 /* 宿舍人生 · 离线缓存：游戏文件缓存优先，接口永远走网络 */
-const VERSION = "dl-v4.4.0";
+const VERSION = "dl-v4.5.0";
 const FILES = ["./", "index.html", "css/site.css", "css/game.css", "css/art.css", "css/noir.css", "fonts/serif-400.woff2", "fonts/serif-600.woff2", "fonts/serif-900.woff2", "fonts/latin-italic.woff2", "fonts/mono.woff2", "js/marks.js", "js/site.js", "img/dormout-night.webp", "img/station-dawn.webp", "manifest.webmanifest", "icons/icon-192.png", "icons/apple-touch-icon.png",
   "js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js", "js/story/social.js",
   "js/systems.js", "js/games.js", "js/art.js", "js/audio.js", "js/api.js", "js/ui.js", "js/main.js"];

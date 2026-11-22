@@ -201,3 +201,20 @@
 .pg-n { color: var(--n-text); }
 .pg-b { color: var(--a-seal-2); }
 @media (hover: hover) { .pg:hover { box-shadow: inset 0 -1px 0 var(--a-seal-2) !important; } }
+
+/* ---------- 片头 ---------- */
+.opening { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 36px; color: var(--n-text); font-family: var(--a-serif); transition: opacity .7s ease, filter .7s ease; }
+.opening.out { opacity: 0; filter: blur(6px); }
+.op-lines { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 420px; animation: opLinesOut .9s ease forwards; }
+.op-lines p { margin: 0; font-size: 17px; letter-spacing: .16em; line-height: 1.7; color: var(--n-text-2); opacity: 0; animation: opLine 1.6s var(--a-ease) both; }
+.op-lines p:first-child { color: var(--n-text); font-size: 20px; }
+@keyframes opLine { from { opacity: 0; transform: translateY(10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+.op-title { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; opacity: 0; animation: opTitle 2.2s var(--a-ease) both; }
+.op-title h1 { margin: 22px 0 10px; font-weight: 900; font-size: clamp(42px, 12vw, 72px); letter-spacing: .32em; text-indent: .32em; }
+.op-seal { display: grid; place-items: center; width: 46px; height: 46px; background: var(--a-seal); color: var(--a-ivory); font-size: 10px; line-height: 1.05; font-weight: 600; border-radius: 2px; box-shadow: inset 0 0 0 2px rgba(236,230,218,.2); animation: opSeal .9s cubic-bezier(.3,1.6,.5,1) both; animation-delay: inherit; }
+.op-latin { margin: 0; font-family: var(--a-latin); font-style: italic; font-size: 16px; color: var(--n-text-3); letter-spacing: .04em; }
+.op-name { margin: 34px 0 0; font-size: 12px; letter-spacing: .5em; color: var(--n-text-3); }
+@keyframes opTitle { from { opacity: 0; } to { opacity: 1; } }
+@keyframes opSeal { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; } 100% { opacity: 1; transform: scale(1) rotate(-3deg); } }
+@keyframes opLinesOut { to { opacity: 0; filter: blur(4px); } }
+@media (prefers-reduced-motion: reduce) { .op-lines p, .op-title, .op-seal { animation-duration: .01s; } }

@@ -128,6 +128,7 @@
     syncButtons();
     try {
       if (opt && opt.recap && (state.sem > 0 || state.beat > 1)) { await UI.Stage.show(UI.Stage.cur && UI.Stage.cur.at ? UI.Stage.cur : { at: "dormout", time: "night", season: "autumn" }); if (token !== runToken) return; await UI.recap(state); if (token !== runToken) return; }
+      if (state.sem === 0 && state.beat === 0 && !state.flags.opened) { state.flags.opened = true; await UI.opening(state); if (token !== runToken) return; }
       await DL.playRun(state, makeIO(token));
     } catch (err) {
       if (err !== ABORT) { console.error(err); UI.store.del(SAVE); closeApp(); }

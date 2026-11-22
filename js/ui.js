@@ -347,6 +347,27 @@
     await closeOverlay();
   }
 
+  // 新的一局：片头。黑场，三行字，然后片名和章印。轻触可跳过
+  async function opening(s) {
+    $("dialog").classList.add("idle");
+    const fam = { rich: "家里给的生活费很宽裕", mid: "家里给的生活费刚刚好", poor: "口袋里是家里凑出来的学费" }[s.family] || "";
+    const lines = ["九月。", "火车晃了一整夜。", fam + "，", "箱子里装着一个人的全部家当。"];
+    const o = overlay(`<div class="opening"><div class="op-lines" style="animation-delay:${0.1 + lines.length * 1.5}s">${lines.map((l, i) => `<p style="animation-delay:${0.5 + i * 1.5}s">${esc(l)}</p>`).join("")}</div>
+      <div class="op-title" style="animation-delay:${0.9 + lines.length * 1.5}s"><span class="op-seal">四<br>〇<br>四</span><h1>宿舍人生</h1><p class="op-latin">Dorm Life — A Novel in Four Years</p><p class="op-name">主演 · ${esc(s.name)}</p></div></div>`, "black");
+    let skip = false;
+    const tap = () => (skip = true);
+    o.addEventListener("click", tap);
+    keyHandler = tap;
+    const total = (0.9 + lines.length * 1.5 + 3.4) * 1000;
+    const t0 = Date.now();
+    while (!skip && !settings.skip && Date.now() - t0 < total) await sleep(100);
+    o.removeEventListener("click", tap);
+    keyHandler = null;
+    o.querySelector(".opening").classList.add("out");
+    await sleep(700);
+    await closeOverlay();
+  }
+
   async function card(title, sub) {
     $("dialog").classList.add("idle");
     const o = overlay(`<div class="bigcard"><h2>${esc(title)}</h2>${sub ? `<p>${esc(sub)}</p>` : ""}</div>`, "black");
@@ -724,6 +745,6 @@
     }
   }
 
-  DL.UI = { remember: rememberHint, recap, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { remember: rememberHint, recap, opening, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);
