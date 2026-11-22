@@ -218,3 +218,14 @@
 @keyframes opSeal { 0% { opacity: 0; transform: scale(1.8) rotate(-12deg); } 60% { opacity: 1; } 100% { opacity: 1; transform: scale(1) rotate(-3deg); } }
 @keyframes opLinesOut { to { opacity: 0; filter: blur(4px); } }
 @media (prefers-reduced-motion: reduce) { .op-lines p, .op-title, .op-seal { animation-duration: .01s; } }
+
+/* iOS WebKit：带 backdrop-filter 的元素嵌套在另一个带 backdrop-filter 的遮罩里时会整块不渲染
+   （群聊、学期安排、周末面板在 iPhone 上直接消失，游戏卡住）。
+   面板一律不用背景模糊，改成近乎不透明的深色渐变，观感几乎一样。 */
+.sheet, .form-card, .mg-panel, .chat {
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+  background: linear-gradient(180deg, rgba(38,34,30,.97), rgba(17,15,13,.985)) !important;
+}
+.fc-badge { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(10,9,8,.72) !important; }
+.mg-panel *, .sheet *, .chat * { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.gnav-cta { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(40,36,32,.85); }
