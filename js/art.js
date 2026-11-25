@@ -14,7 +14,7 @@
     "rooftop-dawn", "rooftop-dusk", "rooftop-night", "sea", "stage-festival", "stage", "stairs", "station-dawn", "station-dusk", "station-night"];
   const HAS = new Set(PHOTOS);
   // 照片自身的光线
-  const NATIVE = { "gate-night": "night", "road-rain": "night", "road-snow": "night", "dormout-snow": "night", gym: "night", hospital: "night", stage: "night", "stage-festival": "night", sea: "dusk", mountain: "dawn", stairs: "day", "road-dusk": "dusk", "road-summer": "dawn", "road-winter": "dawn", "lake-winter": "day", "dorm-rain": "day", "library-rain": "day" };
+  const NATIVE = { "gate-night": "night", "road-rain": "night", "road-snow": "night", "dormout-snow": "night", gym: "night", hospital: "day", "library-night": "day", "library-dawn": "day", "classroom-night": "day", "classroom-dusk": "day", "dorm-night": "day", stage: "night", "stage-festival": "night", sea: "dusk", mountain: "dawn", stairs: "day", "road-dusk": "dusk", "road-summer": "dawn", "road-winter": "dawn", "lake-winter": "day", "dorm-rain": "day", "library-rain": "day" };
   const INDOOR = ["dorm", "library", "classroom", "canteen", "hospital", "gym", "stage", "stairs"];
   const ALT = { dawn: ["day", "dusk"], day: ["dawn", "dusk"], dusk: ["night", "day"], night: ["dusk", "day"] };
 
