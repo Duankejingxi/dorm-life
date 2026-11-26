@@ -34,16 +34,21 @@ const fs = require("node:fs");
     await shot("setup");
     await page.click("#setupForm button[type=submit]");
 
-    const want = new Set(["free", "chat", "bond", "talent", "chapter", "say", "choice", "plan", "transcript", "memory", "yearbook", "mg-intro", "mg-play:stand", "mg-play:umbrella", "mg-play:rush", "mg-play:shoot", "mg-play:rhythm", "mg-play:cram", "mg-result"]);
+    const want = new Set(["wrap", "night", "night-ask", "free", "chat", "bond", "talent", "chapter", "say", "choice", "plan", "transcript", "memory", "yearbook", "mg-intro", "mg-play:stand", "mg-play:umbrella", "mg-play:rush", "mg-play:shoot", "mg-play:rhythm", "mg-play:cram", "mg-result"]);
     const played = {};
     let cramPlayed = 0;
+    let nightsSeen = 0;
+    let wrapSeen = 0;
     const shotTaken = new Set();
     let steps = 0;
     while (steps++ < 6000) {
       const st = await page.evaluate(() => {
         const vis = (id) => !document.getElementById(id).classList.contains("hidden");
         const ov = document.getElementById("overlay");
+        if (document.querySelector(".wrap.in")) return "wrap";
         if (vis("yearbook")) return "yearbook";
+        const nt = document.querySelector(".night.in");
+        if (nt) return nt.querySelector(".nt-opt") ? "night-ask" : nt.classList.contains("ready") ? "night" : "wait";
         if (document.querySelector(".talent-screen")) return "talent";
         const mg = document.querySelector(".mg");
         if (mg && !mg.classList.contains("hidden")) {
@@ -112,6 +117,16 @@ const fs = require("node:fs");
         const story = await page.$(".free-card.story");
         const target = story || cards[steps % Math.max(1, cards.length)];
         if (target) await target.click().catch(() => {});
+      } else if (st === "night-ask") {
+        const os = await page.$$(".nt-opt");
+        if (os.length) await os[steps % os.length].click({ timeout: 1500 }).catch(() => {});
+        nightsSeen++;
+      } else if (st === "wrap") {
+        wrapSeen++;
+        await page.mouse.click(195, 500);
+        await page.waitForTimeout(400);
+      } else if (st === "night") {
+        await page.mouse.click(195, 420);
       } else if (st === "chat") {
         await page.click(".chat-reply");
       } else if (st === "chat-done") {
@@ -140,6 +155,9 @@ const fs = require("node:fs");
     assert.ok(steps < 6000, "没能在 6000 步内打完");
     for (const k of ["stand", "umbrella", "rush", "rhythm", "cram"]) assert.ok(played[k] || k === "umbrella" || k === "rhythm", "没玩到小游戏：" + k);
     console.log("玩到的小游戏：", Object.keys(played).join(" "));
+    console.log("卧谈会选择次数：", nightsSeen);
+    assert.ok(nightsSeen >= 16, "卧谈会没有走完：" + nightsSeen);
+    assert.ok(wrapSeen >= 5, "四年报告没有出现：" + wrapSeen);
     await page.waitForTimeout(1500);
     await shot("yearbook");
     await page.evaluate(() => { const y = document.getElementById("yearbook"); y.scrollTop = y.scrollHeight; });

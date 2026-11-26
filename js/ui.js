@@ -227,6 +227,149 @@
       }
     });
   }
+  /* ---------- 四年报告：毕业那天，像翻一本相册那样翻过这四年 ---------- */
+  function wrapSlides(s, e) {
+    const f = s.flags, fo = s.focus || {}, T = s.tally || { in: 0, out: 0 };
+    const out = [];
+    out.push({ bg: "station-dawn", k: "Four Years", pre: "从九月的火车站", big: 1461, unit: "天", post: "到六月的火车站。" });
+    const lib = (fo.library || 0) + (fo.prep || 0) + (fo.lab || 0);
+    const gp = s.gpas && s.gpas.length ? s.gpas.reduce((a, b) => a + b, 0) / s.gpas.length : 0;
+    if (lib) out.push({ bg: "library-night", k: "Library", pre: "你在图书馆坐了大约", big: lib * 140, unit: "小时", post: gp ? `四年平均绩点 ${gp.toFixed(2)}。` + (s.fails ? `挂过 ${s.fails} 门，也都补回来了。` : "一门没挂。") : "" });
+    else if (gp) out.push({ bg: "classroom-dusk", k: "Grades", pre: "四年平均绩点", big: gp, dec: 2, unit: "", post: s.fails ? `挂过 ${s.fails} 门。没关系，青春总要挂点什么。` : "一门没挂。" });
+    const run = (fo.field || 0) + (fo.ball || 0) + (fo.rehab || 0);
+    if (run) out.push({ bg: "field-night", k: "Field", pre: "你在操场上跑了大约", big: run * 75, unit: "公里", post: "差不多是从学校，跑回了家。" });
+    if (T.out) out.push({ bg: "canteen-night", k: "Money", pre: "四年里，你一共花掉了", big: Math.round(T.out), unit: "元", money: true, post: (fo.work ? `其中一部分，是你自己打工挣来的。` : "") + "大概有三分之一，留在了食堂。" });
+    const ppl = ["jiang", "su", "xu", "lin"].filter((w) => w !== "lin" || f.metLin);
+    const top = ppl.sort((a, b) => (f["with_" + b] || 0) * 6 + s.rel[b] - ((f["with_" + a] || 0) * 6 + s.rel[a]))[0];
+    if (top) {
+      const n = f["with_" + top] || 0;
+      out.push({ bg: { jiang: "field-day", su: "library-day", xu: "rooftop-night", lin: "lake-dusk" }[top], k: "Person", pre: "这四年，陪你最多的人是", name: DL.CAST[top].name, post: (n ? `你们一起过了 ${n} 个周末。` : "") + `你们现在是${DL.LEVELS[DL.levelOf(s.rel[top])]}。`, c: DL.CAST[top].color });
+    }
+    const places = Object.keys(DL.PLACES || {}).filter((p) => f["at_" + p]).sort((a, b) => f["at_" + b] - f["at_" + a]);
+    if (places.length) { const P = DL.PLACES[places[0]]; out.push({ bg: { library: "library-rain", field: "field-day", rooftop: "rooftop-dusk", lake: "lake-dawn", canteen: "canteen-night", dorm: "dorm-night" }[places[0]] || "road-autumn", k: "Place", pre: "你最常去的地方", name: P.name, post: `一共去了 ${f["at_" + places[0]]} 次。` }); }
+    if (f.nightTopics && f.nightTopics.length) out.push({ bg: "dorm-night", k: "Lights out", pre: "熄灯以后，你们聊了", big: f.nightTopics.length, unit: "个晚上", list: f.nightTopics.slice(-8) });
+    out.push({ bg: "gate-autumn", k: "Memories", pre: "你收集了", big: s.memories.length, unit: "段回忆", post: s.memories.length ? `最后一段，是「${s.memories[s.memories.length - 1].title}」。` : "" });
+    out.push({ bg: "station-dusk", k: "Your Title", pre: "如果给这四年起一个名字", name: "「" + e.title.name + "」", post: "谢谢你，陪他们走完这四年。", end: true });
+    return out;
+  }
+  async function wrapped(s, e) {
+    const list = wrapSlides(s, e);
+    const n = el("div", "wrap");
+    n.innerHTML = `<div class="wr-bars">${list.map(() => "<i><b></b></i>").join("")}</div><div class="wr-stage"></div><button class="wr-skip">跳过</button>`;
+    $("app").appendChild(n);
+    requestAnimationFrame(() => n.classList.add("in"));
+    let skipAll = false;
+    n.querySelector(".wr-skip").onclick = (ev) => { ev.stopPropagation(); skipAll = true; if (n._next) n._next(); };
+    const stage = n.querySelector(".wr-stage");
+    for (let i = 0; i < list.length && !skipAll; i++) {
+      const d = list[i];
+      const bars = n.querySelectorAll(".wr-bars i");
+      bars.forEach((b, j) => { b.className = j < i ? "done" : j === i ? "now" : ""; });
+      const sl = el("div", "wr-slide" + (d.end ? " end" : ""));
+      sl.innerHTML = `<div class="wr-bg" style="background-image:url('${DL.Art.url(d.bg)}')"></div>
+        <div class="wr-copy"><p class="wr-k">${esc(d.k)}</p><p class="wr-pre">${esc(d.pre)}</p>
+        ${d.name ? `<h2 class="wr-name"${d.c ? ` style="--c:${d.c}"` : ""}>${esc(d.name)}</h2>` : `<h2 class="wr-big">${d.money ? "<small>¥</small>" : ""}<span>0</span><em>${esc(d.unit || "")}</em></h2>`}
+        ${d.list ? `<ol class="wr-list">${d.list.map((t, j) => `<li style="animation-delay:${0.5 + j * 0.12}s">${esc(t)}</li>`).join("")}</ol>` : ""}
+        ${d.post ? `<p class="wr-post">${esc(d.post)}</p>` : ""}</div>`;
+      stage.appendChild(sl);
+      const old = stage.querySelectorAll(".wr-slide"); if (old.length > 1) { old[0].classList.add("leave"); setTimeout(() => old[0].remove(), 700); }
+      DL.Art.preload(DL.Art.url((list[i + 1] || d).bg));
+      const num = sl.querySelector(".wr-big span");
+      if (num && !settings.skip) {
+        const to = d.big, dec = d.dec || 0, t0 = performance.now(), dur = 1300;
+        const tick = (t) => { const k = Math.min(1, (t - t0) / dur), v = to * (1 - Math.pow(1 - k, 3)); num.textContent = dec ? v.toFixed(dec) : Math.round(v).toLocaleString(); if (k < 1 && sl.isConnected) requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+      } else if (num) num.textContent = d.dec ? d.big.toFixed(d.dec) : Math.round(d.big).toLocaleString();
+      if (DL.Audio) DL.Audio.blip(i === list.length - 1 ? "mem" : undefined);
+      await new Promise((resolve) => {
+        const dur = settings.skip ? 120 : d.end ? 7000 : 5200;
+        const cur = n.querySelector(".wr-bars i.now b"); if (cur) cur.style.animationDuration = dur + "ms";
+        let done = false;
+        const go = () => { if (done) return; done = true; clearTimeout(tm); n.removeEventListener("click", tap); keyHandler = null; n._next = null; resolve(); };
+        const tap = () => go();
+        const tm = setTimeout(go, dur);
+        setTimeout(() => n.addEventListener("click", tap), 350);
+        keyHandler = (ev) => { if (ev.key === " " || ev.key === "Enter" || ev.key === "ArrowRight") go(); };
+        n._next = go;
+      });
+    }
+    n.classList.remove("in"); n.classList.add("out");
+    await sleep(800); n.remove();
+  }
+
+  /* ---------- 卧谈会：熄灯以后，只有声音 ---------- */
+  // 四张床：靠窗两张在上方，靠门两张在下方；说话的人那一角会亮一点
+  const NIGHT_POS = { xu: "tl", me: "tr", jiang: "bl", su: "br" };
+  const Night = {
+    el: null,
+    wait(ms) {
+      return new Promise((resolve) => {
+        const n = this.el;
+        if (settings.skip) { setTimeout(resolve, 60); return; }
+        let ok = false; setTimeout(() => { ok = true; n.classList.add("ready"); }, ms || 380);
+        const go = (e) => { if (e && e.target.closest(".nt-opt")) return; if (!ok) return; n.removeEventListener("click", go); keyHandler = null; n.classList.remove("ready"); if (DL.Audio) DL.Audio.blip(); resolve(); };
+        n.addEventListener("click", go);
+        keyHandler = (e) => { if (e.key === " " || e.key === "Enter") go(); };
+      });
+    },
+    glow(who) { this.el.querySelectorAll(".nt-bed").forEach((b) => b.classList.toggle("on", b.dataset.w === who)); },
+    push(who, text, cls) {
+      const log = this.el.querySelector(".nt-log");
+      log.querySelectorAll(".nt-line").forEach((l) => l.classList.add("old"));
+      const side = who ? (NIGHT_POS[who] || "tr")[1] : "c";
+      const name = who === "me" ? "你" : who ? (DL.CAST[who] || {}).name || "" : "";
+      const p = el("div", "nt-line " + (cls || "") + " s-" + side, (name ? `<small>${esc(name)}</small>` : "") + `<span>${esc(text)}</span>`);
+      log.appendChild(p);
+      const all = log.querySelectorAll(".nt-line"); if (all.length > 5) all[0].remove();
+      remember({ who: name, text });
+      this.glow(who);
+    },
+    async start(v) {
+      $("dialog").classList.add("idle");
+      if (DL.Audio) DL.Audio.scene({ at: "dorm", time: "night", weather: "clear", season: "summer" });
+      const n = el("div", "night");
+      n.innerHTML = `<div class="nt-window"></div>
+        <div class="nt-beds">${Object.keys(NIGHT_POS).map((w) => `<i class="nt-bed p-${NIGHT_POS[w]}" data-w="${w}"><b>${esc(w === "me" ? "你" : DL.CAST[w].name)}</b></i>`).join("")}</div>
+        <p class="nt-title"><span class="latin">Lights out</span>熄灯 · ${esc(v.label || "")}</p>
+        <div class="nt-log"></div><div class="nt-opts"></div><p class="nt-tap">轻触继续</p>`;
+      $("gameScreen").insertBefore(n, $("toasts"));
+      this.el = n;
+      requestAnimationFrame(() => n.classList.add("in"));
+      await sleep(settings.skip ? 100 : 1400);
+    },
+    async say(who, text) { this.push(who, text, who ? "" : "narr"); await this.wait(); },
+    ask(q, opts) {
+      return new Promise((resolve) => {
+        this.push(null, q, "narr q");
+        this.glow(null);
+        const box = this.el.querySelector(".nt-opts");
+        box.innerHTML = "";
+        this.el.classList.add("asking");
+        opts.forEach((t, i) => {
+          const b = el("button", "nt-opt", `<em>${DL.NUM_CN ? DL.NUM_CN[i] : i + 1}</em>${esc(t)}`);
+          b.style.animationDelay = 0.08 * i + 0.15 + "s";
+          b.onclick = (e) => {
+            e.stopPropagation();
+            if (!this.el.classList.contains("asking")) return;
+            this.el.classList.remove("asking"); box.innerHTML = ""; keyHandler = null;
+            if (DL.Audio) DL.Audio.blip("choose"); haptic(8);
+            this.push("me", t.replace(/^「|」$/g, ""));
+            resolve(i);
+          };
+          box.appendChild(b);
+        });
+        keyHandler = (e) => { const k = parseInt(e.key, 10); const bs = box.querySelectorAll(".nt-opt"); if (k >= 1 && k <= bs.length) bs[k - 1].click(); };
+      });
+    },
+    async end(text) {
+      this.push(null, text, "narr close");
+      this.glow(null);
+      await this.wait(900);
+      const n = this.el; n.classList.remove("in"); n.classList.add("out");
+      await sleep(900); n.remove(); this.el = null;
+    },
+  };
+
   // “江野会记住这件事。”
   let remTimer = null;
   function rememberHint(r) {
@@ -745,6 +888,6 @@
     }
   }
 
-  DL.UI = { remember: rememberHint, recap, opening, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
+  DL.UI = { wrapped, Night, remember: rememberHint, recap, opening, Stage, backlog, history, setSkip, achieve, talentDraw, free, chat, bond, haptic, coach, say, ask, hud, toast, heading, overlay, closeOverlay, overlayTap, chapter, card, plan, montage, transcript, memory, journal, epilogue, advance, onKey, store, settings, saveSettings, esc, el, sleep,
     resetHud() { lastStats = null; $("hudStats").innerHTML = ""; }, clearKeys() { keyHandler = null; } };
 })(typeof window !== "undefined" ? window : globalThis);

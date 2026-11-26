@@ -229,3 +229,75 @@
 .fc-badge { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(10,9,8,.72) !important; }
 .mg-panel *, .sheet *, .chat * { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .gnav-cta { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(40,36,32,.85); }
+
+/* ---------- 卧谈会 ---------- */
+.night { position: absolute; inset: 0; z-index: 6; overflow: hidden; background: #050505; color: var(--n-text); font-family: var(--a-serif); opacity: 0; transition: opacity 1.4s ease; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.night.in { opacity: 1; } .night.out { opacity: 0; transition-duration: .9s; }
+/* 窗：月光从上方斜着漏进来 */
+.nt-window { position: absolute; left: 50%; top: -8%; width: 70%; height: 62%; transform: translateX(-50%) skewX(-8deg); background: radial-gradient(60% 70% at 50% 20%, rgba(150,170,205,.16), rgba(150,170,205,.04) 55%, transparent 75%); filter: blur(8px); animation: ntMoon 9s ease-in-out infinite alternate; pointer-events: none; }
+.nt-window::after { content: ""; position: absolute; inset: 18% 30% 40%; background: repeating-linear-gradient(90deg, transparent 0 46%, rgba(0,0,0,.5) 46% 54%, transparent 54% 100%); opacity: .5; }
+@keyframes ntMoon { from { opacity: .7; } to { opacity: 1; } }
+/* 四张床 */
+.nt-beds { position: absolute; inset: calc(70px + var(--safe-t)) 18px calc(30px + var(--safe-b)); pointer-events: none; }
+.nt-bed { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: rgba(236,230,218,.18); transition: background .6s, box-shadow .6s; }
+.nt-bed b { position: absolute; top: 14px; font-size: 10px; font-weight: 400; letter-spacing: .3em; color: rgba(236,230,218,.0); white-space: nowrap; transition: color .6s; }
+.nt-bed.p-tl { left: 0; top: 0; } .nt-bed.p-tr { right: 0; top: 0; } .nt-bed.p-bl { left: 0; bottom: 0; } .nt-bed.p-br { right: 0; bottom: 0; }
+.nt-bed.p-tl b, .nt-bed.p-bl b { left: -2px; } .nt-bed.p-tr b, .nt-bed.p-br b { right: -2px; }
+.nt-bed.p-bl b, .nt-bed.p-br b { top: auto; bottom: 14px; }
+.nt-bed.on { background: #f2d6a8; box-shadow: 0 0 18px 4px rgba(242,214,168,.45), 0 0 120px 40px rgba(242,214,168,.08); }
+.nt-bed.on b { color: rgba(236,230,218,.55); }
+.nt-title { position: absolute; left: 0; right: 0; top: calc(26px + var(--safe-t)); margin: 0; text-align: center; font-size: 12px; letter-spacing: .5em; color: rgba(236,230,218,.35); animation: rcIn 2s .3s var(--a-ease) both; }
+.nt-title .latin { font-size: 15px; letter-spacing: .04em; margin-bottom: 4px; color: rgba(236,230,218,.4); }
+/* 对话：黑暗里的低语，从说话人那一侧浮现 */
+.nt-log { position: absolute; left: 28px; right: 28px; top: 22%; bottom: 30%; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; pointer-events: none; }
+.night.asking .nt-log { bottom: 44%; }
+.nt-line { max-width: 82%; animation: ntIn 1.1s var(--a-ease) backwards; transition: opacity .8s ease, filter .8s ease; }
+.nt-line small { display: block; margin-bottom: 4px; font-size: 10px; letter-spacing: .4em; color: rgba(236,230,218,.4); }
+.nt-line span { font-size: 16px; line-height: 1.85; letter-spacing: .06em; color: rgba(236,230,218,.9); text-shadow: 0 0 18px rgba(242,214,168,.12); }
+.nt-line.s-l { align-self: flex-start; text-align: left; }
+.nt-line.s-r { align-self: flex-end; text-align: right; }
+.nt-line.s-c { align-self: center; text-align: center; max-width: 90%; }
+.nt-line.narr span { font-size: 14px; color: rgba(236,230,218,.55); font-style: normal; letter-spacing: .12em; }
+.nt-line.q span { color: rgba(236,230,218,.75); }
+.nt-line.close span { font-size: 15px; color: rgba(236,230,218,.75); line-height: 2; }
+.nt-line.old { opacity: .28; filter: blur(.6px); }
+@keyframes ntIn { from { opacity: 0; filter: blur(8px); transform: translateY(8px); } to { opacity: 1; filter: none; transform: none; } }
+.nt-opts { position: absolute; left: 24px; right: 24px; bottom: calc(40px + var(--safe-b)); display: flex; flex-direction: column; gap: 10px; max-width: 520px; margin: 0 auto; }
+.nt-opt { display: flex; gap: 14px; align-items: baseline; width: 100%; text-align: left; padding: 15px 18px; border: 0; border-radius: 14px; background: rgba(236,230,218,.045); box-shadow: inset 0 0 0 1px rgba(236,230,218,.1); color: var(--n-text); font: inherit; font-size: 15px; letter-spacing: .05em; line-height: 1.6; cursor: pointer; animation: ntIn .9s var(--a-ease) both; transition: background .3s, box-shadow .3s; }
+.nt-opt em { font-style: normal; font-size: 12px; color: #d9b98a; flex: none; }
+.nt-opt:hover, .nt-opt:active { background: rgba(236,230,218,.08); box-shadow: inset 0 0 0 1px rgba(242,214,168,.35); }
+.nt-tap { position: absolute; left: 0; right: 0; bottom: calc(18px + var(--safe-b)); margin: 0; text-align: center; font-size: 11px; letter-spacing: .5em; color: rgba(236,230,218,.0); transition: color .8s; pointer-events: none; }
+.night.ready:not(.asking) .nt-tap { color: rgba(236,230,218,.28); }
+@media (min-width: 760px) { .nt-beds { inset: 90px 12% 40px; } .nt-log { left: 18%; right: 18%; } }
+@media (prefers-reduced-motion: reduce) { .nt-window { animation: none; } }
+
+/* ---------- 四年报告 ---------- */
+.wrap { position: absolute; inset: 0; z-index: 40; background: #060505; color: var(--n-text); font-family: var(--a-serif); opacity: 0; transition: opacity .8s ease; cursor: pointer; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+.wrap.in { opacity: 1; } .wrap.out { opacity: 0; }
+.wr-bars { position: absolute; z-index: 3; left: 14px; right: 14px; top: calc(12px + var(--safe-t)); display: flex; gap: 4px; }
+.wr-bars i { flex: 1; height: 2px; border-radius: 2px; background: rgba(236,230,218,.18); overflow: hidden; }
+.wr-bars i b { display: block; height: 100%; width: 0; background: var(--n-text); }
+.wr-bars i.done b { width: 100%; }
+.wr-bars i.now b { animation: wrBar 5s linear forwards; }
+@keyframes wrBar { to { width: 100%; } }
+.wr-skip { position: absolute; z-index: 3; right: 14px; top: calc(24px + var(--safe-t)); border: 0; background: none; color: rgba(236,230,218,.45); font: inherit; font-size: 12px; letter-spacing: .3em; padding: 8px; cursor: pointer; }
+.wr-stage { position: absolute; inset: 0; }
+.wr-slide { position: absolute; inset: 0; display: flex; align-items: flex-end; animation: wrIn 1s var(--a-ease) both; }
+.wr-slide.leave { animation: wrOut .7s ease both; }
+@keyframes wrIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wrOut { to { opacity: 0; transform: scale(1.03); } }
+.wr-bg { position: absolute; inset: -4%; background: center / cover no-repeat; filter: brightness(.42) saturate(.8); animation: wrKen 9s ease-out both; }
+.wr-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,5,5,.55), rgba(6,5,5,.1) 35%, rgba(6,5,5,.85) 78%, #060505); }
+@keyframes wrKen { from { transform: scale(1.14); } to { transform: scale(1.02); } }
+.wr-copy { position: relative; z-index: 2; width: 100%; max-width: 620px; margin: 0 auto; padding: 0 30px calc(70px + var(--safe-b)); }
+.wr-k { margin: 0 0 18px; font-family: var(--a-latin); font-style: italic; font-size: 17px; color: rgba(236,230,218,.5); animation: rcIn 1s .15s var(--a-ease) both; }
+.wr-pre { margin: 0; font-size: 18px; letter-spacing: .12em; color: rgba(236,230,218,.82); animation: rcIn 1s .3s var(--a-ease) both; }
+.wr-big { display: flex; align-items: baseline; gap: 10px; margin: 8px 0 4px; font-family: var(--a-latin); font-style: italic; font-weight: 300; font-size: clamp(86px, 27vw, 168px); line-height: 1; letter-spacing: -.02em; animation: rcIn 1.2s .45s var(--a-ease) both; }
+.wr-big small { font-size: .38em; font-style: normal; opacity: .7; }
+.wr-big em { font-family: var(--a-serif); font-style: normal; font-weight: 400; font-size: 20px; letter-spacing: .2em; color: rgba(236,230,218,.7); }
+.wr-name { margin: 14px 0 10px; font-weight: 900; font-size: clamp(54px, 16vw, 96px); letter-spacing: .14em; line-height: 1.1; color: var(--n-text); text-shadow: 0 0 60px var(--c, rgba(236,230,218,.25)); animation: titleIn 1.6s .45s var(--a-ease) both; }
+.wr-slide.end .wr-name { font-size: clamp(40px, 12vw, 72px); letter-spacing: .08em; }
+.wr-post { margin: 16px 0 0; font-size: 15px; line-height: 1.9; letter-spacing: .08em; color: rgba(236,230,218,.62); animation: rcIn 1s .9s var(--a-ease) both; }
+.wr-list { list-style: none; margin: 16px 0 0; padding: 0 0 0 14px; border-left: 1px solid rgba(236,230,218,.2); }
+.wr-list li { font-size: 14px; line-height: 2; letter-spacing: .06em; color: rgba(236,230,218,.72); animation: rcIn .9s var(--a-ease) both; }
+@media (prefers-reduced-motion: reduce) { .wr-bg { animation: none; } }

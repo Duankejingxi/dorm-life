@@ -112,6 +112,7 @@
       const d = DL.adjustStat ? DL.adjustStat(s, k, eff[k]) : eff[k];
       const after = k === "money" ? before + d : clamp(before + d, 0, 100);
       s.stats[k] = after;
+      if (k === "money" && after !== before) { s.tally = s.tally || { in: 0, out: 0 }; if (after > before) s.tally.in += after - before; else s.tally.out += before - after; }
       if (after !== before) changes.push({ kind: "stat", key: k, name: STAT_NAMES[k], delta: after - before });
     }
     if (eff.rel) {
@@ -251,6 +252,7 @@
     if (beat === "summer") return playScene("summer", s, io);
     if (beat === "free") return DL.playFree ? DL.playFree(s, io) : undefined;
     if (beat === "chat") return DL.playChat ? DL.playChat(s, io) : undefined;
+    if (beat === "night") return DL.playNight ? DL.playNight(s, io) : undefined;
     return playScene(beat, s, io);
   }
 

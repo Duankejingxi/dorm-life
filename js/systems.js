@@ -140,6 +140,8 @@
     { id: "reunion", icon: "🔑", name: "四个人", desc: "十年后，404 一个都没少", test: (s) => s.done && ["jiang", "su", "xu"].every((k) => s.rel[k] >= 76) },
     { id: "bond1", icon: "🫶", name: "只属于你们的故事", desc: "解锁第一段羁绊故事", test: (s) => ["jiang", "su", "xu", "lin"].some((k) => (s.flags["bond_" + k] || 0) >= 1) },
     { id: "bond4", icon: "💫", name: "最懂你的人", desc: "和一个人走完全部四段羁绊故事", test: (s) => ["jiang", "su", "xu", "lin"].some((k) => (s.flags["bond_" + k] || 0) >= 4) },
+    { id: "letter", icon: "✉️", name: "床板下的信", desc: "毕业前一晚，找到了那封写给下一个人的信", test: (s) => s.flags.letterFound },
+    { id: "pact", icon: "🤙", name: "夏天的约定", desc: "在卧谈会上，和室友约好每年夏天回来拍照", test: (s) => s.flags.reunionPact },
     { id: "bondall", icon: "🌙", name: "每个人的夜晚", desc: "和三个室友都至少有两段羁绊故事", test: (s) => ["jiang", "su", "xu"].every((k) => (s.flags["bond_" + k] || 0) >= 2) },
     { id: "gold", icon: "✨", name: "天选之人", desc: "抽到一张传说天赋", test: (s) => talentsOf(s).some((t) => t.r === "gold") },
     { id: "gold2", icon: "🌈", name: "欧皇", desc: "同时带着两张传说天赋入学", test: (s) => talentsOf(s).filter((t) => t.r === "gold").length >= 2 },

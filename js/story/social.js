@@ -232,6 +232,8 @@
     const o = opts[idx] || opts[0];
     const P = PLACES[o.place];
     s.flags.freeCount = (s.flags.freeCount || 0) + 1;
+    s.flags["with_" + (o.who || "solo")] = (s.flags["with_" + (o.who || "solo")] || 0) + 1;
+    s.flags["at_" + o.place] = (s.flags["at_" + o.place] || 0) + 1;
     if (!o.who) {
       await io.scene({ at: P.at, time: P.time, weather: "clear", season: DL.currentSeason(s) }, s);
       io.toast(DL.applyFx(s, P.solo.fx), s);
@@ -303,6 +305,7 @@
       ] },
   ];
   DL.CHATS = CHATS;
+  DL.PLACES = PLACES;
 
   DL.playChat = async function (s, io) {
     const c = CHATS.find((x) => x.sem === s.sem && DL.test(x.if, s));

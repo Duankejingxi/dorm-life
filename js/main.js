@@ -81,6 +81,7 @@
       memory: guard(UI.memory), card: guard(UI.card), heading: guard(UI.heading), chapter: guard(UI.chapter), plan: guard(UI.plan),
       montage: guard(UI.montage), transcript: guard(UI.transcript), currentScene: () => Object.assign({}, UI.Stage.cur),
       free: guard(UI.free), chat: guard(UI.chat), bond: guard(UI.bond),
+      night: { start: guard((v) => UI.Night.start(v)), say: guard((w, t) => UI.Night.say(w, t)), ask: guard((q, o) => UI.Night.ask(q, o)), end: guard((t) => UI.Night.end(t)) },
       remember: (r) => { if (token === runToken && !UI.settings.skip) UI.remember(r); },
       game: guard(async (kind, o) => {
         const v = await DL.Games.play(kind, o);
@@ -104,6 +105,8 @@
         archive(e, s);
         $("dialog").classList.add("idle");
         await UI.Stage.show({ at: "dormout", time: "night", weather: "clear", season: "summer" });
+        if (UI.wrapped) await UI.wrapped(s, e);
+        if (token !== runToken) return;
         await UI.epilogue(e, s, {
           again: () => { UI.store.del(SAVE); toSetup(); },
           home: () => { UI.store.del(SAVE); closeApp(); },
@@ -121,6 +124,7 @@
     current = state;
     UI.resetHud();
     UI.history.length = 0;
+    document.querySelectorAll(".night").forEach((n) => n.remove());
     screen("game");
     $("dialog").classList.add("idle");
     $("choices").innerHTML = "";

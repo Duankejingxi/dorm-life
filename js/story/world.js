@@ -37,21 +37,21 @@
   // 每学期的节拍：chapter 开篇 / plan 时间安排 / moment 校园碎片 / exam 期末 / summer 暑假 / 其余是剧情场景
   DL.SEMESTERS = [
     { id: "y1a", label: "大一 · 秋", year: "大一", term: "上学期", season: "autumn", title: "四个陌生人", quote: "那年九月，我们还不知道彼此的名字。",
-      beats: ["chapter", "chat", "y1a_arrival", "y1a_military", "y1a_midautumn", "plan", "free", "y1a_club", "moment", "y1a_rain", "moment", "exam"] },
+      beats: ["chapter", "chat", "y1a_arrival", "y1a_military", "y1a_midautumn", "plan", "free", "y1a_club", "moment", "y1a_rain", "moment", "night", "exam"] },
     { id: "y1b", label: "大一 · 春", year: "大一", term: "下学期", season: "spring", title: "春天的夜晚很长", quote: "好像什么都还来得及。",
-      beats: ["chapter", "chat", "y1b_return", "y1b_cheng", "plan", "free", "y1b_guitar", "moment", "y1b_night", "moment", "exam", "summer"] },
+      beats: ["chapter", "chat", "y1b_return", "y1b_cheng", "plan", "free", "y1b_guitar", "moment", "y1b_night", "moment", "night", "exam", "summer"] },
     { id: "y2a", label: "大二 · 秋", year: "大二", term: "上学期", season: "autumn", title: "第一次有人倒下", quote: "原来长大，是从学会守夜开始的。",
-      beats: ["chapter", "chat", "y2a_freshman", "y2a_injury", "plan", "free", "y2a_low", "moment", "y2a_snow", "moment", "exam"] },
+      beats: ["chapter", "chat", "y2a_freshman", "y2a_injury", "plan", "free", "y2a_low", "moment", "y2a_snow", "moment", "night", "exam"] },
     { id: "y2b", label: "大二 · 春", year: "大二", term: "下学期", season: "spring", title: "有人毕业了", quote: "我们第一次送别别人。",
-      beats: ["chapter", "chat", "y2b_band", "plan", "free", "moment", "y2b_farewell", "y2b_stage", "moment", "exam", "summer"] },
+      beats: ["chapter", "chat", "y2b_band", "plan", "free", "moment", "y2b_farewell", "y2b_stage", "moment", "night", "exam", "summer"] },
     { id: "y3a", label: "大三 · 秋", year: "大三", term: "上学期", season: "autumn", title: "岔路口", quote: "每个人都开始往不同的方向看。",
-      beats: ["chapter", "chat", "y3a_crossroad", "plan", "free", "y3a_su", "moment", "y3a_lin", "moment", "exam"] },
+      beats: ["chapter", "chat", "y3a_crossroad", "plan", "free", "y3a_su", "moment", "y3a_lin", "moment", "night", "exam"] },
     { id: "y3b", label: "大三 · 春", year: "大三", term: "下学期", season: "spring", title: "各自的远方", quote: "有人回到球场，有人奔向车站。",
-      beats: ["chapter", "chat", "y3b_jiang", "plan", "free", "y3b_xu", "moment", "y3b_grind", "moment", "exam", "summer"] },
+      beats: ["chapter", "chat", "y3b_jiang", "plan", "free", "y3b_xu", "moment", "y3b_grind", "moment", "night", "exam", "summer"] },
     { id: "y4a", label: "大四 · 秋", year: "大四", term: "上学期", season: "autumn", title: "最后一个秋天", quote: "银杏又黄了，这是最后一次。",
-      beats: ["chapter", "chat", "y4a_battle", "plan", "free", "y4a_autumn", "moment", "y4a_lin", "exam"] },
+      beats: ["chapter", "chat", "y4a_battle", "plan", "free", "y4a_autumn", "moment", "y4a_lin", "night", "exam"] },
     { id: "y4b", label: "大四 · 夏", year: "大四", term: "下学期", season: "summer", title: "404 Not Found", quote: "后来，那个房间住进了新的人。",
-      beats: ["chapter", "chat", "y4b_results", "y4b_thesis", "plan", "free", "y4b_photo", "y4b_dinner", "y4b_leave"] },
+      beats: ["chapter", "chat", "y4b_results", "y4b_thesis", "plan", "free", "y4b_photo", "y4b_dinner", "night", "y4b_leave"] },
   ];
 
   const y = (s) => Math.floor(s.sem / 2) + 1;

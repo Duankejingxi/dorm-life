@@ -6,7 +6,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.resolve(__dirname, "..");
-const FILES = ["js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js", "js/story/social.js", "js/systems.js"];
+const FILES = ["js/engine.js", "js/story/world.js", "js/story/y1.js", "js/story/y2.js", "js/story/y3.js", "js/story/y4.js", "js/story/moments.js", "js/story/endings.js", "js/story/social.js", "js/story/nights.js", "js/systems.js"];
 
 function load() {
   const ctx = { console, Math, Date, JSON };
@@ -43,6 +43,7 @@ function mockIO(DL, pick, out) {
       const k = opts.findIndex((o) => o.story); return k >= 0 && pick(2) === 0 ? k : pick(opts.length); },
     chat: async (c) => { check(c.title, "chat"); c.msgs.forEach((m) => check(m.text, "chat")); c.replies.forEach((r) => check(r, "chat")); c.follow.forEach((f) => f.forEach((m) => check(m.text, "chat"))); out.chats = (out.chats || 0) + 1; return pick(c.replies.length); },
     bond: async () => {},
+    night: { start: async () => { out.nights = (out.nights || 0) + 1; }, say: async (who, t) => { if (who && !DL.CAST[who]) throw new Error("未知角色 " + who); check(t, "night"); out.lines++; }, ask: async (q, opts) => { check(q, "night"); assert.ok(opts.length > 0, "卧谈会选项为空：" + q); opts.forEach((o) => check(o, "night")); out.choices++; return pick(opts.length); }, end: async (t) => check(t, "night") },
     achieve: (a) => { out.ach = out.ach || {}; out.ach[a.id] = 1; },
     save: () => {},
     epilogue: async (e) => {
@@ -62,7 +63,7 @@ test("剧情用到的字都在内置字体里（新增剧情后运行 tools/subs
 
 test("所有场景、节拍都存在", () => {
   const DL = load();
-  const builtins = ["chapter", "plan", "moment", "exam", "summer", "chat", "free"];
+  const builtins = ["chapter", "plan", "moment", "exam", "summer", "chat", "free", "night"];
   for (const sem of DL.SEMESTERS) for (const b of sem.beats) {
     if (builtins.includes(b) && b !== "summer") continue;
     assert.ok(DL.SCENES[b], "缺少场景 " + b);
